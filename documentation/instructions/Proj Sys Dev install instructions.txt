@@ -1,0 +1,90 @@
+Download raspberry pi imager: https://www.raspberrypi.org/downloads/
+Download Visual Studio Code Insiders: https://code.visualstudio.com/insiders/
+
+++++++++++++++++++++++++++ Installing Raspberry ++++++++++++++++++++++++++
+> Run imager
+> Select Pi OS (Other) > Pi OS Lite (32bit)
+> Select SD Card
+> Click write
+
+> Remove SD card and reinsert it into the computer
+> create a file in the boot of the SD card called "ssh"
+> create a file in the boot of the ST card called "wpa_supplicant.conf" and insert the following (Use a hotspot on your phone if a normal wifi network is not available)
+>>
+country=NL
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="Existing Wifi name"
+    psk="wifipassword"
+}
+<<
+> Remove SD card and insert in Raspberry Pi
+> Boot the Pi
+
+++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
+> Search for Powershell in startmenu and open as administrator
+> test the ssh to the pi with: ssh pi@<RPi address> 		| In my case: ssh pi@10.0.0.104 find pi address with wireshark or router client list)
+> enter password: raspberry
+	> if it works, exit ssh with command: exit
+	> if it doesn't work, retry wireshark or god be with you
+
+Now we will setup SSH keys for passwordless access
+> Type in powershell: cd ~/.ssh
+> Type in powershell: rm id*
+> Type in powershell: ssh-keygen
+> Hit enter 3 times
+> Type next command with the correct RPi IP address here --V
+> Type in powershell: cat ~/.ssh/id_rsa.pub | ssh pi@<RPi IP address> 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'			| You can copy this and paste with rightclick in powershell or terminal
+> As password type: raspberry
+> Check if you can ssh without giving password: ssh pi@<RPi IP address>
+> If no password was asked, continue. Otherwise try this block again.
+
+Update the pi with:
+	> sudo apt update && sudo apt upgrade
+Install git:
+	> sudo apt install git
+
+++++++++++++++++++++++++++ Installing and setting up VSCode insiders ++++++++++++++++++++++++++
+
+> Install VSCode insiders
+> Open the extentions tab on the left side
+> Search and install: 'C/C++'
+> Search and install: 'Remote development', this auto installs a bunch more.
+> Click the three dots on the top right of the search bar and click "Show installed extentions"
+> Uninstall "Remote - SSH", disable is not good enough.
+> Search and install: 'Remote - SSH (Nightly)'
+
+> Click the two green arrows on the bottom left of the window
+> Select: 'Remote-SSH: Connect to host...'
+> Add new SSH host
+> Enter: ssh pi@<RPi address>		| In my case: ssh pi@169.254.245.127
+> Click update 'C:/users/<username>/.ssh/config'
+> Click connect on the banner in the bottom right of the window.
+It will now connect and install some software
+> Click details on banner in lower right corner to see the progress. If it asks for a password you have done the passwordless access wrong and you need to redo that.
+
+> Open the command line with Ctrl+P
+> Type in: '> clone' and click on 'Git: clone'
+> Then clone with github
+> search for Zamtakk/Project_System_Development_2020
+> Login with github
+> Choose location for the repository folder
+> Click on open workspace in the banner in the lower right corner
+> Install the Git History extension
+
+
+
+
+
+
+++++++++++++++++++++++++++ Git on windows ++++++++++++++++++++++++++
+> Install git from the git website: https://git-scm.com/download/win
+> Open VSCode and open the command line with Ctrl+P
+> Type in: '> clone' and click on 'Git: clone'
+> Then clone with github
+> search for Zamtakk/Project_System_Development_2020
+> Login with github
+> Choose location for the repository folder
+> Click on open workspace in the banner in the lower right corner
