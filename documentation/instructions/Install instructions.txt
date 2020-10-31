@@ -1,0 +1,131 @@
+Information:
+        No prefix is information about the task or command that follows
+-       as prefix is something you need to do
+>       as prefix is a command you need to execute locally
+pi>     as prefix is a command you need to execute on the pi through an ssh session
+>>>>    starts a block of text that you need to paste in the file you just opened or created
+<<<<    Ends the block of text that needs to be copied
+<TAB>   If something is tabbed, it is optional and is based on the information above the command or task
+
+++++++++++++++++++++++++++ Installing Ubuntu ++++++++++++++++++++++++++
+- Install Ubuntu 20.04
+
+- Open a terminal window
+
+Update Ubuntu
+> sudo apt update && sudo apt upgrade
+
+Install Visual Studio Code insiders
+> sudo snap install --classic code-insiders
+
+++++++++++++++++++++++++++ Cloning repo ++++++++++++++++++++++++++
+Create a new working directory that is the same as this guide for easy reference
+> sudo mkdir /data
+> sudo chmod 777 /data
+
+Configure git (Special email can be found on the github settings page of your account https://github.com/settings/emails)
+> git config --global user.name "<username>"                |ex. git config --global user.name "Zamtakk"
+> git config --global user.email "<special_github_email>"   |ex. git config --global user.email "28710885+Zamtakk@users.noreply.github.com"
+> git config --global credential.helper store
+
+Create folders for repo
+> mkdir /data/rpi_code_project_system_development_2020
+> mkdir /data/wemos_code_project_system_development_2020
+
+Clone repo using git
+> git clone https://github.com/Zamtakk/Project_System_Development_2020_RPi_Code.git /data/rpi_code_project_system_development_2020/
+> git clone https://github.com/Zamtakk/Project_System_Development_2020_Wemos_Code.git /data/wemos_code_project_system_development_2020/
+
+++++++++++++++++++++++++++ Installing Raspberry ++++++++++++++++++++++++++
+Install raspberry pi imager
+> sudo snap install rpi-imager
+
+- Insert SD card in computer
+- Run imager
+- Select Pi OS (Other) > Pi OS Lite (32bit)
+- Select SD Card
+- Click write
+
+If the card is auto ejected
+    - Remove SD card and reinsert it into the computer to reconnect
+
+Enable SSH by creating a file in the root of the sd card.
+- Open a terminal in the root of the card. (Can be done with rightclick in the files app)
+Create a file in the boot of the SD card called "ssh"
+> touch ssh
+Create a file in the boot of the SD card for the network settings (Use a hotspot on your phone if a normal wifi network is not available)
+> nano wpa_supplicant.conf
+>>>>
+country=NL
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+    ssid="<existing_wifi_name>"
+    psk="<wifipassword>"
+}
+<<<<
+- Eject the SD card and insert in Raspberry Pi
+- Boot the Pi
+
+++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
+Test ssh to the pi
+> ssh pi@raspberrypi.local
+Enter password
+> raspberry
+If it works, exit ssh with command
+    > exit
+If it doesn't work then maybe raspberrypi.local is not working for some reason. Replace it with the IP address of the pi
+
+Now we will setup SSH keys for passwordless access
+Navigate to the ssh folder in a linux terminal
+> cd ~/.ssh
+Check if existing keys are present
+> ls -la
+If there are no files named 'id_rsa.pub' and 'id_rsa'
+    Create new keys (No sudo!!)
+    > ssh-keygen
+    - Hit enter three times
+
+Now we will copy the needed files to the pi
+> cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+Type in the raspberry pi password
+> raspberry
+Check if you can ssh without giving password
+> ssh pi@raspberrypi.local
+If a password was still asked
+    - Cancel the operation with Ctrl + C
+    Remove all existing ssh keys
+    > rm ~/.ssh/*rsa*
+    - Go back and start from the beginning of the previous paragraph
+
+Update the pi
+pi> sudo apt update && sudo apt upgrade
+Install required software
+pi> sudo apt install gdbserver
+
+++++++++++++++++++++++++++ Setup Toolchains and software ++++++++++++++++++++++++++
+Install all required software
+> sudo apt install g++-arm-linux-gnueabihf gdb-multiarch sshpass
+
+++++++++++++++++++++++++++ Setup Visual Studio Code ++++++++++++++++++++++++++
+- Go to the extention tab (search by name, not creator)
+- Install: Tasks by actboy168
+- Install: StatusBar Debugger by Fabio Spampinato
+- Install: C/C++ by Microsoft
+- Install: Native Debug by WebFreak
+
+Open the repo for rpi_code
+- Ctrl + K -> Ctrl + O
+- Navigate to /data/rpi_code_project_system_development_2020
+
+Edit user settings file
+- Shift + Ctrl + P
+- Type in: 'Preferences: Open Settings (JSON)'
+- Hit enter
+>>>>
+{
+    "debug.showInStatusBar": "never",
+    "debug.toolBarLocation": "hidden"
+}
+<<<<
