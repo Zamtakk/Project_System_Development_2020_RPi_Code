@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "gdb",
+            "request": "attach",
+            "name": "Debug",
+            "executable": "${workspaceRoot}/bin/proj_sys_rpi_app",
+            "target": "raspberrypi.local:9999",
+            "remote": true,
+            "gdbpath": "/usr/bin/gdb-multiarch",
+            "cwd": "${workspaceRoot}"
+        }
+    ]
+}
