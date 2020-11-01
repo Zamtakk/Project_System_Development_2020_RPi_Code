@@ -2,6 +2,26 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "clean",
+			"options": {
+				"statusbar": {
+					"label": "$(trash) Clean"
+				}
+			},
+			"type": "shell",
+			"command": "make",
+			"args": [
+				"clean"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
 			"label": "build",
 			"options": {
 				"statusbar": {
@@ -16,7 +36,7 @@
 			},
 			"presentation": {
 				"clear": true
-			}    
+			}
 		},
 		{
 			"label": "upload",
@@ -29,18 +49,15 @@
 				"build"
 			],
 			"type": "shell",
-			"command": "source",
+			"command": "rsync",
 			"args": [
-				"/etc/environment",
-				"&&",
-				"rsync",
 				"-avzP",
 				"./bin/*",
-				"pi@$RPI_ADDRESS:~/",
+				"pi@${env:RPI_ADDRESS}:~/",
 			],
 			"presentation": {
 				"clear": true
-			}   
+			}
 		},
 		{
 			"label": "run",
@@ -53,13 +70,10 @@
 				"upload"
 			],
 			"type": "shell",
-			"command": "source",
+			"command": "sshpass",
 			"args": [
-				"/etc/environment",
-				"&&",
-				"sshpass",
 				"ssh",
-				"pi@$RPI_ADDRESS",
+				"pi@${env:RPI_ADDRESS}",
 				"sudo",
 				"./proj_sys_rpi_app"
 			],
@@ -69,7 +83,7 @@
 			},
 			"presentation": {
 				"clear": true
-			}   
+			}
 		},
 		{
 			"label": "debug",
@@ -82,13 +96,10 @@
 				"upload"
 			],
 			"type": "shell",
-			"command": "source",
+			"command": "sshpass",
 			"args": [
-				"/etc/environment",
-				"&&",
-				"sshpass",
 				"ssh",
-				"pi@$RPI_ADDRESS",
+				"pi@${env:RPI_ADDRESS}",
 				"sudo",
 				"gdbserver",
 				"localhost:9999",
@@ -96,7 +107,7 @@
 			],
 			"presentation": {
 				"clear": true
-			}   
+			}
 		}
 	]
 }
