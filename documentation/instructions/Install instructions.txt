@@ -7,6 +7,14 @@ pi>     as prefix is a command you need to execute on the pi through an ssh sess
 <<<<    Ends the block of text that needs to be copied
 <TAB>   If something is tabbed, it is optional and is based on the information above the command or task
 
+++++++++++++++++++++++++++ WSL ++++++++++++++++++++++++++
+If you want to use WSL, use WSL1. WSL2 does not work due to forced network NATing.
+
+Add the environment variable to .profile
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.profile          |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.profile
+And add the environment variable to .bashrc
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc          |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.bashrc
+
 ++++++++++++++++++++++++++ Installing Ubuntu ++++++++++++++++++++++++++
 - Install Ubuntu 20.04
 
