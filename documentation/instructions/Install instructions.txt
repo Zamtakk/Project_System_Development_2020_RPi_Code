@@ -82,6 +82,7 @@ Add RPi address to the environment variables to easily access it. (use sudo -i i
 
 ++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
 Test ssh to the pi (Don't replace $RPI_ADDRESS, this uses the environment variable that was set earlier)
+This can sometimes be refused the first time, just try again.
 > ssh pi@$RPI_ADDRESS
 Enter password
 > raspberry
@@ -115,12 +116,15 @@ Update the pi
 pi> sudo apt update && sudo apt upgrade
 Install required software
 pi> sudo apt install gdbserver
+Exit the pi
+pi> exit
 
 ++++++++++++++++++++++++++ Setup Toolchains and software ++++++++++++++++++++++++++
 Install all required software
-> sudo apt install g++-arm-linux-gnueabihf gdb-multiarch sshpass
+> sudo apt install g++-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils
 
 ++++++++++++++++++++++++++ Setup Visual Studio Code for RPi ++++++++++++++++++++++++++
+- Open Visual Studio Code
 - Go to the extention tab (search by name, not creator)
 - Install: Tasks by actboy168
 - Install: StatusBar Debugger by Fabio Spampinato
@@ -130,6 +134,9 @@ Install all required software
 Open the repo for rpi_code
 - Ctrl + K -> Ctrl + O
 - Navigate to /data/rpi_code_project_system_development_2020
+
+VSCode will now ask to reload VSCode a few times with a message in the bottom right
+- Click reload in the message in the bottom right until it stops asking.
 
 Edit user settings file
 - Shift + Ctrl + P
@@ -141,6 +148,7 @@ Edit user settings file
     "debug.toolBarLocation": "hidden"
 }
 <<<<
+- Save the file and close it.
 
 ++++++++++++++++++++++++++ Setup Visual Studio Code for Wemos ++++++++++++++++++++++++++
 Always open a new window for wemos development, do not add them to the same workspace. RPi and Wemos compilers bite.
