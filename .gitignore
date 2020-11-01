@@ -31,5 +31,6 @@
 *.out
 *.app
 
-# Compiled files in bin
-/bin/*
+# # Compiled files in bin
+# /bin/*
+# !/bin/*.txt
