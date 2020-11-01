@@ -15,13 +15,6 @@ pi>     as prefix is a command you need to execute on the pi through an ssh sess
 Update Ubuntu
 > sudo apt update && sudo apt upgrade
 
-Add RPi address to the environment variables to easily access it. (use sudo -i instead of directly sudo)
-> sudo -i
-> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment          |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
-> exit
-
-- Reboot Ubuntu for these changes to take effect. (Logout is not enough)
-
 Install Visual Studio Code insiders
 > sudo snap install --classic code-insiders
 
@@ -60,7 +53,7 @@ If the card is auto ejected
     - Remove SD card and reinsert it into the computer to reconnect
 
 Enable SSH by creating a file in the root of the sd card.
-- Open a terminal in the root of the card. (Can be done with rightclick in the files app)
+- Open a terminal in the boot partition of the card. (Can be done with rightclick in the files app)
 Create a file in the boot of the SD card called "ssh"
 > touch ssh
 Create a file in the boot of the SD card for the network settings (Use a hotspot on your phone if a normal wifi network is not available)
@@ -77,6 +70,15 @@ network={
 <<<<
 - Eject the SD card and insert in Raspberry Pi
 - Boot the Pi
+
+- Find the IP address the pi uses. Use the router client list or scan with wireshark while you boot the pi.
+
+Add RPi address to the environment variables to easily access it. (use sudo -i instead of directly sudo)
+> sudo -i
+> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment          |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
+> exit
+
+- Reboot Ubuntu for these changes to take effect. (Logout is not enough)
 
 ++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
 Test ssh to the pi (Don't replace $RPI_ADDRESS, this uses the environment variable that was set earlier)
