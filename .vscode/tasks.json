@@ -33,7 +33,7 @@
 			"args": [
 				"-avzP",
 				"./bin/*",
-				"pi@raspberrypi.local:~/",
+				"pi@${env:RPI_ADDRESS}:~/",
 			],
 			"presentation": {
 				"clear": true
@@ -53,7 +53,7 @@
 			"command": "sshpass",
 			"args": [
 				"ssh",
-				"pi@raspberrypi.local",
+				"pi@${env:RPI_ADDRESS}",
 				"sudo",
 				"./proj_sys_rpi_app"
 			],
@@ -79,7 +79,7 @@
 			"command": "sshpass",
 			"args": [
 				"ssh",
-				"pi@raspberrypi.local",
+				"pi@${env:RPI_ADDRESS}",
 				"sudo",
 				"gdbserver",
 				"localhost:9999",
