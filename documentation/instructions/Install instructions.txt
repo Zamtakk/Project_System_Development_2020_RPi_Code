@@ -15,6 +15,9 @@ Add the environment variable to .profile
 And add the environment variable to .bashrc
 > echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc          |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.bashrc
 
+Add environment variable to windows to link WSL and windows
+- Start > Search: 'Edit the system environment variables' > Click: 'Environment Variables...' > Add new user variable: 'WSLENV=RPI_ADDRESS'
+
 ++++++++++++++++++++++++++ Installing Ubuntu ++++++++++++++++++++++++++
 - Install Ubuntu 20.04
 
@@ -176,3 +179,7 @@ Add your user to the dialout group
 > sudo usermod -a -G dialout <username>
 
 - You need to reboot your computer for this last change to take effect. (Logout does not work)
+
+++++++++++++++++++++++++++ Other usefull extentions ++++++++++++++++++++++++++
+- Go to the extention tab (search by name, not creator)
+- Install: Git History by Don Jayamanne
