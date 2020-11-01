@@ -1,5 +1,5 @@
-Download raspberry pi imager: https://www.raspberrypi.org/downloads/
-Download Visual Studio Code Insiders: https://code.visualstudio.com/insiders/
+Download and install raspberry pi imager: https://www.raspberrypi.org/downloads/
+Download and install Visual Studio Code Insiders: https://code.visualstudio.com/insiders/
 
 ++++++++++++++++++++++++++ Installing Raspberry ++++++++++++++++++++++++++
 > Run imager
@@ -43,43 +43,8 @@ Now we will setup SSH keys for passwordless access
 
 Update the pi with:
 	> sudo apt update && sudo apt upgrade
-Install git:
-	> sudo apt install git
 
-++++++++++++++++++++++++++ Installing and setting up VSCode insiders ++++++++++++++++++++++++++
-
-> Install VSCode insiders
-> Open the extentions tab on the left side
-> Search and install: 'C/C++'
-> Search and install: 'Remote development', this auto installs a bunch more.
-> Click the three dots on the top right of the search bar and click "Show installed extentions"
-> Uninstall "Remote - SSH", disable is not good enough.
-> Search and install: 'Remote - SSH (Nightly)'
-
-> Click the two green arrows on the bottom left of the window
-> Select: 'Remote-SSH: Connect to host...'
-> Add new SSH host
-> Enter: ssh pi@<RPi address>		| In my case: ssh pi@169.254.245.127
-> Click update 'C:/users/<username>/.ssh/config'
-> Click connect on the banner in the bottom right of the window.
-It will now connect and install some software
-> Click details on banner in lower right corner to see the progress. If it asks for a password you have done the passwordless access wrong and you need to redo that.
-
-> Open the command line with Ctrl+P
-> Type in: '> clone' and click on 'Git: clone'
-> Then clone with github
-> search for Zamtakk/Project_System_Development_2020
-> Login with github
-> Choose location for the repository folder
-> Click on open workspace in the banner in the lower right corner
-> Install the Git History extension
-
-
-
-
-
-
-++++++++++++++++++++++++++ Git on windows ++++++++++++++++++++++++++
+++++++++++++++++++++++++++ Install git on windows ++++++++++++++++++++++++++
 > Install git from the git website: https://git-scm.com/download/win
 > Open VSCode and open the command line with Ctrl+P
 > Type in: '> clone' and click on 'Git: clone'
@@ -93,3 +58,78 @@ It will now connect and install some software
 	> git config user.name "your username"	| ex. git config user.name "Zamtakk"
 	> git config user.email "your email"	| ex. git config user.email "28710885+Zamtakk@users.noreply.github.com"
 > Repeat for second repo: Zamtakk/Project_System_Development_2020_Wemos_Code
+
+++++++++++++++++++++++++++ Installing and setting up VSCode insiders for Wemos ++++++++++++++++++++++++++
+> Go to the extension tab and search for "PlatformIO IDE" and install it
+> Once installed, go to the PlatformIO tab and click on projects in te side bar.
+> Add an existing project and navigate to the folder where you cloned the git repo's and add
+	Project_System_Development_2020_Wemos_Code\Wemos_Code as an existing project.
+> When it is added, open the project.
+
+Note: When working on the Rpi and Wemos, both workspaces need to be open in seperate windows or they will interfere
+The PlatformIO code checker and Intellisence don't mix.
+
+++++++++++++++++++++++++++ Installing and setting up VSCode insiders for Rpi ++++++++++++++++++++++++++
+Note: As stated before, make sure you do all Rpi and Wemos configurations and coding in seperate windows and workspaces
+or they will interfere with each other.
+
+> Download and install MSYS2 in C:\msys64 from https://www.msys2.org/
+> Create a folder called "rpi" in C:\msys64\home\
+> Download the latest version of the arm-linux-gnueabihf toolchain from https://gnutoolchains.com/raspberry/ (I took raspberry-gcc8.3.0-r2.exe (438 MB))
+> Run it and install it in C:\msys64\home\rpi (It will create SysGCC folder in rpi)
+> Create a file called "RPI-gcc_toolchain.sh" in C:\msys64\etc\profile.d\
+> Add the data below to the file, replace the IP with the IP of the pi.
+>>>>>>>>>
+export PATH="$PATH:/c/msys64/home/rpi/SysGCC/bin"
+export RPI_IP="10.0.0.104"
+export RPI_USER="pi"
+export RPI_PASSWORD="raspberry"
+<<<<<<<<<
+> Open environment path settings by searching for "environment"
+> Click on "environment variables" in the bottom
+> Add new and add:
+>>> Name:	RPIDEV_LOC
+>>> Val:	c:/msys64/home/rpi/SysGCC
+> Click OK on all windows to close them.
+
+
+
+
+
+
+
+
+
+++++++++++++++++++++++++++ Optional configurations ++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+++++++++++++++++++++++++++ Compiling on the raspberry ++++++++++++++++++++++++++
+> Install VSCode insiders
+> Open the extensions tab on the left side
+> Search and install: 'C/C++'
+> Search and install: 'Remote development', this auto installs a bunch more.
+> Click the three dots on the top right of the search bar and click "Show installed extensions"
+> Uninstall "Remote - SSH", disable is not good enough.
+> Search and install: 'Remote - SSH (Nightly)'
+
+> Click the two green arrows on the bottom left of the window
+> Select: 'Remote-SSH: Connect to host...'
+> Add new SSH host
+> Enter: ssh pi@<RPi address>		| In my case: ssh pi@169.254.245.127
+> Click update 'C:/users/<username>/.ssh/config'
+> Click connect on the banner in the bottom right of the window.
+It will now connect and install some software
+> Click details on banner in lower right corner to see the progress. If it asks for a password you have done the passwordless access wrong and you need to redo that.
+
+Open a terminal that runs on the pi and install git
+> sudo apt install git
+
+> Open the command line with Ctrl+P
+> Type in: '> clone' and click on 'Git: clone'
+> Then clone with github
+> search for Zamtakk/Project_System_Development_2020_RPi_Code
+> Login with github
+> Choose location for the repository folder
+> Click on open workspace in the banner in the lower right corner
+> Install the Git History extension
