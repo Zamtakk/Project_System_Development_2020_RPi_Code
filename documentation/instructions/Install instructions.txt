@@ -25,6 +25,9 @@ Add RPi address to the environment variables to easily access it. (use sudo -i i
 Install Visual Studio Code insiders
 > sudo snap install --classic code-insiders
 
+Install other required software
+> sudo apt install git
+
 ++++++++++++++++++++++++++ Cloning repo ++++++++++++++++++++++++++
 Create a new working directory that is the same as this guide for easy reference
 > sudo mkdir /data
