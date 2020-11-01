@@ -15,6 +15,13 @@ pi>     as prefix is a command you need to execute on the pi through an ssh sess
 Update Ubuntu
 > sudo apt update && sudo apt upgrade
 
+Add RPi address to the environment variables to easily access it. (use sudo -i instead of directly sudo)
+> sudo -i
+> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment          |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
+> exit
+
+- Reboot Ubuntu for these changes to take effect. (Logout is not enough)
+
 Install Visual Studio Code insiders
 > sudo snap install --classic code-insiders
 
@@ -69,13 +76,13 @@ network={
 - Boot the Pi
 
 ++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
-Test ssh to the pi
-> ssh pi@raspberrypi.local
+Test ssh to the pi (Don't replace $RPI_ADDRESS, this uses the environment variable that was set earlier)
+> ssh pi@$RPI_ADDRESS
 Enter password
 > raspberry
 If it works, exit ssh with command
     > exit
-If it doesn't work then maybe raspberrypi.local is not working for some reason. Replace it with the IP address of the pi
+If it doesn't work, make sure your pi is connected and the IP address set in /etc/environment is correct. Reboot after changing /etc/environment!!
 
 Now we will setup SSH keys for passwordless access
 Navigate to the ssh folder in a linux terminal
@@ -88,11 +95,11 @@ If there are no files named 'id_rsa.pub' and 'id_rsa'
     - Hit enter three times
 
 Now we will copy the needed files to the pi
-> cat ~/.ssh/id_rsa.pub | ssh pi@raspberrypi.local 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
+> cat ~/.ssh/id_rsa.pub | ssh pi@$RPI_ADDRESS 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
 Type in the raspberry pi password
 > raspberry
 Check if you can ssh without giving password
-> ssh pi@raspberrypi.local
+> ssh pi@$RPI_ADDRESS
 If a password was still asked
     - Cancel the operation with Ctrl + C
     Remove all existing ssh keys
@@ -108,7 +115,7 @@ pi> sudo apt install gdbserver
 Install all required software
 > sudo apt install g++-arm-linux-gnueabihf gdb-multiarch sshpass
 
-++++++++++++++++++++++++++ Setup Visual Studio Code ++++++++++++++++++++++++++
+++++++++++++++++++++++++++ Setup Visual Studio Code for RPi ++++++++++++++++++++++++++
 - Go to the extention tab (search by name, not creator)
 - Install: Tasks by actboy168
 - Install: StatusBar Debugger by Fabio Spampinato
@@ -129,3 +136,22 @@ Edit user settings file
     "debug.toolBarLocation": "hidden"
 }
 <<<<
+
+++++++++++++++++++++++++++ Setup Visual Studio Code for Wemos ++++++++++++++++++++++++++
+Always open a new window for wemos development, do not add them to the same workspace. RPi and Wemos compilers bite.
+- Shift + Ctrl + N
+
+- Go to the extention tab (search by name, not creator)
+- Install: PlatformIO IDE by PlatformIO
+
+Open the wemos_code folder in the wemos repo
+- Ctrl + K -> Ctrl + O
+- Navigate to /data/wemos_code_project_system_development_2020/Wemos_Code
+
+Open a terminal
+- Ctrl + Alt + T
+
+Add your user to the dialout group
+> sudo usermod -a -G dialout <username>
+
+- You need to reboot your computer for this last change to take effect. (Logout does not work)
