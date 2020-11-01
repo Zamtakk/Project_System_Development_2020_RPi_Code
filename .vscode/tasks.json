@@ -29,11 +29,14 @@
 				"build"
 			],
 			"type": "shell",
-			"command": "rsync",
+			"command": "source",
 			"args": [
+				"/etc/environment",
+				"&&",
+				"rsync",
 				"-avzP",
 				"./bin/*",
-				"pi@${env:RPI_ADDRESS}:~/",
+				"pi@$RPI_ADDRESS:~/",
 			],
 			"presentation": {
 				"clear": true
@@ -50,10 +53,13 @@
 				"upload"
 			],
 			"type": "shell",
-			"command": "sshpass",
+			"command": "source",
 			"args": [
+				"/etc/environment",
+				"&&",
+				"sshpass",
 				"ssh",
-				"pi@${env:RPI_ADDRESS}",
+				"pi@$RPI_ADDRESS",
 				"sudo",
 				"./proj_sys_rpi_app"
 			],
@@ -76,10 +82,13 @@
 				"upload"
 			],
 			"type": "shell",
-			"command": "sshpass",
+			"command": "source",
 			"args": [
+				"/etc/environment",
+				"&&",
+				"sshpass",
 				"ssh",
-				"pi@${env:RPI_ADDRESS}",
+				"pi@$RPI_ADDRESS",
 				"sudo",
 				"gdbserver",
 				"localhost:9999",
