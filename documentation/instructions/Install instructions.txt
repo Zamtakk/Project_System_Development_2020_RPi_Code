@@ -18,6 +18,8 @@ And add the environment variable to .bashrc
 Add environment variable to windows to link WSL and windows
 - Start > Search: 'Edit the system environment variables' > Click: 'Environment Variables...' > Add new user variable: 'WSLENV=RPI_ADDRESS'
 
+Program the Wemos direct from windows. Use Git for Windows to clone repo. See last chapter.
+
 ++++++++++++++++++++++++++ Installing Ubuntu ++++++++++++++++++++++++++
 - Install Ubuntu 20.04
 
@@ -172,6 +174,8 @@ Open the wemos_code folder in the wemos repo
 - Ctrl + K -> Ctrl + O
 - Navigate to /data/wemos_code_project_system_development_2020/Wemos_Code
 
+- Wait for Intellisense to rebuild and the include errors to go away (Can take a minute)
+
 Open a terminal
 - Ctrl + Alt + T
 
@@ -183,3 +187,17 @@ Add your user to the dialout group
 ++++++++++++++++++++++++++ Other usefull extentions ++++++++++++++++++++++++++
 - Go to the extention tab (search by name, not creator)
 - Install: Git History by Don Jayamanne
+
+++++++++++++++++++++++++++ Install git on windows ++++++++++++++++++++++++++
+- Install git from the git website: https://git-scm.com/download/win
+- Open VSCode and open the command line with Shift + Ctrl + P
+- Type in: 'clone' and click on 'Git: clone'
+- Then clone with github
+- search for Zamtakk/Project_System_Development_2020_Wemos_Code
+- Login with github
+- Choose location for the repository folder
+- Click on open workspace in the banner in the lower right corner
+- Open terminal to add username and email (Ctrl + `)
+> Add with commands:
+	> git config user.name "your username"	| ex. git config user.name "Zamtakk"
+	> git config user.email "your email"	| ex. git config user.email "28710885+Zamtakk@users.noreply.github.com"
