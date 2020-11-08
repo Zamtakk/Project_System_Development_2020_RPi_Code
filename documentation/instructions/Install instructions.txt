@@ -126,9 +126,9 @@ If a password was still asked
     - Go back and start from the beginning of the previous paragraph
 
 Update the pi
-pi> sudo apt update && sudo apt upgrade
+pi> sudo apt update && sudo apt upgrade -y
 Install required software
-pi> sudo apt install gdbserver
+pi> sudo apt install gdbserver -y
 Exit the pi
 pi> exit
 
