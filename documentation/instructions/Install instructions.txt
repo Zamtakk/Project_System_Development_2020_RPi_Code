@@ -26,13 +26,13 @@ Program the Wemos direct from windows. Use Git for Windows to clone repo. See la
 - Open a terminal window
 
 Update Ubuntu
-> sudo apt update && sudo apt upgrade
+> sudo apt update && sudo apt upgrade -y
 
 Install Visual Studio Code insiders
 > sudo snap install --classic code-insiders
 
 Install other required software
-> sudo apt install git
+> sudo apt install git -y
 
 ++++++++++++++++++++++++++ Cloning repo ++++++++++++++++++++++++++
 Create a new working directory that is the same as this guide for easy reference
@@ -134,7 +134,7 @@ pi> exit
 
 ++++++++++++++++++++++++++ Setup Toolchains and software ++++++++++++++++++++++++++
 Install all required software
-> sudo apt install g++-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils
+> sudo apt install g++-8-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils -y
 
 ++++++++++++++++++++++++++ Setup Visual Studio Code for RPi ++++++++++++++++++++++++++
 - Open Visual Studio Code
