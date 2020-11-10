@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/arm-linux-gnueabihf-g++",
+            "compilerPath": "/usr/bin/arm-linux-gnueabihf-g++-8",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "gcc-x64"
