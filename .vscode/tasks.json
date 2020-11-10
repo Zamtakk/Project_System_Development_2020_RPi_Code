@@ -74,7 +74,29 @@
 			"args": [
 				"ssh",
 				"pi@${env:RPI_ADDRESS}",
-				"sudo",
+				"./proj_sys_rpi_app"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"presentation": {
+				"clear": true
+			}
+		},
+		{
+			"label": "Kill remote",
+			"options": {
+				"statusbar": {
+					"label": "$(remove-close) Kill remote"
+				}
+			},
+			"type": "shell",
+			"command": "sshpass",
+			"args": [
+				"ssh",
+				"pi@${env:RPI_ADDRESS}",
+				"killall",
 				"./proj_sys_rpi_app"
 			],
 			"group": {
