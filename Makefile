@@ -1,5 +1,5 @@
-CXX		  := arm-linux-gnueabihf-g++
-CXX_FLAGS := -Wall -Wextra -std=c++17 -ggdb
+CXX		  := arm-linux-gnueabihf-g++-8
+CXX_FLAGS := -Wall -Wextra -Wno-psabi -pthread -std=c++17 -ggdb
 
 BIN		:= bin
 SRC		:= src
