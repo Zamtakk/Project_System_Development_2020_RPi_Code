@@ -1,160 +1,228 @@
 Information:
-        No prefix is information about the task or command that follows
+i:      as prefix is information about the task or command that follows
 -       as prefix is something you need to do
->       as prefix is a command you need to execute locally
+>       as prefix is a command you need to execute locally in WSL or native Ubuntu
 pi>     as prefix is a command you need to execute on the pi through an ssh session
 >>>>    starts a block of text that you need to paste in the file you just opened or created
 <<<<    Ends the block of text that needs to be copied
-<TAB>   If something is tabbed, it is optional and is based on the information above the command or task
+IF:     Only perform the actions below the IF: that are indented with a <TAB> when the statement next to the IF: resolves to 'true'
+<TAB>   If something is tabbed (indented), it belongs to the IF: statement above the tabbed lines and should only be performed if the IF: is true
 
-++++++++++++++++++++++++++ WSL ++++++++++++++++++++++++++
-If you want to use WSL, use WSL1. WSL2 does not work due to forced network NATing.
+++++++++++++++++++++++++++ Preparing the Raspberry Pi ++++++++++++++++++++++++++
+i: First we need to install the Raspberry Pi imager tool on the host computer
+IF: Used host is Windows with WSL
+    - Download and install the tool from (https://www.raspberrypi.org/software/)
+IF: Used host is Ubuntu
+    - Open a terminal and run
+    > sudo snap install rpi-imager
 
-Add the environment variable to .profile
-> echo "RPI_ADDRESS=<rpi_address>" >> ~/.profile          |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.profile
-And add the environment variable to .bashrc
-> echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc          |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.bashrc
-
-Add environment variable to windows to link WSL and windows
-- Start > Search: 'Edit the system environment variables' > Click: 'Environment Variables...' > Add new user variable: 'WSLENV=RPI_ADDRESS'
-
-Program the Wemos direct from windows. Use Git for Windows to clone repo. See last chapter.
-
-++++++++++++++++++++++++++ Installing Ubuntu ++++++++++++++++++++++++++
-- Install Ubuntu 20.04
-
-- Open a terminal window
-
-Update Ubuntu
-> sudo apt update && sudo apt upgrade -y
-
-Install Visual Studio Code insiders
-> sudo snap install --classic code-insiders
-
-Install other required software
-> sudo apt install git -y
-
-++++++++++++++++++++++++++ Cloning repo ++++++++++++++++++++++++++
-Create a new working directory that is the same as this guide for easy reference
-> sudo mkdir /data
-> sudo chmod 777 /data
-
-Configure git (Special email can be found on the github settings page of your account https://github.com/settings/emails)
-> git config --global user.name "<username>"                |ex. git config --global user.name "Zamtakk"
-> git config --global user.email "<special_github_email>"   |ex. git config --global user.email "28710885+Zamtakk@users.noreply.github.com"
-> git config --global credential.helper store
-
-Create folders for repo
-> mkdir /data/rpi_code_project_system_development_2020
-> mkdir /data/wemos_code_project_system_development_2020
-
-Clone repo using git
-> git clone https://github.com/Zamtakk/Project_System_Development_2020_RPi_Code.git /data/rpi_code_project_system_development_2020/
-> git clone https://github.com/Zamtakk/Project_System_Development_2020_Wemos_Code.git /data/wemos_code_project_system_development_2020/
-
-++++++++++++++++++++++++++ Installing Raspberry ++++++++++++++++++++++++++
-Install raspberry pi imager
-> sudo snap install rpi-imager
-
-- Insert SD card in computer
+i: Now we will use the tool to install the RPi OS onto the micro SD card that will be used in the RPi
+- Insert SD card in computer (USB SD reader can be used)
 - Run imager
 - Select Pi OS (Other) > Pi OS Lite (32bit)
 - Select SD Card
 - Click write
 
-If the card is auto ejected
-    - Remove SD card and reinsert it into the computer to reconnect
+i: The card will most likely auto ejected from the computer, we will need to reconnect it
+- Remove the card from the computer
+- Reinsert the card in the computer
 
-Enable SSH by creating a file in the root of the sd card.
-- Open a terminal in the boot partition of the card. (Can be done with rightclick in the files app)
-Create a file in the boot of the SD card called "ssh"
-> touch ssh
-Create a file in the boot of the SD card for the network settings (Use a hotspot on your phone if a normal wifi network is not available)
-> nano wpa_supplicant.conf
->>>>
-country=NL
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
+i: By adding two files to the SD card we can automaticaly connect the Raspberry Pi to the internet and make it accessible from the host computer
+IF: Used host is Windows with WSL
+    - Open Windows explorer and navigate to the SD card (This will be a smaller drive (252MB) than the card itself, the other part is in a file system that windows does not recognize)
+    - Create a new text file via the right click context menu, name this file 'ssh' (You need to remove the extension, windows will warn you, click Yes)
+    - Create another text file via the right click context menu, name this file 'wpa_supplicant.conf' (You need to change the extension, windows will warn you, click Yes)
+    - Open the 'wpa_supplicant.conf' file and add the following text.
+    >>>>
+    country=NL
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
 
-network={
-    ssid="<existing_wifi_name>"
-    psk="<wifipassword>"
-}
-<<<<
-- Eject the SD card and insert in Raspberry Pi
-- Boot the Pi
+    network={
+        ssid="<existing_wifi_name>"
+        psk="<wifipassword>"
+    }
+    <<<<
+    - Make sure to edit the SSID name and PSK (password) before saving and closing the file
+IF: Used host is Ubuntu
+    - Open the Files app and navigate to the SD card
+    - Open the right click context menu and click 'Open terminal here'
+    i: we will create a file called 'ssh'
+    > touch ssh
+    i: now we create and edit a file called 'wpa_supplicant.conf'
+    > nano wpa_supplicant.conf
+    i: insert the following text
+    >>>>
+    country=NL
+    ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+    update_config=1
 
-- Find the IP address the pi uses. Use the router client list or scan with wireshark while you boot the pi.
+    network={
+        ssid="<existing_wifi_name>"
+        psk="<wifipassword>"
+    }
+    <<<<
+    - Make sure to edit the SSID name and PSK (password)
+    - Save the file with Ctrl + O, and exit with Ctrl + X
 
-Add RPi address to the environment variables to easily access it. (use sudo -i instead of directly sudo)
+- Now remove the SD card from the host computer
+
+i: we can now use wireshark to find the ip adress of the Raspberry Pi
+IF: Used host is Windows with WSL
+    - Download and install the software from (https://www.wireshark.org/#download)
+    - Run wireshark
+IF: Used host is Ubuntu
+    i: We will install wireshark with the packet manager
+    > sudo apt install wireshark -y
+    i: It will ask if 'Non-superusers should be able to capture packets', we will select 'no'
+    - Highlight <no> and press enter
+    i: Wireshark will need to be started with root privileges
+    > sudo wireshark
+
+i: In wireshark we will monitor the wifi or ethernet network of the host computer to find the 'arp' packets send by the Pi, this will tell us the IP address
+- Double click on the apdapter that is connected to the same network as configured in the wpa_supplicant.conf of the the Raspberry Pi
+- In the filter bar on top, enter 'arp' (Without quotes) and press enter.
+i: Wireshark will now show all arp packages on the network.
+- Insert the SD card in the Pi, power it on and monitor the packages in wireshark.
+i: We are looking for a package from a source that starts with 'Raspberr_'
+- When a package from 'Raspberr_' appears, write down the last IP address in the Info field. This will be the one after "Tell "
+- Close wireshark, it is no longer needed.
+
+IF: Used host is Windows with WSL
+    i: We will need to add a few environment variables to windows, open the environment variables ad follows
+    - Start > Search: 'Edit the system environment variables' > Click: 'Environment Variables...'
+    - Add new user variable: 'WSLENV=RPI_ADDRESS'
+    - Add new user varibale: 'RPI_ADDRESS=<rpi_address>'    | Replace the <rpi_address> with the actual address of the Pi that was found in wireshark
+
+i: We are done with the Pi for now, we will come back to him later. Leave him powered on!
+
+++++++++++++++++++++++++++ Installing and configuring the host operating system ++++++++++++++++++++++++++
+IF: Used host is Windows with WSL
+    i: It is now time to install WSL if you have not done this already. If you have done this, make sure your installation is a WSL 1 installation as WSL 2 does not work.
+    i: We need a bridged network connection and WSL 1 does this automaticaly, but WSL 2 uses NAT and this cannot be changed at the time of writing this.
+    i: To install Ubuntu 20.04 on WSL 1 you only need to use the Microsoft store. By default (in Windows 10 versions 20H2 and before) it uses WSL 1.
+    - Open the Microsoft Store and search for 'Ubuntu 20.04 LTS'
+    - In the top bar you first need to click the blue button to get the app, and then again to install it. (If it asks for a Microsoft account to login, just 
+        ignore it and click the X. It will install even if you don't login, it just takes a few minutes seemingly without doing anything.)
+    - After it is installed, open ubuntu via the start menu. It will need some time to initialize.
+    - After initialization it will ask for a username and password. Fill these in as you like but make sure to remember the password.
+    i: from now on all terminal commands denoted with the '>' are not just for a host with Ubuntu but also for WSL. Execute these commands within the ubuntu WSL terminal.
+
+- Open a terminal
+i: We will now update the OS and install the required software
+> sudo apt-get update && sudo apt-get upgrade -y
+> sudo apt-get install g++-8-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils git -y
+
+i: We will now add environment variables (This is in addition to the ones done in Windows for WSL users) (Make sure to replace <rpi_address> with the Pi IP address)
+i: First we will add one to the /etc/environment, this must be done as root
 > sudo -i
-> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment          |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
+> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment              |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
 > exit
+i: Next we will add two as a normal user
+i: Add the environment variable to .profile
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.profile                    |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.profile
+i: And add the environment variable to .bashrc
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc                     |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.bashrc
 
-- Reboot Ubuntu for these changes to take effect. (Logout is not enough)
+- Reboot the host computer for these changes to take effect. (Logout is not enough) (WSL users need to reboot windows entirely, not just WSL)
 
-++++++++++++++++++++++++++ Setup SSH and passwordless access ++++++++++++++++++++++++++
-Test ssh to the pi (Don't replace $RPI_ADDRESS, this uses the environment variable that was set earlier)
-This can sometimes be refused the first time, just try again.
-> ssh pi@$RPI_ADDRESS
-Enter password
-> raspberry
-If it works, exit ssh with command
-    > exit
-If it doesn't work, make sure your pi is connected and the IP address set in /etc/environment is correct. Reboot after changing /etc/environment!!
+######################################################################################################################################################################
+############################################################ THIS IS WERE YOU LEFT OFF BEFORE THE REBOOT #############################################################
+######################################################################################################################################################################
 
-Now we will setup SSH keys for passwordless access
-Navigate to the ssh folder in a linux terminal
+++++++++++++++++++++++++++ Connecting the host system with the Raspberry Pi ++++++++++++++++++++++++++
+i: To easily connect the host to the Pi without needing to fill in the password every time we will add ssh keys to the Pi.
+- Open a terminal
+i: We will need to check for existing keys, navigate to the ssh folder
 > cd ~/.ssh
-Check if existing keys are present
-> ls -la
-If there are no files named 'id_rsa.pub' and 'id_rsa'
-    Create new keys (No sudo!!)
+IF: The folder exists
+    i: check for existing keys
+    > ls -la
+    IF: There are files called 'id_rsa.pub' and 'id_rsa'
+        i: the keys exist, you can skip creating new ones
+
+IF: The folder does not exist OR there are no files called 'id_rsa.pub' and 'id_rsa'
+    i: We will create new keys
     > ssh-keygen
+    i: We can use the default settings for the generation of keys
     - Hit enter three times
 
-Now we will copy the needed files to the pi
+i: Now we will copy the files to the Raspberry Pi, you do NOT need to replace RPI_ADDRESS!
 > cat ~/.ssh/id_rsa.pub | ssh pi@$RPI_ADDRESS 'mkdir -p ~/.ssh && cat >> ~/.ssh/authorized_keys'
-Type in the raspberry pi password
+i: Type in the raspberry pi password to authorize
 > raspberry
-Check if you can ssh without giving password
+i: Check if you can ssh without giving password
 > ssh pi@$RPI_ADDRESS
-If a password was still asked
+IF: A password was still asked
     - Cancel the operation with Ctrl + C
-    Remove all existing ssh keys
+    i: Remove all existing ssh keys
     > rm ~/.ssh/*rsa*
-    - Go back and start from the beginning of the previous paragraph
+    - Go back and start from the beginning of this chapter
 
-Update the pi
-pi> sudo apt update && sudo apt upgrade -y
-Install required software
-pi> sudo apt install gdbserver -y
-Exit the pi
+i: You are now logged in the Pi, we will need to update the OS of the Pi
+pi> sudo apt-get update && sudo apt-get upgrade -y
+i: Now we need to install some software to be able to debug later.
+pi> sudo apt-get install gdbserver -y
+
+i: We are now done in the pi
 pi> exit
 
-++++++++++++++++++++++++++ Setup Toolchains and software ++++++++++++++++++++++++++
-Install all required software
-> sudo apt install g++-8-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils -y
+++++++++++++++++++++++++++ Cloning the project ++++++++++++++++++++++++++
+i: Create a new working directory that is the same as this guide for easy reference
+> sudo mkdir /data
+> sudo chmod 777 /data
 
-++++++++++++++++++++++++++ Setup Visual Studio Code for RPi ++++++++++++++++++++++++++
-- Open Visual Studio Code
-- Go to the extention tab (search by name, not creator)
+i: Configure git (Special email can be found on the github settings page of your account https://github.com/settings/emails)
+> git config --global user.name "<username>"                        |ex. git config --global user.name "Zamtakk"
+> git config --global user.email "<special_github_email>"           |ex. git config --global user.email "28710885+Zamtakk@users.noreply.github.com"
+> git config --global credential.helper store
+
+i: Create folders for the project repositories
+> mkdir /data/rpi_code_project_system_development_2020
+
+IF: Host is Ubuntu (WSL users get this repo later)
+    > mkdir /data/wemos_code_project_system_development_2020
+
+i: Clone repository using git
+> git clone https://github.com/Zamtakk/Project_System_Development_2020_RPi_Code.git /data/rpi_code_project_system_development_2020/
+
+IF: Host is Ubuntu (WSL users get this repo later)
+    > git clone https://github.com/Zamtakk/Project_System_Development_2020_Wemos_Code.git /data/wemos_code_project_system_development_2020/
+
+++++++++++++++++++++++++++ Configuring the programming environment for the Raspberry Pi ++++++++++++++++++++++++++
+i: We will now install the programming environment
+IF: Used host is Windows with WSL
+    - Download and install Visual Studio Code Insiders from (https://code.visualstudio.com/insiders/)
+    - Start the software
+    i: We need to open the project
+    - Press Ctrl + Shift + P to open the command line in VSCode
+    - Type in: 'Open Folder in WSL' and press enter
+    - Navigate to the repo in /data/rpi_code_project_system_development_2020
+    - Click open.
+IF: Used host is Ubuntu
+    > sudo snap install --classic code-insiders
+    - Start the software
+    i: We need to open the project
+    - Press Ctrl + K followed by Ctrl + O
+    - Navigate to the repo in /data/rpi_code_project_system_development_2020
+    - Click OK.
+
+i: Now we will install the needed extensions
+- Go to the extension tab and search and install the following extensions (search by name, not creator)
 - Install: Tasks by actboy168
 - Install: StatusBar Debugger by Fabio Spampinato
 - Install: C/C++ by Microsoft
 - Install: Native Debug by WebFreak
+- Install: Git History by Don Jayamanne
 
-Open the repo for rpi_code
-- Ctrl + K -> Ctrl + O
-- Navigate to /data/rpi_code_project_system_development_2020
-
-VSCode will now ask to reload VSCode a few times with a message in the bottom right
+i: VSCode might want to reload a couple of times to finish up installation
 - Click reload in the message in the bottom right until it stops asking.
 
-Edit user settings file
-- Shift + Ctrl + P
+i: We need to edit user settings file to make VSCode not interfere with an extension
+- Open the VSCode command line with Shift + Ctrl + P
 - Type in: 'Preferences: Open Settings (JSON)'
 - Hit enter
+i: Insert these variables in the file
 >>>>
 {
     "debug.showInStatusBar": "never",
@@ -163,41 +231,64 @@ Edit user settings file
 <<<<
 - Save the file and close it.
 
-++++++++++++++++++++++++++ Setup Visual Studio Code for Wemos ++++++++++++++++++++++++++
-Always open a new window for wemos development, do not add them to the same workspace. RPi and Wemos compilers bite.
-- Shift + Ctrl + N
+++++++++++++++++++++++++++ Configuring the programming environment for the Wemos ++++++++++++++++++++++++++
+i: NOTE, always keep the wemos workspace and the RPi workspace in seperate VSCode windows. The C/C++ extension and the PlatformIO extension bite each other.
 
-- Go to the extention tab (search by name, not creator)
+IF: Used host is Windows with WSL
+    - Download and install git from the git website: https://git-scm.com/download/win
+    - Open a new VSCode window by pressing Ctrl + Shift + N
+    - Open VSCode and open the command line with Shift + Ctrl + P
+    - Type in: 'clone' and click on 'Git: clone'
+    - Then clone with github
+    - search for Zamtakk/Project_System_Development_2020_Wemos_Code
+    - Login with github
+    - Choose a location for the repository folder somewhere on your windows OS (advised it to use a location with a short path without spaces ex. C:\PJSDV\Wemos)
+    - Click on open workspace in the banner in the lower right corner
+    - Open terminal, in VSCode, to add username and email with Ctrl + `
+    i: Add the values with the following commands: (Special email can be found on the github settings page of your account https://github.com/settings/emails)
+    > git config user.name "<your_username>"	        | ex. git config user.name "Zamtakk"
+    > git config user.email "<your_email>"	            | ex. git config user.email "28710885+Zamtakk@users.noreply.github.com"
+
+IF: Used host is Ubuntu
+    - Open a new VSCode window by pressing Ctrl + Shift + N
+    i: Open the Wemos_Code folder within the wemos repository
+    - Press Ctrl + K followed by Ctrl + O
+    - Navigate to /data/wemos_code_project_system_development_2020/Wemos_Code
+    i: We need to add the user to the dialout group to allow the software to Program a USB device
+    - Open a terminal
+    i: Add your user to the dialout group
+    > sudo usermod -a -G dialout <username>
+    i: You need to reboot the host computer to make these changed take effect
+    ######################################################################################################################################################################
+    ############################################################ THIS IS WERE YOU LEFT OFF BEFORE THE REBOOT #############################################################
+    ######################################################################################################################################################################
+    - Reopen VSCode with the Wemos_Code workspace
+
+i: Now we will install the needed extension
+- Go to the extension tab and search and install the following extension (search by name, not creator)
 - Install: PlatformIO IDE by PlatformIO
-
-Open the wemos_code folder in the wemos repo
-- Ctrl + K -> Ctrl + O
-- Navigate to /data/wemos_code_project_system_development_2020/Wemos_Code
 
 - Wait for Intellisense to rebuild and the include errors to go away (Can take a minute)
 
-Open a terminal
-- Ctrl + Alt + T
+i: You now have two workspaces you can use to program the Raspberry Pi and the Wemos ESP8266
 
-Add your user to the dialout group
-> sudo usermod -a -G dialout <username>
+++++++++++++++++++++++++++ Using the programming environment for the Raspberry Pi ++++++++++++++++++++++++++
+i: In the bottom blue status bar there are several task buttons you can use to Clean/Build/Run/Debug your code. Most of these are pretty self explanetory.
+i: To use the remote debugging function though, you first need to start a remote session with the 'Start Remote' button. As soon as this is running you can press the
+i: smaller bug right next to it. This will start the local debugging session that will connect to the remote process.
 
-- You need to reboot your computer for this last change to take effect. (Logout does not work)
+i: If a debugging process gets stuck or a program freezes or something happens and the program does not self terminate, you can use the kill remote button.
+i: This will stop all remote debugging processes and all running instances of the program.
 
-++++++++++++++++++++++++++ Other usefull extentions ++++++++++++++++++++++++++
-- Go to the extention tab (search by name, not creator)
-- Install: Git History by Don Jayamanne
+i: To have some easy control over the Pi there are also buttons available to reboot and shutdown the Raspberry Pi.
 
-++++++++++++++++++++++++++ Install git on windows ++++++++++++++++++++++++++
-- Install git from the git website: https://git-scm.com/download/win
-- Open VSCode and open the command line with Shift + Ctrl + P
-- Type in: 'clone' and click on 'Git: clone'
-- Then clone with github
-- search for Zamtakk/Project_System_Development_2020_Wemos_Code
-- Login with github
-- Choose location for the repository folder
-- Click on open workspace in the banner in the lower right corner
-- Open terminal to add username and email (Ctrl + `)
-> Add with commands:
-	> git config user.name "your username"	| ex. git config user.name "Zamtakk"
-	> git config user.email "your email"	| ex. git config user.email "28710885+Zamtakk@users.noreply.github.com"
+++++++++++++++++++++++++++ Using the programming environment for the Wemos ++++++++++++++++++++++++++
+i: Programming the Wemos makes use of the PlatformIO environment that uses its own buttons in the blue bottom status bar.
+
+i: It has a house to open the PlatformIO home window.
+i: A checkmark to build and verify your code.
+i: An arrow to build and upload your code to the wemos.
+i: A trashcan to clean, remove the compiled code.
+i: A plug to start a Serial monitor.
+i: A new terminal button.
+i: And a bug to start a debugging session.
