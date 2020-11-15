@@ -349,6 +349,8 @@ IF: If you want to edit the SSID and password
     - Save the file with Ctrl + O and enter, and exit with Ctrl + X
 
 i: Give the script execution permissions
-> sudo chmod 777 setup_wifi_ap.sh
+pi> sudo chmod 777 setup_wifi_ap.sh
 i: Now run the script with root permissions
-> sudo ./setup_wifi_ap.sh
+pi> sudo ./setup_wifi_ap.sh
+- Reboot the Pi to finish up the setup
+pi> sudo reboot
