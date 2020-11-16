@@ -292,3 +292,65 @@ i: A trashcan to clean, remove the compiled code.
 i: A plug to start a Serial monitor.
 i: A new terminal button.
 i: And a bug to start a debugging session.
+
+++++++++++++++++++++++++++ Changing the wireless Pi connection to a direct ethernet connection ++++++++++++++++++++++++++
+i: If you want to use the Pi to setup a wifi hotstop for an IoT project it is not possible to also communicate with the Pi over wifi.
+i: It would be possible if you connect to the hotspot of the Pi but then your host computer won't have an internet connection anymore.
+i: To bypass this problem we can use an ethernet cable to directly connect to the raspberry pi.
+
+- Open wireshark and start monitoring the wired ethernet interface of your host computer.
+- Type in the filter bar at the top 'arp' and press enter to start filtering arp messages.
+- Connect the Pi to the host computer with an ethernet cable.
+- Monitor the arp messages and wait for a message from the pi stating "Who has x.x.x.x? (ARP Probe)"
+- Modify your ethernet adapter settings and give your ethernet interface an IP address ONE higher than the Pi, and set the address of the Pi as the gateway address.
+
+i: you now need to modify the environment variable to match this new address.
+IF: Used host is Windows with WSL
+    i: Modify the RPI_ADDRESS variable in the system environment variables
+    - Start > Search: 'Edit the system environment variables' > Click: 'Environment Variables...'
+    - Change user variable: 'RPI_ADDRESS=<rpi_address>'             | Replace the <rpi_address> with the address of the Pi that was found in wireshark
+
+i: We will now change the environment variables in WSL or ubuntu (Make sure to replace <rpi_address> with the Pi IP address)
+i: First we will change one in the /etc/environment, this must be done as root
+> sudo -i
+> nano /etc/environment
+- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+> exit
+
+i: Next we will change two as a normal user
+i: Change the variable in .profile
+> nano ~/.profile
+- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+
+i: Change the variable in .bashrc
+> nano ~/.bashrc
+- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+
+- Reboot the host computer for these changes to take effect. (Logout is not enough) (WSL users need to reboot windows entirely, not just WSL)
+
+######################################################################################################################################################################
+############################################################ THIS IS WERE YOU LEFT OFF BEFORE THE REBOOT #############################################################
+######################################################################################################################################################################
+
+++++++++++++++++++++++++++ Setting up a wifi access point on the Raspberry Pi ++++++++++++++++++++++++++
+i: WARNING! Make sure you have changed the connection to a direct ethernet connection before proceeding. This can be done in the chapter above.
+
+i: The Raspberry Pi needs a Wifi connection to be able to download a script. If you have followed with the guide to this point it will still have
+i: one next to the direct connection you are using now. If you did not follow the guide, please add a wifi connection by using the > sudo raspi-config
+
+i: Login to the pi
+> ssh pi@$RPI_ADDRESS
+i: We will now download a script that will setup the wifi hotspot.
+pi> wget https://raw.githubusercontent.com/Zamtakk/Raspberry_WiFi_AP/main/setup_wifi_ap.sh
+
+IF: If you want to edit the SSID and password
+    pi> nano setup_wifi_ap.sh
+    - Change the SSID and password on line 42 and 43
+    - Save the file with Ctrl + O and enter, and exit with Ctrl + X
+
+i: Give the script execution permissions
+pi> sudo chmod 777 setup_wifi_ap.sh
+i: Now run the script with root permissions
+pi> sudo ./setup_wifi_ap.sh
+- Reboot the Pi to finish up the setup
+pi> sudo reboot

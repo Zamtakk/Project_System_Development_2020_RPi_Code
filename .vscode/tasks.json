@@ -1,7 +1,49 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{
+		{//=============================================== Reboot
+			"label": "reboot",
+			"options": {
+				"statusbar": {
+					"label": "$(debug-restart) Reboot Pi"
+				}
+			},
+			"type": "shell",
+			"command": "sshpass",
+			"args": [
+				"ssh",
+				"pi@${env:RPI_ADDRESS}",
+				"sudo",
+				"shutdown",
+				"-r",
+				"now"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{//=============================================== Shutdown Pi
+			"label": "shutdown",
+			"options": {
+				"statusbar": {
+					"label": "$(zap) Shutdown Pi"
+				}
+			},
+			"type": "shell",
+			"command": "sshpass",
+			"args": [
+				"ssh",
+				"pi@${env:RPI_ADDRESS}",
+				"sudo",
+				"shutdown",
+				"-h",
+				"now"
+			],
+			"presentation": {
+				"clear": true
+			}
+		},
+		{//=============================================== clean
 			"label": "clean",
 			"options": {
 				"statusbar": {
@@ -20,7 +62,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},
+		},//=============================================== build
 		{
 			"label": "build",
 			"options": {
@@ -37,7 +79,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},
+		},//=============================================== upload
 		{
 			"label": "upload",
 			"options": {
@@ -58,7 +100,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},
+		},//=============================================== run
 		{
 			"label": "run",
 			"options": {
@@ -83,7 +125,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},
+		},//=============================================== Kill remote
 		{
 			"label": "Kill remote",
 			"options": {
@@ -97,7 +139,11 @@
 				"ssh",
 				"pi@${env:RPI_ADDRESS}",
 				"killall",
-				"./proj_sys_rpi_app"
+				"./proj_sys_rpi_app",
+				"&&",
+				"sudo",
+				"killall",
+				"gdbserver"
 			],
 			"group": {
 				"kind": "test",
@@ -106,7 +152,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},
+		},//=============================================== debug
 		{
 			"label": "debug",
 			"options": {
