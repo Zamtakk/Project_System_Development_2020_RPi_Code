@@ -3,7 +3,7 @@ CXX_FLAGS := -Wall -Wextra -Wno-psabi -pthread -std=c++17 -ggdb
 
 BIN		:= bin
 SRC		:= src
-INCLUDE	:= include
+INCLUDE	:= include -Iheaders
 LIB		:= lib
 
 LIBRARIES	:=
