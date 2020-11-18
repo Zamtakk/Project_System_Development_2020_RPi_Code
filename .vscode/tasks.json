@@ -1,7 +1,24 @@
 {
 	"version": "2.0.0",
 	"tasks": [
-		{//=============================================== Reboot
+		{ //=============================================== Teminal
+			"label": "term",
+			"options": {
+				"statusbar": {
+					"label": "$(terminal)"
+				}
+			},
+			"type": "shell",
+			"command": "ssh",
+			"args": [
+				"pi@${env:RPI_ADDRESS}"
+			],
+			"presentation": {
+				"clear": true,
+				"group": "default"
+			}
+		},
+		{ //=============================================== Reboot
 			"label": "reboot",
 			"options": {
 				"statusbar": {
@@ -22,7 +39,7 @@
 				"clear": true
 			}
 		},
-		{//=============================================== Shutdown Pi
+		{ //=============================================== Shutdown Pi
 			"label": "shutdown",
 			"options": {
 				"statusbar": {
@@ -43,7 +60,7 @@
 				"clear": true
 			}
 		},
-		{//=============================================== clean
+		{ //=============================================== clean
 			"label": "clean",
 			"options": {
 				"statusbar": {
@@ -62,7 +79,7 @@
 			"presentation": {
 				"clear": true
 			}
-		},//=============================================== build
+		}, //=============================================== build
 		{
 			"label": "build",
 			"options": {
@@ -77,9 +94,10 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
-		},//=============================================== upload
+		}, //=============================================== upload
 		{
 			"label": "upload",
 			"options": {
@@ -98,9 +116,9 @@
 				"pi@${env:RPI_ADDRESS}:~/",
 			],
 			"presentation": {
-				"clear": true
+				"reveal": "silent"
 			}
-		},//=============================================== run
+		}, //=============================================== run
 		{
 			"label": "run",
 			"options": {
@@ -123,9 +141,10 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
-		},//=============================================== Kill remote
+		}, //=============================================== Kill remote
 		{
 			"label": "Kill remote",
 			"options": {
@@ -141,6 +160,9 @@
 				"killall",
 				"./proj_sys_rpi_app",
 				"&&",
+				"sshpass",
+				"ssh",
+				"pi@${env:RPI_ADDRESS}",
 				"sudo",
 				"killall",
 				"gdbserver"
@@ -150,9 +172,10 @@
 				"isDefault": true
 			},
 			"presentation": {
+				"reveal": "never",
 				"clear": true
 			}
-		},//=============================================== debug
+		}, //=============================================== debug
 		{
 			"label": "debug",
 			"options": {
@@ -174,7 +197,8 @@
 				"./proj_sys_rpi_app"
 			],
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		}
 	]
