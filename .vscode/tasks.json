@@ -116,7 +116,7 @@
 				"pi@${env:RPI_ADDRESS}:~/",
 			],
 			"presentation": {
-				"reveal": "silent"
+				"group": "default"
 			}
 		}, //=============================================== run
 		{
