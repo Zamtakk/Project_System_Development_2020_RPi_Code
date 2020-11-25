@@ -215,8 +215,9 @@ i: Now we will install the needed extensions
 - Install: Native Debug by WebFreak
 - Install: Git History by Don Jayamanne
 
-i: VSCode might want to reload a couple of times to finish up installation
-- Click reload in the message in the bottom right until it stops asking.
+IF: Host is ubuntu
+    i: VSCode might want to reload a couple of times to finish up installation
+    - Click reload in the message in the bottom right until it stops asking.
 
 i: We need to edit user settings file to make VSCode not interfere with an extension
 - Open the VSCode command line with Shift + Ctrl + P
@@ -243,7 +244,7 @@ IF: Used host is Windows with WSL
     - search for Zamtakk/Project_System_Development_2020_Wemos_Code
     - Login with github
     - Choose a location for the repository folder somewhere on your windows OS (advised it to use a location with a short path without spaces ex. C:\PJSDV\Wemos)
-    - Click on open workspace in the banner in the lower right corner
+    - DO NOT open the workspace by using the banner in the lower right corner! Open it by pressing Ctrl + O followed by Ctrl + K and navigate to the wemos_code folder in the repo.
     - Open terminal, in VSCode, to add username and email with Ctrl + `
     i: Add the values with the following commands: (Special email can be found on the github settings page of your account https://github.com/settings/emails)
     > git config user.name "<your_username>"	        | ex. git config user.name "Zamtakk"
