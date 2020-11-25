@@ -1,6 +1,6 @@
-#ifndef SOCKET_SERVER_HPP
-#define SOCKET_SERVER_HPP
- 
+#ifndef WEBSOCKETBACKEND_HPP
+#define WEBSOCKETBACKEND_HPP
+
 #define ASIO_STANDALONE
 
 #include <websocketpp/config/asio_no_tls.hpp>
@@ -9,6 +9,11 @@
 #include <thread>
 #include <queue>
 #include <string>
+
+#ifdef UNUSED
+#elif defined(__GNUC__)
+# define UNUSED(x) UNUSED_ ## x __attribute__((unused))
+#endif
 
 std::queue<std::string> *_socket_rx;
 std::queue<std::string> *_socket_tx;
@@ -22,7 +27,7 @@ using websocketpp::lib::placeholders::_2;
 // pull out the type of messages sent by our config
 typedef server::message_ptr message_ptr;
 
-void new_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg){
+void MessageReceived(server* UNUSED(s), websocketpp::connection_hdl UNUSED(hdl), message_ptr msg){
     // std::cout << "on_message called with hdl: " << hdl.lock().get()
     //           << " and message: " << msg->get_payload()
     //           << std::endl;
@@ -49,7 +54,7 @@ void new_message(server *s, websocketpp::connection_hdl hdl, message_ptr msg){
     // }
 }
 
-void setRxTx(std::queue<std::string> *rx, std::queue<std::string> *tx){
+void SetRxTx(std::queue<std::string> *rx, std::queue<std::string> *tx){
     _socket_rx = rx;
     _socket_tx = tx;
 }
@@ -68,7 +73,7 @@ void StartSocket(){
         echo_server.init_asio();
 
         // Register our message handler
-        echo_server.set_message_handler(bind(&new_message, &echo_server, ::_1, ::_2));
+        echo_server.set_message_handler(::bind(&MessageReceived, &echo_server, ::_1, ::_2));
 
         // Listen on port 9002
         echo_server.listen(9002);
@@ -88,5 +93,5 @@ void StartSocket(){
         std::cout << "other exception" << std::endl;
     }
 }
- 
+
 #endif

@@ -1,25 +1,19 @@
-#include "socket_server.hpp"
+#include "SocketServer.hpp"
+
 #include <iostream>
 #include <thread>
 #include <string>
-#include <queue>
 
 using namespace std;
 
 int main()
 {
-    queue<string> *socket_rx = new queue<string>();
-    queue<string> *socket_tx = new queue<string>();
-
-    setRxTx(socket_rx, socket_tx);
-
-    // Constructs the new thread and runs it. Does not block execution.
-    thread t1(StartSocket);
+    SocketServer* Socket = SocketServer::Instance();
+    string message;
 
     while(true){
-        if(socket_rx->size() > 0){
-            string message = socket_rx->front();
-            socket_rx->pop();
+        message = Socket->GetMessage();
+        if(message != ""){
             cout << "Incoming message: " << message << endl;
             if (message.find("exit") != string::npos) break;
         }else{
