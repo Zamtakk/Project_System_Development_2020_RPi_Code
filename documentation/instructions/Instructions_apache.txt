@@ -6,3 +6,6 @@ Follow this tutorial: https://pimylifeup.com/raspberry-pi-apache/ use pjsdvgroup
 
 Use the command:
   sudo /etc/init.d/apache2 restart
+  
+To easily change/code a website get the following extension in vscode:
+  - Live Server by Ritwick Dey
