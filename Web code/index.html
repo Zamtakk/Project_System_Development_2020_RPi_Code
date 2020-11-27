@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="style.css">
+    <script src="communication.js"></script> 
+</head>
+<body>
+    <div class="form-container">
+        <form>
+            <label for="texttosend">Say something to the pi</label><br>
+            <input type="text" id="texttosend" name="texttosend"><br>
+        </form> 
+    </div>
+
+    <div class="btn-container">
+        <button onclick="sendSocket()">Send</button>
+    </div>
+
+    <div class="receive-container">
+        <p>Answer:</p>
+    </div>
+
+    <pre id="log"></pre> 
+</body>
+</html> 
