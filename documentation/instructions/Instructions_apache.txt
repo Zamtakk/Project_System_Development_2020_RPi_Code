@@ -1,0 +1,8 @@
+Installing apache2 webserver
+
+Make sure your Pi is connected to the internet! (revert the script changes or connect to a router and SSH over your LAN)
+
+Follow this tutorial: https://pimylifeup.com/raspberry-pi-apache/ use pjsdvgroup13.com rather than example.com.
+
+Use the command:
+  sudo /etc/init.d/apache2 restart
