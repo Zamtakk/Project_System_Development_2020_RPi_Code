@@ -17,3 +17,5 @@ To load the code on the webserver use SFTP to copy over the files to the /var/ww
     -communication.js
     
     and copy over the code to the corresponding file.
+
+The code can be found on github in the Web code folder.
