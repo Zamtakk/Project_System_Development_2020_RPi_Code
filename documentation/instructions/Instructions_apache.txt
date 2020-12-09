@@ -9,3 +9,11 @@ Use the command:
   
 To easily change/code a website get the following extension in vscode:
   - Live Server by Ritwick Dey
+
+To load the code on the webserver use SFTP to copy over the files to the /var/www/pjsdvgroup13.com/public_html/ folder
+  > alternatively just create the following files in the folder:
+    -index.html
+    -style.css
+    -communication.js
+    
+    and copy over the code to the corresponding file.
