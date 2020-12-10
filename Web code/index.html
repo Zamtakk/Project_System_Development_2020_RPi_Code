@@ -2,32 +2,37 @@
 <html>
 <head>
     <link rel="stylesheet" href="style.css">
-    <script src="communication.js"></script> 
 </head>
 <body>
-    <div class="form-container">
-        <form>
-            <label for="texttosend">Say something to the pi</label><br>
-            <input type="text" id="texttosend" name="texttosend"><br>
-        </form> 
-    </div>
+    <p>Lamp bediening:</p>
+    <button type="button" class="collapsible">Schemerlamp</button>
+    <div class="content">
+        <div class="form-container">
+            <form>
+                <label for="texttosend">Stuur tekst naar Pi:</label><br>
+                <input type="text" id="texttosend" name="texttosend"><br>
+            </form> 
+        </div>
 
-    <div class="btn-container">
-        <button onclick="sendSocket()">Send</button>
-    </div>
+        <div class="btn-container">
+            <button onclick=sendSocket()>Send</button>
+        </div>
 
-    <div class="receive-container">
-        <p>Answer:</p>
-    </div>
+        <div class="lamp-switch">
+            <p>Zet lamp aan/uit:</p>
+            <label class="switchlamp">
+                <input type="checkbox">
+                <span class="slider round"></span>
+            </label>
+        </div>
 
-    <div class="lamp-switch">
-        <p>Turn lamp on/off:</p>
-        <label class="switchlamp">
-            <input type="checkbox">
-            <span class="slider round"></span>
-        </label>
+        <div class="lamp-dimmer">
+            <p>Dim het licht:</p>
+            <input type="range" min="1" max="100" value="50" class="dimmerslider" id="myRange">
+        </div>
     </div>
 
     <pre id="log"></pre> 
+    <script src="communication.js"></script> 
 </body>
 </html> 
