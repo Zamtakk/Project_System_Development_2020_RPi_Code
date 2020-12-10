@@ -6,9 +6,7 @@ Follow this tutorial: https://pimylifeup.com/raspberry-pi-apache/ use pjsdvgroup
 
 Use the command:
   sudo /etc/init.d/apache2 restart
-  
-To easily change/code a website get the following extension in vscode:
-  - Live Server by Ritwick Dey
+ 
 
 To load the code on the webserver use SFTP to copy over the files to the /var/www/pjsdvgroup13.com/public_html/ folder
   > alternatively just create the following files in the folder:
@@ -19,3 +17,7 @@ To load the code on the webserver use SFTP to copy over the files to the /var/ww
     and copy over the code to the corresponding file.
 
 The code can be found on github in the Web code folder.
+
+To easily change/code a website in vscode get the following extension:
+  - Live Server by Ritwick Dey
+> Right click index.html > open live server to open the code in your browser
