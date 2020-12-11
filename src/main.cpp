@@ -1,4 +1,4 @@
-#include "SocketServer.hpp"
+#include "Websocket/SocketServer.hpp"
 
 #include <iostream>
 #include <thread>
@@ -12,10 +12,10 @@ int main()
     string message;
 
     while(true){
-        message = Socket->GetMessage();
-        if(message != ""){
-            cout << "Incoming message: " << message << endl;
-            if (message.find("exit") != string::npos) break;
+        SocketMessage message = Socket->GetMessage();
+        if(message.Message != ""){
+            cout << "Incoming message: " << message.Message << endl;
+            if (message.Message.find("exit") != string::npos) break;
         }else{
             this_thread::sleep_for (chrono::milliseconds(100));
         }
