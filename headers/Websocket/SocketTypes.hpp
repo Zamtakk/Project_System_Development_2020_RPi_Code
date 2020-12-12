@@ -5,23 +5,25 @@
 
 #include "WebsocketTypes.hpp"
 
+using std::string;
+
 struct DeviceRegistration
 {
-    std::string UUID;
-    websocketpp::connection_hdl ConnectionHandle;
+    string UUID;
+    connection_hdl ConnectionHandle;
     message_ptr MessagePointer;
 };
 
 struct WebsocketMessage
 {
-    websocketpp::connection_hdl Handle;
+    connection_hdl Handle;
     message_ptr MessagePointer;
 };
 
 struct SocketMessage
 {
-    std::string UUID;
-    std::string Message;
+    string UUID;
+    string Message;
 };
 
 #endif
