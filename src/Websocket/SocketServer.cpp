@@ -19,6 +19,10 @@ using std::this_thread::sleep_for;
 SocketServer *SocketServer::socketServer = NULL;
 
 // Public methods
+/*!
+    @brief Get a pointer to the socket server. There will always only be one. It will create one if none exists.
+    @return A pointer to the SocketServer.
+*/
 SocketServer *SocketServer::Instance()
 {
     if (!socketServer)
@@ -26,6 +30,10 @@ SocketServer *SocketServer::Instance()
     return socketServer;
 }
 
+/*!
+    @brief Tries to get a new message from the socket server.
+    @return Returns the first message in the queue. If no message is present it will return an empty string.
+*/
 string SocketServer::GetMessage()
 {
     const lock_guard<mutex> lock(messageLock);
@@ -41,6 +49,12 @@ string SocketServer::GetMessage()
     }
 }
 
+/*!
+    @brief Sends a message to the given device.
+    @param[in] uuid The UUID of the device where the message needs to go to.
+    @param[in] jsonStringMessage A JSON message in string format.
+    @return Returns true if the device is found. Returns false if the UUID is not registered in the socket server.
+*/
 bool SocketServer::SendMessage(string uuid, string jsonStringMessage)
 {
     DeviceRegistration *devicePtr = getRegisteredDevice(uuid);
@@ -57,6 +71,9 @@ bool SocketServer::SendMessage(string uuid, string jsonStringMessage)
 }
 
 // Private Methods
+/*!
+    @brief Sets the queue in the Websocket++ code to be able to retrieve data and starts the needed threads.
+*/
 SocketServer::SocketServer()
 {
     SetQueueAndLock(&websocketppRxQueue, &websocketppRxLock);
@@ -65,12 +82,18 @@ SocketServer::SocketServer()
     processRxThread = new thread(&SocketServer::parseIncommingMessages, this);
 }
 
+/*!
+    @brief Destructs the socket server and ends all threads
+*/
 SocketServer::~SocketServer()
 {
     delete websocketppThread;
     delete processRxThread;
 }
 
+/*!
+    @brief Checks all incoming messages from the websocket connection and handles them before potentially putting them in the queue for the main thread. Must be run in a seperate thread. Never returns!!
+*/
 void SocketServer::parseIncommingMessages()
 {
     WebsocketMessage websocketppMessage;
@@ -147,6 +170,11 @@ bool SocketServer::isMessageValid(string message)
     return true;
 }
 
+/*!
+    @brief Check if a given UUID is present in the list of registered devices.
+    @param[in] uuid A string specifying the requested UUID.
+    @return Return true if the devices is a known registered device.
+*/
 bool SocketServer::isDeviceRegistered(string uuid)
 {
     for (vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
@@ -159,18 +187,31 @@ bool SocketServer::isDeviceRegistered(string uuid)
     return false;
 }
 
+/*!
+    @brief Send an error message to the device specifying that it is nog registered.
+    @param[in] websocketppMessage A WebsocketMessage containing the connection data.
+*/
 void SocketServer::sendDeviceNotRegistered(WebsocketMessage websocketppMessage)
 {
     websocketppMessage.MessagePointer->set_payload("{\"error\":" + to_string(NOT_REGISTERED) + ",\"description\":\"Device not registered!\"}");
     SendWebsocketppMessage(websocketppMessage);
 }
 
+/*!
+    @brief Send an error message to the device specifying that the message was not in the correct JSON format
+    @param[in] websocketppMessage A WebsocketMessage containing the connection data.
+*/
 void SocketServer::sendIncorrectMessageFormat(WebsocketMessage websocketppMessage)
 {
     websocketppMessage.MessagePointer->set_payload("{\"error\":" + to_string(INVALID_FORMAT) + ",\"description\":\"Message format is not correct.\nIt needs at least UUID, Type and Commands\"}");
     SendWebsocketppMessage(websocketppMessage);
 }
 
+/*!
+    @brief Find a device in the registeredDevices list based on the UUID.
+    @param[in] uuid A string specifying the UUID
+    @return A DeviceRegistration if the device is found and a nullptr if it isn't found.
+*/
 DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
 {
     for (vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
@@ -183,6 +224,10 @@ DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
     return nullptr;
 }
 
+/*!
+    @brief Register a new device in the socket server
+    @param[in] websocketppMessage A WebsocketMessage containing al connection information
+*/
 void SocketServer::registerDevice(WebsocketMessage websocketppMessage)
 {
     json jsonMessage = json::parse(websocketppMessage.MessagePointer->get_payload());
