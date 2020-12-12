@@ -12,5 +12,6 @@ typedef websocketpp::server<websocketpp::config::asio> server;
 
 // pull out the type of messages sent by our config
 typedef server::message_ptr message_ptr;
+typedef websocketpp::connection_hdl connection_hdl;
 
 #endif
