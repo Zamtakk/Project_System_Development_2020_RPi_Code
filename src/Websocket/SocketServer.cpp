@@ -44,15 +44,15 @@ SocketMessage SocketServer::GetMessage()
     }
 }
 
-bool SocketServer::SendMessage(SocketMessage message)
+bool SocketServer::SendMessage(string uuid, string jsonStringMessage)
 {
-    DeviceRegistration *devicePtr = getRegisteredDevice(message.UUID);
+    DeviceRegistration *devicePtr = getRegisteredDevice(uuid);
     if (devicePtr != nullptr)
     {
         WebsocketMessage packet;
         packet.Handle = devicePtr->ConnectionHandle;
         packet.MessagePointer = devicePtr->MessagePointer;
-        packet.MessagePointer->set_payload(message.Message);
+        packet.MessagePointer->set_payload(jsonStringMessage);
         SendWebsocketppMessage(packet);
         return true;
     }

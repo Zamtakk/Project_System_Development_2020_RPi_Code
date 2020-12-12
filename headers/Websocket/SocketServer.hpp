@@ -20,7 +20,7 @@ class SocketServer
 public:
     static SocketServer *Instance();
     SocketMessage GetMessage();
-    bool SendMessage(SocketMessage message);
+    bool SendMessage(string uuid, string jsonStringMessage);
 
 private:
     SocketServer();
