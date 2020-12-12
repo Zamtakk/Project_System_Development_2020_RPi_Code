@@ -1,10 +1,12 @@
 #include "Devices/Device.hpp"
 
+#include "Websocket/SocketServer.hpp"
+
 #include <string>
 
 using std::string;
 
-Device::Device(string uuid, string type) : uuid(uuid), type(type), status(CONNECTED)
+Device::Device(string uuid, string type, SocketServer *server) : uuid(uuid), type(type), status(CONNECTED), socketServer(server)
 {
 }
 

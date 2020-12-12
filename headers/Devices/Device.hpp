@@ -2,6 +2,7 @@
 #define DEVICE_HPP
 
 #include "CommandTypes.hpp"
+#include "Websocket/SocketServer.hpp"
 
 #include <string>
 
@@ -10,7 +11,7 @@ using std::string;
 class Device
 {
 public:
-    Device(string uuid, string type);
+    Device(string uuid, string type, SocketServer *server);
     ~Device();
     string getUUID();
     string getType();
@@ -22,6 +23,7 @@ protected:
     string uuid;
     string type;
     DeviceStatus status;
+    SocketServer *socketServer;
 };
 
 #endif
