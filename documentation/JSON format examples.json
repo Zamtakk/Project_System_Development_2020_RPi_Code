@@ -2,59 +2,37 @@
     {
         "UUID": "0123456789",
         "Type": "Door",
-        "Commands": [
-            {
-                "command": 1,
-                "value": "open"
-            },
-            {
-                "command": 5,
-                "value": 240
-            },
-            {
-                "command": 3,
-                "value": 85.2
-            }
-        ]
+        "command": 1,
+        "value": "open"
     },
-    
     {
         "UUID": "0123456789",
         "Type": "Website",
-        "Commands": [
-            {
-                "command": 0,
-                "value": ""
-            }
-        ]
+        "command": 0,
+        "value": ""
     },
-    
     {
         "UUID": "0123456789",
         "Type": "Website",
-        "Commands": [
+        "command": 1,
+        "value": [
             {
-                "command": 1,
-                "value": [
-                    {
-                        "UUID":"0123456789",
-                        "Type":"Door",
-                        "Status":"connected",
-                        "Name":"Appartment Door",
-                        "Door":"open",
-                        "Button":"released",
-                        "Light":"off"
-                    },
-                    {
-                        "UUID":"9876543210",
-                        "Type":"Bed",
-                        "Status":"disconnected",
-                        "Name":"N/A",
-                        "Door":"N/A",
-                        "Button":"N/A",
-                        "Light":"N/A"
-                    }
-                ]
+                "UUID": "0123456789",
+                "Type": "Door",
+                "Status": "connected",
+                "Name": "Appartment Door",
+                "Door": "open",
+                "Button": "released",
+                "Light": "off"
+            },
+            {
+                "UUID": "9876543210",
+                "Type": "Bed",
+                "Status": "disconnected",
+                "Name": "N/A",
+                "Pressure": "N/A",
+                "Button": "N/A",
+                "Light": "N/A"
             }
         ]
     }
