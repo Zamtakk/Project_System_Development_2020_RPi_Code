@@ -17,11 +17,11 @@ int main()
 
     while (true)
     {
-        SocketMessage message = Socket->GetMessage();
-        if (message.Message != "")
+        message = Socket->GetMessage();
+        if (message != "")
         {
-            cout << "Incoming message: " << message.Message << endl;
-            if (message.Message.find("exit") != string::npos)
+            cout << "Incoming message: " << message << endl;
+            if (message.find("exit") != string::npos)
                 break;
         }
         else
