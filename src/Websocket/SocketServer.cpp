@@ -138,8 +138,8 @@ void SocketServer::parseIncommingMessages()
             else
             {
                 sendDeviceNotRegistered(websocketppMessage);
+                continue;
             }
-            continue;
         }
 
         // Handle message
