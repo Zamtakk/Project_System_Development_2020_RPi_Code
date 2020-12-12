@@ -11,3 +11,15 @@ Device::Device(string uuid, string type) : uuid(uuid), type(type), status(CONNEC
 Device::~Device()
 {
 }
+
+string Device::getUUID(){
+    return uuid;
+}
+
+string Device::getType(){
+    return type;
+}
+
+DeviceStatus Device::getStatus(){
+    return status;
+}
