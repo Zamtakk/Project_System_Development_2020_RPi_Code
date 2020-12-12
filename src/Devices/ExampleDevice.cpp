@@ -41,3 +41,7 @@ string ExampleDevice::getDeviceInfo()
     
     return deviceInfo.dump();
 }
+
+void ExampleDevice::handleMessage(string message){
+    
+}
