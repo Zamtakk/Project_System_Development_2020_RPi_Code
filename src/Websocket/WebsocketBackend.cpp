@@ -1,21 +1,27 @@
 #include "Websocket/WebsocketBackend.hpp"
 
+using std::cout;
+using std::endl;
+using std::lock_guard;
+using std::mutex;
+using std::queue;
+
 // Create a server endpoint
 server Server;
 
-std::queue<WebsocketMessage> *RxQueue;
-std::mutex *RxQueueLock;
+queue<WebsocketMessage> *RxQueue;
+mutex *RxQueueLock;
 
 void MessageReceived(server *UNUSED(s), websocketpp::connection_hdl hdl, message_ptr msg)
 {
     WebsocketMessage newMessage = {
         .Handle = hdl,
         .MessagePointer = msg};
-    const std::lock_guard<std::mutex> lock(*RxQueueLock);
+    const lock_guard<mutex> lock(*RxQueueLock);
     RxQueue->push(newMessage);
 }
 
-void SetQueueAndLock(std::queue<WebsocketMessage> *queue, std::mutex *lock)
+void SetQueueAndLock(queue<WebsocketMessage> *queue, mutex *lock)
 {
     RxQueue = queue;
     RxQueueLock = lock;
@@ -51,10 +57,10 @@ void StartSocket()
     }
     catch (websocketpp::exception const &e)
     {
-        std::cout << e.what() << std::endl;
+        cout << e.what() << endl;
     }
     catch (...)
     {
-        std::cout << "other exception" << std::endl;
+        cout << "other exception" << endl;
     }
 }
