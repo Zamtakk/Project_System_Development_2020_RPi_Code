@@ -84,28 +84,23 @@ void SocketServer::parseIncommingMessages()
         }
         _websocketppLock.~lock_guard();
 
-        // SendWebsocketppMessage(websocketppMessage);
-
-        if (websocketppMessage.MessagePointer->get_payload().find("registration") != std::string::npos)
+        if (websocketppMessage.MessagePointer->get_payload().find("registration") != string::npos)
         {
-            DeviceRegistration newDevice {
+            DeviceRegistration newDevice{
                 .UUID = "1234",
                 .ConnectionHandle = websocketppMessage.Handle,
-                .MessagePointer = websocketppMessage.MessagePointer
-            };
+                .MessagePointer = websocketppMessage.MessagePointer};
             registeredDevices.push_back(newDevice);
-            SocketMessage newMessage {
+            SocketMessage newMessage{
                 .UUID = "1234",
-                .Message = "Hello Test"
-            };
+                .Message = "Hello Test"};
             SendMessage(newMessage);
         }
-        else if (websocketppMessage.MessagePointer->get_payload().find("heartbeat") != std::string::npos)
+        else if (websocketppMessage.MessagePointer->get_payload().find("heartbeat") != string::npos)
         {
-            SocketMessage newMessage {
+            SocketMessage newMessage{
                 .UUID = "1234",
-                .Message = "Heartbeat response"
-            };
+                .Message = "Heartbeat response"};
             SendMessage(newMessage);
         }
         else
