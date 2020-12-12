@@ -47,7 +47,7 @@ int main()
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
-                ExampleDevice *newDevice = new ExampleDevice(newUUID, newType);
+                ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
                 exampleDevices.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
