@@ -19,7 +19,7 @@ class SocketServer
 {
 public:
     static SocketServer *Instance();
-    SocketMessage GetMessage();
+    string GetMessage();
     bool SendMessage(string uuid, string jsonStringMessage);
 
 private:
@@ -37,7 +37,7 @@ private:
 
     static SocketServer *socketServer;
 
-    queue<SocketMessage> messageQueue;
+    queue<string> messageQueue;
     mutex messageLock;
 
     queue<WebsocketMessage> websocketppRxQueue;

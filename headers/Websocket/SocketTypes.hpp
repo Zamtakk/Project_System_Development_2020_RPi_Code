@@ -20,10 +20,4 @@ struct WebsocketMessage
     message_ptr MessagePointer;
 };
 
-struct SocketMessage
-{
-    string UUID;
-    string Message;
-};
-
 #endif

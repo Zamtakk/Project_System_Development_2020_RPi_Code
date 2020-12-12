@@ -26,21 +26,18 @@ SocketServer *SocketServer::Instance()
     return socketServer;
 }
 
-SocketMessage SocketServer::GetMessage()
+string SocketServer::GetMessage()
 {
     const lock_guard<mutex> lock(messageLock);
     if (!messageQueue.empty())
     {
-        SocketMessage newMessage = messageQueue.front();
+        string newMessage = messageQueue.front();
         messageQueue.pop();
         return newMessage;
     }
     else
     {
-        SocketMessage msg = {
-            .UUID = "",
-            .Message = ""};
-        return msg;
+        return "";
     }
 }
 
@@ -130,10 +127,7 @@ void SocketServer::parseIncommingMessages()
         else
         {
             const lock_guard<mutex> _messageLock(messageLock);
-            SocketMessage newSocketMessage{
-                .UUID = jsonMessage["UUID"],
-                .Message = jsonMessage.dump()};
-            messageQueue.push(newSocketMessage);
+            messageQueue.push(websocketppMessage.MessagePointer->get_payload());
             _messageLock.~lock_guard();
         }
     }
