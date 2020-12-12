@@ -1,4 +1,5 @@
 #include "Websocket/SocketServer.hpp"
+#include "Devices/ExampleDevice.hpp"
 
 #include <iostream>
 #include <thread>
