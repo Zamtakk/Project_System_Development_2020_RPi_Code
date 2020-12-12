@@ -165,12 +165,10 @@ bool SocketServer::isDeviceRegistered(string uuid)
     return false;
 }
 
-void SocketServer::sendDeviceNotRegistered(string uuid)
+void SocketServer::sendDeviceNotRegistered(WebsocketMessage websocketppMessage)
 {
-    SocketMessage newMessage{
-        .UUID = uuid,
-        .Message = "{\"error\":" + to_string(NOT_REGISTERED) + ",\"description\":\"Device not registered!\"}"};
-    SendMessage(newMessage);
+    websocketppMessage.MessagePointer->set_payload("{\"error\":" + to_string(NOT_REGISTERED) + ",\"description\":\"Device not registered!\"}");
+    SendWebsocketppMessage(websocketppMessage);
 }
 
 void SocketServer::sendIncorrectMessageFormat(WebsocketMessage websocketppMessage)

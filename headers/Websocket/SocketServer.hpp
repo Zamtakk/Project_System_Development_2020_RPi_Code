@@ -29,7 +29,7 @@ private:
     void parseIncommingMessages();
     bool isDeviceRegistered(string uuid);
     bool isMessageValid(string message);
-    void sendDeviceNotRegistered(string uuid);
+    void sendDeviceNotRegistered(WebsocketMessage websocketppMessage);
     void sendIncorrectMessageFormat(WebsocketMessage websocketppMessage);
     void registerDevice(WebsocketMessage websocketppMessage);
 
