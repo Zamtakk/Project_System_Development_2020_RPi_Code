@@ -43,5 +43,5 @@ string ExampleDevice::getDeviceInfo()
 }
 
 void ExampleDevice::handleMessage(string message){
-    
+    socketServer->SendMessage(uuid, message);
 }
