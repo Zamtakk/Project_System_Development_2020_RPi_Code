@@ -1,14 +1,24 @@
 #ifndef COMMANDTYPES_HPP
 #define COMMANDTYPES_HPP
 
-enum ErrorCodes{
+enum ErrorCodes
+{
     NOT_REGISTERED = 0,
     INVALID_FORMAT
 };
 
-enum GeneralDeviceCommands{
+enum GeneralDeviceCommands
+{
     HEARTBEAT = 1000,
-    REGISTRATION
+    REGISTRATION,
+    DEVICEINFO
+};
+
+enum DeviceStatus
+{
+    CONNECTED = 2000,
+    UNSTABLE,
+    DISCONNECTED
 };
 
 #endif
