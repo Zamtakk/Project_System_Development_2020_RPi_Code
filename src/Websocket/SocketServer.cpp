@@ -4,14 +4,14 @@
 
 using json = nlohmann::json;
 
-using std::to_string;
-using std::string;
 using std::lock_guard;
 using std::mutex;
+using std::string;
 using std::thread;
-using std::this_thread::sleep_for;
-using std::chrono::milliseconds;
+using std::to_string;
 using std::vector;
+using std::chrono::milliseconds;
+using std::this_thread::sleep_for;
 
 // Global static pointer used to ensure a single instance of the class.
 SocketServer *SocketServer::socketServer = NULL;

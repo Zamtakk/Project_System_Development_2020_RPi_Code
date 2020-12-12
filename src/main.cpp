@@ -4,24 +4,29 @@
 #include <thread>
 #include <string>
 
-using std::string;
 using std::cout;
 using std::endl;
-using std::this_thread::sleep_for;
+using std::string;
 using std::chrono::milliseconds;
+using std::this_thread::sleep_for;
 
 int main()
 {
-    SocketServer* Socket = SocketServer::Instance();
+    SocketServer *Socket = SocketServer::Instance();
     string message;
 
-    while(true){
+    while (true)
+    {
         SocketMessage message = Socket->GetMessage();
-        if(message.Message != ""){
+        if (message.Message != "")
+        {
             cout << "Incoming message: " << message.Message << endl;
-            if (message.Message.find("exit") != string::npos) break;
-        }else{
-            sleep_for (milliseconds(100));
+            if (message.Message.find("exit") != string::npos)
+                break;
+        }
+        else
+        {
+            sleep_for(milliseconds(100));
         }
     }
 }

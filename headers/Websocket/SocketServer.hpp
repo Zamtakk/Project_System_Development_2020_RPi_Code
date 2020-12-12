@@ -9,9 +9,9 @@
 #include "WebsocketBackend.hpp"
 #include "SocketTypes.hpp"
 
-using std::string;
-using std::queue;
 using std::mutex;
+using std::queue;
+using std::string;
 using std::thread;
 using std::vector;
 

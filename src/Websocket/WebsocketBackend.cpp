@@ -10,8 +10,7 @@ void MessageReceived(server *UNUSED(s), websocketpp::connection_hdl hdl, message
 {
     WebsocketMessage newMessage = {
         .Handle = hdl,
-        .MessagePointer = msg
-    };
+        .MessagePointer = msg};
     const std::lock_guard<std::mutex> lock(*RxQueueLock);
     RxQueue->push(newMessage);
 }
