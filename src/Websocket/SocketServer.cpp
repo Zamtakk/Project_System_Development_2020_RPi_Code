@@ -139,6 +139,11 @@ void SocketServer::parseIncommingMessages()
     }
 }
 
+/*!
+    @brief Checks to see if the message is valid JSON and if it contains the required fields
+    @param[in] message The raw string message passed on from the websocket connection
+    @return Returns true if message is proper JSON and contains the required fields
+*/
 bool SocketServer::isMessageValid(string message)
 {
     json jsonMessage = json::parse(message);
