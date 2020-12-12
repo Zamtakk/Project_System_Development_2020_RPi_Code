@@ -7,13 +7,7 @@
 #include <mutex>
 
 #include "WebsocketBackend.hpp"
-#include "DeviceRegistration.hpp"
-
-struct SocketMessage
-{
-    std::string UUID;
-    std::string Message;
-};
+#include "SocketTypes.hpp"
 
 class SocketServer
 {
@@ -31,15 +25,15 @@ private:
 
     static SocketServer *socketServer;
 
-    std::queue<SocketMessage> *messageQueue;
-    std::mutex *messageLock;
+    std::queue<SocketMessage> messageQueue;
+    std::mutex messageLock;
 
-    std::queue<WebsocketConnection *> *websocketppRxQueue;
-    std::mutex *websocketppRxLock;
+    std::queue<WebsocketMessage> websocketppRxQueue;
+    std::mutex websocketppRxLock;
 
     std::thread *websocketppThread;
     std::thread *processRxThread;
 
-    std::vector<DeviceRegistration *> registeredDevices;
+    std::vector<DeviceRegistration> registeredDevices;
 };
 #endif
