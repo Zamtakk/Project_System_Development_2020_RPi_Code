@@ -1,4 +1,4 @@
-#include "ExampleDevice.hpp"
+#include "Devices/ExampleDevice.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
