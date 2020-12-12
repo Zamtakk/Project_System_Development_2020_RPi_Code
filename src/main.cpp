@@ -4,7 +4,11 @@
 #include <thread>
 #include <string>
 
-using namespace std;
+using std::string;
+using std::cout;
+using std::endl;
+using std::this_thread::sleep_for;
+using std::chrono::milliseconds;
 
 int main()
 {
@@ -17,7 +21,7 @@ int main()
             cout << "Incoming message: " << message.Message << endl;
             if (message.Message.find("exit") != string::npos) break;
         }else{
-            this_thread::sleep_for (chrono::milliseconds(100));
+            sleep_for (milliseconds(100));
         }
     }
 }
