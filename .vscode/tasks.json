@@ -191,7 +191,6 @@
 			"args": [
 				"ssh",
 				"pi@${env:RPI_ADDRESS}",
-				"sudo",
 				"gdbserver",
 				"localhost:9999",
 				"./proj_sys_rpi_app"
