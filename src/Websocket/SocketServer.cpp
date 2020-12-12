@@ -1,5 +1,8 @@
 #include "Websocket/SocketServer.hpp"
 #include "Websocket/WebsocketTypes.hpp"
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 // Global static pointer used to ensure a single instance of the class.
 SocketServer *SocketServer::socketServer = NULL;
