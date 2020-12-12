@@ -114,7 +114,7 @@ void SocketServer::parseIncommingMessages()
             }
             else
             {
-                sendDeviceNotRegistered(jsonMessage["UUID"]);
+                sendDeviceNotRegistered(websocketppMessage);
             }
             continue;
         }
