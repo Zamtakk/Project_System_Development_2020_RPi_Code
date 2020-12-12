@@ -80,8 +80,10 @@ void SocketServer::parseIncommingMessages()
 
     while (1)
     {
-        sleep_for(milliseconds(500));
+        // Wait before parsing a new message to not overload the system
+        sleep_for(milliseconds(250));
 
+        // Aquire lock and get a new message if one is available
         const lock_guard<mutex> _websocketppLock(websocketppRxLock);
         if (!websocketppRxQueue.empty())
         {
@@ -95,31 +97,42 @@ void SocketServer::parseIncommingMessages()
         }
         _websocketppLock.~lock_guard();
 
-        if (websocketppMessage.MessagePointer->get_payload().find("registration") != string::npos)
+        // Check if the message stucture is valid JSON and if it contains the required fields
+        if (!isMessageValid(websocketppMessage.MessagePointer->get_payload()))
         {
-            DeviceRegistration newDevice{
-                .UUID = "1234",
-                .ConnectionHandle = websocketppMessage.Handle,
-                .MessagePointer = websocketppMessage.MessagePointer};
-            registeredDevices.push_back(newDevice);
-            SocketMessage newMessage{
-                .UUID = "1234",
-                .Message = "Hello Test"};
-            SendMessage(newMessage);
+            sendIncorrectMessageFormat(websocketppMessage);
+            continue;
         }
-        else if (websocketppMessage.MessagePointer->get_payload().find("heartbeat") != string::npos)
+
+        // Parse the message for easy use
+        json jsonMessage = json::parse(websocketppMessage.MessagePointer->get_payload());
+
+        // Check if the message comes from a registered device
+        // If it doesn't, register it if it is a registration message
+        if (!isDeviceRegistered(jsonMessage["UUID"]))
         {
-            SocketMessage newMessage{
-                .UUID = "1234",
-                .Message = "Heartbeat response"};
-            SendMessage(newMessage);
+            if (jsonMessage["command"] == REGISTRATION)
+            {
+                registerDevice(websocketppMessage);
+            }
+            else
+            {
+                sendDeviceNotRegistered(jsonMessage["UUID"]);
+            }
+            continue;
+        }
+
+        // Handle message
+        if (jsonMessage["command"] == HEARTBEAT)
+        {
+            // Todo: implement heartbeat system
         }
         else
         {
             const lock_guard<mutex> _messageLock(messageLock);
             SocketMessage newSocketMessage{
-                .UUID = "n/a",
-                .Message = "n/a"};
+                .UUID = jsonMessage["UUID"],
+                .Message = jsonMessage.dump()};
             messageQueue.push(newSocketMessage);
             _messageLock.~lock_guard();
         }
