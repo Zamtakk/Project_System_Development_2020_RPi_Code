@@ -27,9 +27,11 @@ private:
     ~SocketServer();
 
     void parseIncommingMessages();
+    bool isDeviceRegistered(string uuid);
     bool isMessageValid(string message);
     void sendDeviceNotRegistered(string uuid);
-    void sendIncorrectMessageFormat(string uuid);
+    void sendIncorrectMessageFormat(WebsocketMessage websocketppMessage);
+    void registerDevice(WebsocketMessage websocketppMessage);
 
     DeviceRegistration *getRegisteredDevice(string uuid);
 

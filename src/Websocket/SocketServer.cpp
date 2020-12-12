@@ -2,6 +2,8 @@
 #include "Websocket/WebsocketTypes.hpp"
 #include "json.hpp"
 
+#include "CommandTypes.hpp"
+
 using json = nlohmann::json;
 
 using std::lock_guard;
@@ -133,16 +135,30 @@ bool SocketServer::isMessageValid(string message)
     return true;
 }
 
+bool SocketServer::isDeviceRegistered(string uuid)
+{
+    for (vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
+    {
+        if (i->UUID.find(uuid) != string::npos)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 void SocketServer::sendDeviceNotRegistered(string uuid)
 {
     SocketMessage newMessage{
         .UUID = uuid,
-        .Message = "{\"error\":" + to_string(1) + ",\"description\":\"Device not registered!\"}"};
+        .Message = "{\"error\":" + to_string(NOT_REGISTERED) + ",\"description\":\"Device not registered!\"}"};
     SendMessage(newMessage);
 }
 
-void SocketServer::sendIncorrectMessageFormat(string uuid)
+void SocketServer::sendIncorrectMessageFormat(WebsocketMessage websocketppMessage)
 {
+    websocketppMessage.MessagePointer->set_payload("{\"error\":" + to_string(INVALID_FORMAT) + ",\"description\":\"Message format is not correct.\nIt needs at least UUID, Type and Commands\"}");
+    SendWebsocketppMessage(websocketppMessage);
 }
 
 DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
@@ -155,4 +171,16 @@ DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
         }
     }
     return nullptr;
+}
+
+void SocketServer::registerDevice(WebsocketMessage websocketppMessage)
+{
+    json jsonMessage = json::parse(websocketppMessage.MessagePointer->get_payload());
+
+    DeviceRegistration newDevice{
+        .UUID = jsonMessage["UUID"],
+        .ConnectionHandle = websocketppMessage.Handle,
+        .MessagePointer = websocketppMessage.MessagePointer};
+
+    registeredDevices.push_back(newDevice);
 }
