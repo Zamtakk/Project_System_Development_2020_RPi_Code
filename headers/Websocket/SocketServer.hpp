@@ -9,6 +9,12 @@
 #include "WebsocketBackend.hpp"
 #include "SocketTypes.hpp"
 
+using std::string;
+using std::queue;
+using std::mutex;
+using std::thread;
+using std::vector;
+
 class SocketServer
 {
 public:
@@ -21,19 +27,23 @@ private:
     ~SocketServer();
 
     void parseIncommingMessages();
-    DeviceRegistration *getRegisteredDevice(std::string uuid);
+    bool isMessageValid(string message);
+    void sendDeviceNotRegistered(string uuid);
+    void sendIncorrectMessageFormat(string uuid);
+
+    DeviceRegistration *getRegisteredDevice(string uuid);
 
     static SocketServer *socketServer;
 
-    std::queue<SocketMessage> messageQueue;
-    std::mutex messageLock;
+    queue<SocketMessage> messageQueue;
+    mutex messageLock;
 
-    std::queue<WebsocketMessage> websocketppRxQueue;
-    std::mutex websocketppRxLock;
+    queue<WebsocketMessage> websocketppRxQueue;
+    mutex websocketppRxLock;
 
-    std::thread *websocketppThread;
-    std::thread *processRxThread;
+    thread *websocketppThread;
+    thread *processRxThread;
 
-    std::vector<DeviceRegistration> registeredDevices;
+    vector<DeviceRegistration> registeredDevices;
 };
 #endif

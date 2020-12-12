@@ -4,6 +4,15 @@
 
 using json = nlohmann::json;
 
+using std::to_string;
+using std::string;
+using std::lock_guard;
+using std::mutex;
+using std::thread;
+using std::this_thread::sleep_for;
+using std::chrono::milliseconds;
+using std::vector;
+
 // Global static pointer used to ensure a single instance of the class.
 SocketServer *SocketServer::socketServer = NULL;
 
@@ -17,7 +26,7 @@ SocketServer *SocketServer::Instance()
 
 SocketMessage SocketServer::GetMessage()
 {
-    const std::lock_guard<std::mutex> lock(messageLock);
+    const lock_guard<mutex> lock(messageLock);
     if (!messageQueue.empty())
     {
         SocketMessage newMessage = messageQueue.front();
@@ -53,8 +62,8 @@ SocketServer::SocketServer()
 {
     SetQueueAndLock(&websocketppRxQueue, &websocketppRxLock);
 
-    websocketppThread = new std::thread(StartSocket);
-    processRxThread = new std::thread(&SocketServer::parseIncommingMessages, this);
+    websocketppThread = new thread(StartSocket);
+    processRxThread = new thread(&SocketServer::parseIncommingMessages, this);
 }
 
 SocketServer::~SocketServer()
@@ -69,9 +78,9 @@ void SocketServer::parseIncommingMessages()
 
     while (1)
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        sleep_for(milliseconds(500));
 
-        const std::lock_guard<std::mutex> _websocketppLock(websocketppRxLock);
+        const lock_guard<mutex> _websocketppLock(websocketppRxLock);
         if (!websocketppRxQueue.empty())
         {
             websocketppMessage = websocketppRxQueue.front();
@@ -105,7 +114,7 @@ void SocketServer::parseIncommingMessages()
         }
         else
         {
-            const std::lock_guard<std::mutex> _messageLock(messageLock);
+            const lock_guard<mutex> _messageLock(messageLock);
             SocketMessage newSocketMessage{
                 .UUID = "n/a",
                 .Message = "n/a"};
@@ -138,9 +147,9 @@ void SocketServer::sendIncorrectMessageFormat(string uuid)
 
 DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
 {
-    for (std::vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
+    for (vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
     {
-        if (i->UUID.find(uuid) != std::string::npos)
+        if (i->UUID.find(uuid) != string::npos)
         {
             return &(*i);
         }
