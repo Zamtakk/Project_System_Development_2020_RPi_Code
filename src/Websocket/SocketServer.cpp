@@ -117,7 +117,28 @@ void SocketServer::parseIncommingMessages()
     }
 }
 
-DeviceRegistration *SocketServer::getRegisteredDevice(std::string uuid)
+bool SocketServer::isMessageValid(string message)
+{
+    json jsonMessage = json::parse(message);
+
+    if (!jsonMessage.contains("UUID") || !jsonMessage.contains("Type") || !jsonMessage.contains("Commands"))
+        return false;
+    return true;
+}
+
+void SocketServer::sendDeviceNotRegistered(string uuid)
+{
+    SocketMessage newMessage{
+        .UUID = uuid,
+        .Message = "{\"error\":" + to_string(1) + ",\"description\":\"Device not registered!\"}"};
+    SendMessage(newMessage);
+}
+
+void SocketServer::sendIncorrectMessageFormat(string uuid)
+{
+}
+
+DeviceRegistration *SocketServer::getRegisteredDevice(string uuid)
 {
     for (std::vector<DeviceRegistration>::iterator i = registeredDevices.begin(); i < registeredDevices.end(); i++)
     {
