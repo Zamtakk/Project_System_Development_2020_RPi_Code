@@ -163,9 +163,12 @@ void SocketServer::parseIncommingMessages()
 */
 bool SocketServer::isMessageValid(string message)
 {
+    if (!json::accept(message))
+        return false;
+
     json jsonMessage = json::parse(message);
 
-    if (!jsonMessage.contains("UUID") || !jsonMessage.contains("Type") || !jsonMessage.contains("Commands"))
+    if (!jsonMessage.contains("UUID") || !jsonMessage.contains("Type") || !jsonMessage.contains("command"))
         return false;
     return true;
 }
