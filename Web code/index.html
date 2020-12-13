@@ -4,35 +4,130 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <p>Lamp bediening:</p>
-    <button type="button" class="collapsible">Schemerlamp</button>
-    <div class="content">
-        <div class="form-container">
-            <form>
-                <label for="texttosend">Stuur tekst naar Pi:</label><br>
-                <input type="text" id="texttosend" name="texttosend"><br>
-            </form> 
-        </div>
+    <div class="header">
+        <img src="Images/Logo.png" class="logo-img" alt="logo">
+        <span>Zorgcentrum "De blije vis"</span>
+    </div>
 
-        <div class="btn-container">
-            <button onclick=sendSocket()>Send</button>
-        </div>
-
-        <div class="lamp-switch">
-            <p>Zet lamp aan/uit:</p>
-            <label class="switchlamp">
-                <input type="checkbox">
-                <span class="slider round"></span>
-            </label>
-        </div>
-
-        <div class="lamp-dimmer">
-            <p>Dim het licht:</p>
-            <input type="range" min="1" max="100" value="50" class="dimmerslider" id="myRange">
+    <div class="notificationscolumn">
+        <div class="notificationscard">
+            <h1>Notificaties</h1>
         </div>
     </div>
 
-    <pre id="log"></pre> 
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <h1>Koelkast</h1>
+                <div class ="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+        
+                <div class="device-status">
+                    <p>Huidige status koelkast:</p>
+                    <p id="statusvalue"> status </p>
+                    <label class="switch">
+                        <input type="checkbox" id="switchstatus" onclick="setStatus()" >
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <h1>Schemerlamp</h1>
+            <div class ="icon">
+                <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+            </div>
+    
+            <div class="device-status">
+                <p>Zet lamp aan/uit:</p>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider round"></span>
+                </label>
+                <p>Dim het licht:</p>
+                <input type="range" min="1" max="100" value="50" class="dimmerslider" id="myRange">
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <h1>Deur</h1>
+            <div class ="icon">
+                <img src="Images/Door-icon.png" class="device-img" alt="door">
+            </div>
+    
+            <div class="device-status">
+                <p>Huidige status deur:</p>
+                <p id="doorstatusvalue"> status </p>
+                <p>Open/sluit deur:</p>
+                <label class="switch">
+                    <input type="checkbox" id="switchdoorstatus" onclick="setStatus()">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+          </div>
+        </div>
+    </div> 
+
+    <div class="row">
+        <div class="column">
+          <div class="card">
+            <h1>Stoel</h1>
+            <div class ="icon">
+                <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+            </div>
+    
+            <div class="device-status">
+                <p>Placeholder</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <h1>Bed</h1>
+            <div class ="icon">
+                <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+            </div>
+    
+            <div class="device-status">
+                <p>Placeholder</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="card">
+            <h1>Zuil</h1>
+            <div class ="icon">
+                <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+            </div>
+    
+            <div class="device-status">
+                <p>Placeholder</p>
+            </div>
+          </div>
+        </div>
+    </div> 
+
+    <div class="row">
+        <div class="column">
+          <div class="card">
+            <h1>Venster</h1>
+            <div class ="icon">
+                <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+            </div>
+    
+            <div class="device-status">
+                <p>Placeholder</p>
+            </div>
+          </div>
+        </div>
+    </div> 
     <script src="communication.js"></script> 
 </body>
 </html> 

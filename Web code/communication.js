@@ -1,18 +1,3 @@
-var coll = document.getElementsByClassName("collapsible");
-var i;
-
-for (i = 0; i < coll.length; i++) {
-  coll[i].addEventListener("click", function() {
-    this.classList.toggle("active");
-    var content = this.nextElementSibling;
-    if (content.style.display === "block") {
-      content.style.display = "none";
-    } else {
-      content.style.display = "block";
-    }
-  });
-}
-
 var pjsdvSocket = new WebSocket("wss://127.0.0.1:9002"); //change websocket address for address on the pi websocket server
 
 function log(logstr) {   
@@ -34,4 +19,20 @@ pjsdvSocket.onopen = function (event) {
 
 pjsdvSocket.onmessage = function (event) {
     log(event.data);
+}
+
+function setStatus() {
+	var toggleswitch = document.getElementById("switchstatus");
+	var doortoggleswitch = document.getElementById("switchdoorstatus");
+	if (toggleswitch.checked == true) {
+		document.getElementById("statusvalue").innerHTML = "open";
+	} else {
+		document.getElementById("statusvalue").innerHTML = "dicht";
+	}
+
+	if (doortoggleswitch.checked == true) {
+		document.getElementById("doorstatusvalue").innerHTML = "open";
+	} else {
+		document.getElementById("doorstatusvalue").innerHTML = "dicht";
+	}
 }
