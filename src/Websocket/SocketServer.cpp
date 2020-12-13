@@ -79,7 +79,7 @@ SocketServer::SocketServer()
     SetQueueAndLock(&websocketppRxQueue, &websocketppRxLock);
 
     websocketppThread = new thread(StartSocket);
-    processRxThread = new thread(&SocketServer::parseIncommingMessages, this);
+    processRxThread = new thread(&SocketServer::parseIncomingMessages, this);
 }
 
 /*!
@@ -94,7 +94,7 @@ SocketServer::~SocketServer()
 /*!
     @brief Checks all incoming messages from the websocket connection and handles them before potentially putting them in the queue for the main thread. Must be run in a seperate thread. Never returns!!
 */
-void SocketServer::parseIncommingMessages()
+void SocketServer::parseIncomingMessages()
 {
     WebsocketMessage websocketppMessage;
 

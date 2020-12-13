@@ -26,7 +26,7 @@ private:
     SocketServer();
     ~SocketServer();
 
-    void parseIncommingMessages();
+    void parseIncomingMessages();
     bool isDeviceRegistered(string uuid);
     bool isMessageValid(string message);
     void sendDeviceNotRegistered(WebsocketMessage websocketppMessage);
