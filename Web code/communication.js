@@ -1,24 +1,23 @@
-var pjsdvSocket = new WebSocket("wss://127.0.0.1:9002"); //change websocket address for address on the pi websocket server
+var pjsdvSocket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 
-function log(logstr) {   
-    document.getElementById("log").innerHTML +=logstr+"\n";
+function log(logstr) {
+	document.getElementById("log").innerHTML += logstr + "\n";
 }
 
-async function sendSocket() {
-    var msg = {
-        type: "message",
-        text: document.getElementById("texttosend").value
-    };
+async function sendSocketTest() {
+	var msg = document.getElementById("texttosend").value;
 
-    pjsdvSocket.send(JSON.stringify(msg));
+	pjsdvSocket.send(msg);
+
+	document.getElementById("texttosend").value = "";
 }
 
 pjsdvSocket.onopen = function (event) {
-    pjsdvSocket.send("Here's some text that the server is urgently awaiting!"); 
+	pjsdvSocket.send("Here's some text that the server is urgently awaiting!");
 };
 
 pjsdvSocket.onmessage = function (event) {
-    log(event.data);
+	log(event.data);
 }
 
 function setStatus() {
