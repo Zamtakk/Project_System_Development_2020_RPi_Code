@@ -3,7 +3,10 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/include/",
+                "${workspaceFolder}/headers/",
+                "${workspaceFolder}/headers/Websocket/",
+                "${workspaceFolder}/headers/Devices/"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/arm-linux-gnueabihf-g++-8",
