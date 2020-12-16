@@ -13,11 +13,11 @@ class Device
 public:
     Device(string uuid, string type, SocketServer *server);
     ~Device();
-    string getUUID();
-    string getType();
-    DeviceStatus getStatus();
-    virtual string getDeviceInfo() = 0;
-    virtual void handleMessage(string message) = 0;
+    string GetUUID();
+    string GetType();
+    DeviceStatus GetStatus();
+    virtual string GetDeviceInfo() = 0;
+    virtual void HandleMessage(string message) = 0;
 
 protected:
     string uuid;

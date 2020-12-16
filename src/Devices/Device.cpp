@@ -14,14 +14,14 @@ Device::~Device()
 {
 }
 
-string Device::getUUID(){
+string Device::GetUUID(){
     return uuid;
 }
 
-string Device::getType(){
+string Device::GetType(){
     return type;
 }
 
-DeviceStatus Device::getStatus(){
+DeviceStatus Device::GetStatus(){
     return status;
 }
