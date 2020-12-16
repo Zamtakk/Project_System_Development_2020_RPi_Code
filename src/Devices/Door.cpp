@@ -38,10 +38,11 @@ string Door::getDeviceInfo()
         {"Type", type},
         {"Status", status},
         {"aVariable", aVariable}};
-    
+
     return deviceInfo.dump();
 }
 
-void Door::handleMessage(string message){
+void Door::handleMessage(string message)
+{
     socketServer->SendMessage(uuid, message);
 }
