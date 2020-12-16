@@ -54,7 +54,7 @@ int main()
         }
         else
         {
-            devices.find(jsonMessage["UUID"])->second->handleMessage(message);
+            devices.find(jsonMessage["UUID"])->second->HandleMessage(message);
         }
     }
 }
