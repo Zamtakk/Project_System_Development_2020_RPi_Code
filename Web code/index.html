@@ -29,8 +29,9 @@
                 <div class="device-status">
                     <p>Huidige status koelkast:</p>
                     <p id="statusvalue"> status </p>
-                    <label class="switch">
-                        <input type="checkbox" id="switchstatus" onclick="setStatus()">
+                    <label class="switch">'
+                        <!-- The onclick parameters are for testing/demo purposes only -->
+                        <input type="checkbox" id="switchstatus" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -47,7 +48,8 @@
                 <div class="device-status">
                     <p>Zet lamp aan/uit:</p>
                     <label class="switch">
-                        <input type="checkbox">
+                        <!-- The onclick parameters are for testing/demo purposes only -->
+                        <input type="checkbox" onclick="sendSocket('sometext')">
                         <span class="slider round"></span>
                     </label>
                     <p>Dim het licht:</p>
@@ -127,18 +129,6 @@
 
                 <div class="device-status">
                     <p>Placeholder</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="column">
-            <div class="card">
-                <h1>Testfield</h1>
-
-                <div class="device-status">
-                    <label for="texttosend">Send text to Pi SocketServer:</label><br>
-                    <input type="text" id="texttosend" name="texttosend"><br>
-                    <input type="submit" value="Submit" onclick="sendSocketTest()">
                 </div>
             </div>
         </div>
