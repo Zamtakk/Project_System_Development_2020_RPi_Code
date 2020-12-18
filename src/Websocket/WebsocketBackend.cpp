@@ -37,8 +37,7 @@ void StartSocket()
     try
     {
         // Set logging settings
-        Server.set_access_channels(websocketpp::log::alevel::all);
-        Server.clear_access_channels(websocketpp::log::alevel::frame_payload);
+        Server.clear_access_channels(websocketpp::log::alevel::all);
 
         // Initialize Asio
         Server.init_asio();
