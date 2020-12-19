@@ -6,6 +6,8 @@
 
 using json = nlohmann::json;
 
+using std::cout;
+using std::endl;
 using std::lock_guard;
 using std::mutex;
 using std::string;
@@ -101,7 +103,7 @@ void SocketServer::parseIncomingMessages()
     while (1)
     {
         // Wait before parsing a new message to not overload the system
-        sleep_for(milliseconds(250));
+        sleep_for(milliseconds(50));
 
         // Aquire lock and get a new message if one is available
         const lock_guard<mutex> _websocketppLock(websocketppRxLock);
@@ -124,6 +126,9 @@ void SocketServer::parseIncomingMessages()
             continue;
         }
 
+        //Display incoming message
+        cout << "[Socket Server] " << "New message: " << websocketppMessage.MessagePointer->get_payload() << endl;
+
         // Parse the message for easy use
         json jsonMessage = json::parse(websocketppMessage.MessagePointer->get_payload());
 
@@ -141,18 +146,34 @@ void SocketServer::parseIncomingMessages()
                 continue;
             }
         }
-
-        // Handle message
-        if (jsonMessage["command"] == HEARTBEAT)
+        // If a device is registered but a new one comes in, delete the old registration.
+        else if (jsonMessage["command"] == REGISTRATION)
         {
+            cout << "[Socket Server] " << "New registration for existing device received." << endl;
+            for (std::vector<DeviceRegistration>::iterator it = registeredDevices.begin(); it != registeredDevices.end(); it++)
+            {
+                if (it->UUID.compare(jsonMessage["UUID"]) == 0)
+                {
+                    registeredDevices.erase(it);
+                    break;
+                }
+            }
+            cout << "[Socket Server] " << "Old registration removed!" << endl;
+            registerDevice(websocketppMessage);
+            continue;
+        }
+        else if (jsonMessage["command"] == HEARTBEAT)
+        {
+            cout << "[Socket Server] " << "Heartbeat received!" << endl;
+            cout << "[Socket Server] " << "The heartbeat function is not yet implemented..." << endl;
             // Todo: implement heartbeat system
+            continue;
         }
-        else
-        {
-            const lock_guard<mutex> _messageLock(messageLock);
-            messageQueue.push(websocketppMessage.MessagePointer->get_payload());
-            _messageLock.~lock_guard();
-        }
+
+        // Pass the message on to the main.
+        const lock_guard<mutex> _messageLock(messageLock);
+        messageQueue.push(websocketppMessage.MessagePointer->get_payload());
+        _messageLock.~lock_guard();
     }
 }
 
@@ -241,4 +262,6 @@ void SocketServer::registerDevice(WebsocketMessage websocketppMessage)
         .MessagePointer = websocketppMessage.MessagePointer};
 
     registeredDevices.push_back(newDevice);
+
+    cout << "[Socket Server] " << "New device registered with UUID: " << jsonMessage["UUID"] << endl;
 }
