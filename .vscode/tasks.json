@@ -33,6 +33,7 @@
 				"pi@${env:RPI_ADDRESS}:/var/www/pjsdvgroup13.com/public_html/",
 			],
 			"presentation": {
+				"clear": true,
 				"group": "default"
 			}
 		},
@@ -54,7 +55,8 @@
 				"now"
 			],
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		},
 		{ //=============================================== Shutdown Pi
@@ -75,7 +77,8 @@
 				"now"
 			],
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		},
 		{ //=============================================== clean
@@ -95,7 +98,8 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		}, //=============================================== build
 		{
@@ -190,8 +194,7 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"reveal": "never",
-				"clear": true
+				"group": "default"
 			}
 		}, //=============================================== debug
 		{
