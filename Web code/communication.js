@@ -44,3 +44,7 @@ socket.onopen = function (event) {
 socket.onmessage = function (event) {
 	log(event.data);
 }
+
+async function sendString() {
+	socket.send(document.getElementById("demoinput").value);
+}
