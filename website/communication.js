@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 
 /*!
 	@brief Log a string to the notifications screen
