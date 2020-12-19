@@ -17,6 +17,24 @@
 				"clear": true,
 				"group": "default"
 			}
+		}, //=============================================== Sync webserver
+		{
+			"label": "upload",
+			"options": {
+				"statusbar": {
+					"label": "$(sync) Sync Website"
+				}
+			},
+			"type": "shell",
+			"command": "rsync",
+			"args": [
+				"-avzP",
+				"./website/*",
+				"pi@${env:RPI_ADDRESS}:/var/www/pjsdvgroup13.com/public_html/",
+			],
+			"presentation": {
+				"group": "default"
+			}
 		},
 		{ //=============================================== Reboot
 			"label": "reboot",
