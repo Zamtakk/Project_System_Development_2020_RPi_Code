@@ -16,6 +16,7 @@ using std::endl;
 using std::map;
 using std::pair;
 using std::string;
+using std::to_string;
 using std::vector;
 using std::chrono::milliseconds;
 using std::this_thread::sleep_for;
@@ -54,7 +55,14 @@ int main()
         }
         else
         {
-            devices.find(jsonMessage["UUID"])->second->HandleMessage(message);
+            if (devices.count(jsonMessage["UUID"]) != 0)
+            {
+                devices.find(jsonMessage["UUID"])->second->HandleMessage(message);
+            }
+            else
+            {
+                Socket->SendMessage(jsonMessage["UUID"], "{\"error\":" + to_string(NOT_REGISTERED) + ",\"description\":\"Device object was not yet created!\"}");
+            }
         }
     }
 }

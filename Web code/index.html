@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <img src="Images/Logo.png" class="logo-img" alt="logo">
+        <span>Zorgcentrum "De blije vis"</span>
+    </div>
+
+    <div class="notificationscolumn">
+        <div class="notificationscard">
+            <h1>Notificaties</h1>
+            <p id="log"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <h1>Koelkast</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Huidige status koelkast:</p>
+                    <p id="statusvalue"> status </p>
+                    <label class="switch">'
+                        <!-- The onclick parameters are for testing/demo purposes only -->
+                        <input type="checkbox" id="switchstatus" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <h1>Schemerlamp</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Zet lamp aan/uit:</p>
+                    <label class="switch">
+                        <!-- The onclick parameters are for testing/demo purposes only -->
+                        <input type="checkbox" onclick="sendSocket('sometext')">
+                        <span class="slider round"></span>
+                    </label>
+                    <p>Dim het licht:</p>
+                    <input type="range" min="1" max="100" value="50" class="dimmerslider" id="myRange">
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <h1>Deur</h1>
+                <div class="icon">
+                    <img src="Images/Door-icon.png" class="device-img" alt="door">
+                </div>
+
+                <div class="device-status">
+                    <p>Huidige status deur:</p>
+                    <p id="doorstatusvalue"> status </p>
+                    <p>Open/sluit deur:</p>
+                    <label class="switch">
+                        <input type="checkbox" id="switchdoorstatus" onclick="setStatus()">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <h1>Stoel</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Placeholder</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <h1>Bed</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Placeholder</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <h1>Zuil</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Placeholder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <h1>Venster</h1>
+                <div class="icon">
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <div class="device-status">
+                    <p>Placeholder</p>
+                </div>
+            </div>
+        </div>
+        <div class="column">
+            <div class="card">
+                <h1>Demo field</h1>
+                <div class="device-status">
+                    <label for="demoinput">String to send:</label><br>
+                    <input type="text" id="demoinput" name="demoinput"><br>
+                    <input type="submit" value="Submit" onclick="sendString()">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="communication.js"></script>
+</body>
+
+</html>
