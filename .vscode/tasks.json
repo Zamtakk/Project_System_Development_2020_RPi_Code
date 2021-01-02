@@ -22,7 +22,7 @@
 			"label": "upload",
 			"options": {
 				"statusbar": {
-					"label": "$(sync) Sync Website"
+					"label": "$(sync) Sync"
 				}
 			},
 			"type": "shell",
@@ -41,7 +41,7 @@
 			"label": "reboot",
 			"options": {
 				"statusbar": {
-					"label": "$(debug-restart) Reboot Pi"
+					"label": "$(debug-restart) Pi"
 				}
 			},
 			"type": "shell",
@@ -63,7 +63,7 @@
 			"label": "shutdown",
 			"options": {
 				"statusbar": {
-					"label": "$(zap) Shutdown Pi"
+					"label": "$(zap) Pi"
 				}
 			},
 			"type": "shell",
@@ -171,7 +171,7 @@
 			"label": "Kill remote",
 			"options": {
 				"statusbar": {
-					"label": "$(remove-close) Kill remote"
+					"label": "$(remove-close) Kill"
 				}
 			},
 			"type": "shell",
@@ -201,7 +201,7 @@
 			"label": "debug",
 			"options": {
 				"statusbar": {
-					"label": "$(debug) Start remote"
+					"label": "$(debug) Start"
 				}
 			},
 			"dependsOn": [
