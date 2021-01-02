@@ -21,29 +21,38 @@
     <div class="row">
         <div class="column">
             <div class="card">
-                <h1>Koelkast</h1>
                 <div class="icon">
+                    <span class="helper"></span>
                     <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
                 </div>
 
+                <h1>Koelkast</h1>
+
                 <div class="device-status">
-                    <p>Huidige status koelkast:</p>
-                    <p id="statusvalue"> status </p>
-                    <label class="switch">'
-                        <!-- The onclick parameters are for testing/demo purposes only -->
+                    <p>Huidige status: </p>
+                    <p>Aan/uit: </p>
+                    <p>Dim niveau: </p>
+                    <p>Laatste beweging: </p>
+                </div>
+                <div class="device-values">
+                    <P>Connected</P>
+                    <label class="switch">
                         <input type="checkbox" id="switchstatus" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
                         <span class="slider round"></span>
                     </label>
+                    <input type="range" min="1" max="100" value="50" class="dimmerslider" id="myRange">
+                    <p>2 min geleden</p>
                 </div>
             </div>
         </div>
 
         <div class="column">
             <div class="card">
-                <h1>Schemerlamp</h1>
                 <div class="icon">
+                    <span class="helper"></span>
                     <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
                 </div>
+                <h1>Schemerlamp</h1>
 
                 <div class="device-status">
                     <p>Zet lamp aan/uit:</p>
@@ -60,10 +69,12 @@
 
         <div class="column">
             <div class="card">
-                <h1>Deur</h1>
                 <div class="icon">
+                    <span class="helper"></span>
                     <img src="Images/Door-icon.png" class="device-img" alt="door">
                 </div>
+
+                <h1>Deur</h1>
 
                 <div class="device-status">
                     <p>Huidige status deur:</p>
@@ -81,10 +92,12 @@
     <div class="row">
         <div class="column">
             <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
                 <h1>Stoel</h1>
-                <div class="icon">
-                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
-                </div>
 
                 <div class="device-status">
                     <p>Placeholder</p>
@@ -94,10 +107,12 @@
 
         <div class="column">
             <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
                 <h1>Bed</h1>
-                <div class="icon">
-                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
-                </div>
 
                 <div class="device-status">
                     <p>Placeholder</p>
@@ -107,10 +122,12 @@
 
         <div class="column">
             <div class="card">
-                <h1>Zuil</h1>
                 <div class="icon">
+                    <span class="helper"></span>
                     <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
                 </div>
+
+                <h1>Zuil</h1>
 
                 <div class="device-status">
                     <p>Placeholder</p>
@@ -122,10 +139,12 @@
     <div class="row">
         <div class="column">
             <div class="card">
-                <h1>Venster</h1>
                 <div class="icon">
+                    <span class="helper"></span>
                     <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
                 </div>
+
+                <h1>Venster</h1>
 
                 <div class="device-status">
                     <p>Placeholder</p>
