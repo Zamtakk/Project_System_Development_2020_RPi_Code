@@ -22,7 +22,7 @@ async function sendSocket(UUID, type, command, value) {
 		command: command,
 		value: value
 	};
-	socket.send(JSON.stringify(msg, null, 2));
+	socket.send(JSON.stringify(msg));
 }
 
 /*!
@@ -35,7 +35,7 @@ socket.onopen = function (event) {
 		command: 1001,
 		value: ""
 	}
-	socket.send(JSON.stringify(registration, null, 2));
+	socket.send(JSON.stringify(registration));
 };
 
 /*!
