@@ -3,13 +3,15 @@
         "UUID": "0123456789",
         "Type": "Door",
         "command": 1,
-        "value": "open"
+        "value": "open",
+        "UserID": "Hank"
     },
     {
         "UUID": "0123456789",
         "Type": "Website",
         "command": 0,
-        "value": ""
+        "value": "",
+        "UserID": "Security"
     },
     {
         "UUID": "0123456789",
@@ -34,6 +36,7 @@
                 "Button": "N/A",
                 "Light": "N/A"
             }
-        ]
+        ],
+        "UserID": "Hank"
     }
 ]

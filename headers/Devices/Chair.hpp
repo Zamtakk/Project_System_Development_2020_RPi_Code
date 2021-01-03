@@ -19,10 +19,10 @@ public:
     bool IsVibratorOn();
 
 private:
-    void pressureSensorChange(int pressureValue);
-    void buttonPressed(bool buttonPressed);
-    bool ledStateOn(bool stateOn);
-    bool vibratorStateOn(bool stateOn);
+    void PressureSensorChange();
+    void ButtonPressed();
+    bool LedStateOn();
+    bool VibratorStateOn();
     bool ledState;
     bool vibratorState;
     bool buttonPressed;
