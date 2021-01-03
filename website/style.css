@@ -8,11 +8,16 @@ body {
 }
 
 .header {
-  height: 51px;
-  width: 100%;
+  margin-left: -8px;
+  margin-top: -8px;
+  padding: 4px;
+  padding-left: 10px;
+  height: 59px;
+  width: 1920px;
   background-color: #0066cb;
   text-align: left;
   font-size: 30px;
+  box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.6); /* this adds the "card" effect */
 }
 
 .logo-img {
@@ -21,19 +26,22 @@ body {
   vertical-align: middle;
 }
 
+.title {
+  color: white;
+}
+
 /* Right most colum for notifications */
 .notificationscolumn {
   float: right;
-  width: 25%;
-  height: 600px;
-  padding: 0 10px;
+  width: 460px;
+  height: 861px;
   padding-top: 10px;
   display: inline-table;
 }
 
 .notificationscard {
-  height: 590px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  height: 861px;
+  box-shadow: 4px 4px 6px 0 rgba(0, 0, 0, 0.5); /* this adds the "card" effect */
   padding: 16px;
   text-align: center;
   background-color: #c9c9c9;
@@ -43,7 +51,7 @@ body {
 .row {
   margin: 0 -5px;
   height: 290px;
-  width: 75%;
+  width: 1428px;
 }
 /* Clear floats after the columns */
 .row:after {
@@ -63,7 +71,7 @@ body {
 
 /* Style the counter cards */
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2); /* this adds the "card" effect */
+  box-shadow: 2px 4px 6px 0 rgba(0, 0, 0, 0.5); /* this adds the "card" effect */
   padding: 16px;
   height: 100%;
   text-align: center;
@@ -91,15 +99,32 @@ body {
 }
 
 h1 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   margin-top: 10px;
 }
 
 p {
-  margin-top: 15px;
-  margin-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 10px;
   height: 22px;
   font-size: 14pt;
+}
+
+.normal_text {
+  font-size: 14pt;
+}
+
+.slider_text {
+  font-size: 12pt;
+  font-weight: bold;
+}
+
+.slider_whitespace {
+  font-size: 0pt;
+}
+
+.status {
+  color: red;
 }
 
 .device-status {
@@ -113,7 +138,7 @@ p {
 }
 .device-values {
   /* vertical-align: top; */
-  width: 123px;
+  width: 119px;
   /* align-content: left; */
   /* display: inline-block; */
   text-align: right;
@@ -123,12 +148,12 @@ p {
 
 .dimmerslider {
   margin: 0px;
-  margin-top: 18px;
+  margin-top: 5px;
+  margin-bottom: 11px;
   width: 100%;
-  /* height: 20px; */
 }
 
-/* Responsive columns - one column layout (vertical) on small screens */
+/* Responsive columns - one column layout (vertical) on small screens
 @media screen and (max-width: 600px) {
   .column {
     width: 80%;
@@ -142,13 +167,13 @@ p {
     display: block;
     margin-bottom: 20px;
   }
-}
+} */
 
 /* The switch - the box around the slider */
 .switch {
   position: relative;
   display: inline-block;
-  margin-top: 15px;
+  margin-bottom: 10px;
   width: 44px;
   height: 22px;
 }
