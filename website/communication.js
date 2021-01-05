@@ -75,7 +75,7 @@ socket.onmessage = function (event) {
 */
 async function updateDeviceInformation(deviceInformation) {
 	console.log(deviceInformation);
-	for (var i; i < deviceInformation["value"].length; i++) {
+	for (var i = 0; i < deviceInformation["value"].length; i++) {
 		switch (deviceInformation["value"][i]["Type"]) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
