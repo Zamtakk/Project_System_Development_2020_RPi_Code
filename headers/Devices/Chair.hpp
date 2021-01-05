@@ -11,7 +11,7 @@ using std::string;
 class Chair : public Device
 {
 public:
-    Chair(string uuid, string type, SocketServer *server);
+    Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
     ~Chair();
     string GetDeviceInfo();
     void HandleMessage(string message);

@@ -14,7 +14,7 @@ using std::string;
     @param[in] 
     @return 
 */
-ExampleDevice::ExampleDevice(string uuid, string type, SocketServer *server) : Device(uuid, type, server), aVariable(false)
+ExampleDevice::ExampleDevice(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), aVariable(false)
 {
 }
 
