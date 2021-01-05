@@ -29,80 +29,101 @@ async function sendSocket(type, command) {
 				value = 0;
 			}
 		}
-			msg = {
-				UUID: document.getElementById("chair_uuid").innerHTML,
-				Type: type,
-				command: command,
-				value: value
-			};
-		}
-		socket.send(JSON.stringify(msg));
+		msg = {
+			UUID: document.getElementById("chair_uuid").innerHTML,
+			Type: type,
+			command: command,
+			value: value
+		};
+	}
+	socket.send(JSON.stringify(msg));
+}
+
+/*!
+	@brief Send registration message when the connection with server gets established
+*/
+socket.onopen = function (event) {
+	var registration = {
+		UUID: "0000000001",
+		Type: "Website",
+		command: 1001,
+		value: ""
+	}
+	socket.send(JSON.stringify(registration));
+};
+
+/*!
+	@brief Trigger an event when receiving a message
+*/
+socket.onmessage = function (event) {
+	var jsonMessage = JSON.parse(event.data);
+	if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == 4000) {
+		document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
+	}
+	else if (jsonMessage["command"] == 4100) {
+		updateDeviceInformation(jsonMessage);
 	}
 
-	/*!
-		@brief Send registration message when the connection with server gets established
-	*/
-	socket.onopen = function (event) {
-		var registration = {
-			UUID: "0000000001",
-			Type: "Website",
-			command: 1001,
-			value: ""
-		}
-		socket.send(JSON.stringify(registration));
-	};
+	if (jsonMessage["command"] < 4000) {
+		log(event.data);
+	}
+}
 
-	/*!
-		@brief Trigger an event when receiving a message
-	*/
-	socket.onmessage = function (event) {
-		console.log(event.data);
-		var jsonMessage = JSON.parse(event.data);
-		if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == 4000) {
-			document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
-		}
-		else if (jsonMessage["command"] == 4100) {
-			updateDeviceInformation(jsonMessage);
-		}
-
-		if (jsonMessage["command"] < 4000) {
-			log(event.data);
+/*!
+	@brief Function to handle incoming messages containing the device information
+	@param[in] JSON message with the device information as value
+*/
+async function updateDeviceInformation(deviceInformation) {
+	console.log(deviceInformation);
+	for (var i; i < deviceInformation["value"].length; i++) {
+		switch (deviceInformation["value"][i]["Type"]) {
+			case "Fridge":
+				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("fridge_status").innerHTML = "connected";
+				break;
+			case "Lamp":
+				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("lamp_status").innerHTML = "connected";
+				break;
+			case "Door":
+				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("door_status").innerHTML = "connected";
+				break;
+			case "Chair":
+				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("chair_status").innerHTML = "connected";
+				break;
+			case "Bed":
+				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("bed_status").innerHTML = "connected";
+				break;
+			case "Column":
+				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("column_status").innerHTML = "connected";
+				break;
+			case "Wall":
+				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("wall_status").innerHTML = "connected";
+				break;
+			case "Simulation":
+				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("simulation_status").innerHTML = "connected";
+				break;
+			case "WIB":
+				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+				if (deviceInformation["value"][0]["Status"] == 2000)
+					document.getElementById("wib_status").innerHTML = "connected";
+				break;
+			default:
+				break;
 		}
 	}
-
-	async function sendString() {
-		socket.send(document.getElementById("demoinput").value);
-	}
-
-	async function updateDeviceInformation(deviceInformation) {
-		console.log(deviceInformation);
-		if (deviceInformation["value"][0]["Type"] == "Fridge") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Lamp") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Door") {
-			
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Chair") {
-			document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
-			if (deviceInformation["value"][0]["Status"] == 2000)
-				document.getElementById("chair_status").innerHTML = "connected";
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Bed") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Column") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Wall") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "Simulation") {
-
-		}
-		else if (deviceInformation["value"][0]["Type"] == "WIB") {
-
-		}
-	}
+}

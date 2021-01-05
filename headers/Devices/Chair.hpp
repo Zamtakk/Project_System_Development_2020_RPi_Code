@@ -25,7 +25,7 @@ private:
     bool VibratorStateOn();
     bool vibratorState;
     bool buttonPressed;
-    int  pressureValue;
+    int pressureValue;
 };
 
 #endif

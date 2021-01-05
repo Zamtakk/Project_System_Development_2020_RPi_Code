@@ -7,11 +7,11 @@
 
 using json = nlohmann::json;
 
-using std::string;
-using std::stoi;
-using std::to_string;
 using std::cout;
 using std::endl;
+using std::stoi;
+using std::string;
+using std::to_string;
 
 /*!
     @brief Constructor for the Chair object
@@ -54,10 +54,12 @@ string Chair::GetDeviceInfo()
 void Chair::HandleMessage(string message)
 {
 	json jsonMessage = json::parse(message);
-	if(jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE) {
+	if (jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE)
+	{
 		PressureSensorChange(message);
 	}
-	else if(jsonMessage["command"] == CHAIR_BUTTON_CHANGE) {
+	else if (jsonMessage["command"] == CHAIR_BUTTON_CHANGE)
+	{
 		ButtonPressed(message);
 	}
 	socketServer->SendMessage(uuid, message);
@@ -82,7 +84,7 @@ void Chair::PressureSensorChange(string message)
 	//TODO: use vector with devices in stead of hardcoded website uuid
 	socketServer->SendMessage("0000000001", message);
 	string value = jsonMessage["value"];
-	pressureValue = stoi(value,nullptr,10);
+	pressureValue = stoi(value, nullptr, 10);
 }
 
 /*!
