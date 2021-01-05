@@ -35,8 +35,9 @@ async function sendSocket(type, command) {
 			command: command,
 			value: value
 		};
+		socket.send(JSON.stringify(msg));
 	}
-	socket.send(JSON.stringify(msg));
+	
 }
 
 /*!

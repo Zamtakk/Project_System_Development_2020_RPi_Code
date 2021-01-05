@@ -9,7 +9,6 @@ using json = nlohmann::json;
 
 using std::cout;
 using std::endl;
-using std::stoi;
 using std::string;
 using std::to_string;
 
@@ -80,11 +79,10 @@ bool Chair::IsVibratorOn()
 */
 void Chair::PressureSensorChange(string message)
 {
-	json jsonMessage = json::parse(message);
 	//TODO: use vector with devices in stead of hardcoded website uuid
 	socketServer->SendMessage("0000000001", message);
-	string value = jsonMessage["value"];
-	pressureValue = stoi(value, nullptr, 10);
+	json jsonMessage = json::parse(message);
+	pressureValue = jsonMessage["value"];
 }
 
 /*!
