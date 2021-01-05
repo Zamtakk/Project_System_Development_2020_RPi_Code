@@ -1,7 +1,6 @@
 #include "Websocket/SocketServer.hpp"
 #include "Devices/Device.hpp"
 #include "Devices/ExampleDevice.hpp"
-#include "Devices/DeviceTypes.hpp"
 #include "Devices/Chair.hpp"
 #include "Devices/Website.hpp"
 
@@ -28,9 +27,6 @@ int main()
     SocketServer *Socket = SocketServer::Instance();
     string message;
     map<string, Device *> devices;
-    vector<ExampleDevice *> exampleDevices;
-    vector<Chair *> chairs;
-    vector<Website *> website;
 
     while (true)
     {
@@ -48,30 +44,27 @@ int main()
         {
             string newUUID, newType;
 
-            if (jsonMessage["Type"] == EXAMPLEDEVICE)
+            if (jsonMessage["Type"] == "ExampleDevice")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
-                exampleDevices.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
-            else if (jsonMessage["Type"] == CHAIR)
+            else if (jsonMessage["Type"] == "Chair")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Chair *newDevice = new Chair(newUUID, newType, Socket);
-                chairs.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
-            else if (jsonMessage["Type"] == WEBSITE)
+            else if (jsonMessage["Type"] == "Website")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Website *newDevice = new Website(newUUID, newType, Socket);
-                website.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
-                
+        
                 map<string, Device *>::iterator it = devices.begin();
 
                 while(it != devices.end()) {
