@@ -19,8 +19,8 @@ public:
     bool IsVibratorOn();
 
 private:
-    void PressureSensorChange(string message);
-    void ButtonPressed(string message);
+    void PressureSensorChange(int pressureValue);
+    void ButtonPressed(bool buttonPressed);
     void LedStateOn(bool stateOn);
     void VibratorStateOn(bool stateOn);
     bool vibratorState;

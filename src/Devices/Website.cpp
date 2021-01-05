@@ -9,8 +9,10 @@ using json = nlohmann::json;
 
 using std::string;
 
+//TODO: website implementation, doesn't do anything yet except for being created in main
+
 /*!
-    @brief 
+    @brief Temporary, needs implementation
     @param[in] 
     @return 
 */
@@ -19,7 +21,7 @@ Website::Website(string uuid, string type, SocketServer *server) : Device(uuid, 
 }
 
 /*!
-    @brief 
+    @brief Temporary, needs implementation
     @param[in] 
     @return 
 */
@@ -28,7 +30,7 @@ Website::~Website()
 }
 
 /*!
-    @brief Packs all device variables in a JSON object.
+    @brief Packs all device variables in a JSON object, no variables implemented
     @return Returns a JSON string with all device info.
 */
 string Website::GetDeviceInfo()
@@ -41,6 +43,11 @@ string Website::GetDeviceInfo()
     return deviceInfo.dump();
 }
 
+/*!
+    @brief Temporary, needs implementation
+    @param[in] 
+    @return 
+*/
 void Website::HandleMessage(string message)
 {
     socketServer->SendMessage(uuid, message);

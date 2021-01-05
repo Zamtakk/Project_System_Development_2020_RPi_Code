@@ -56,11 +56,11 @@ void Chair::HandleMessage(string message)
 	json jsonMessage = json::parse(message);
 	if (jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE)
 	{
-		PressureSensorChange(message);
+		PressureSensorChange(jsonMessage["value"]);
 	}
 	else if (jsonMessage["command"] == CHAIR_BUTTON_CHANGE)
 	{
-		ButtonPressed(message);
+		ButtonPressed(jsonMessage["value"]);
 	}
 	socketServer->SendMessage(uuid, message);
 }
@@ -76,34 +76,33 @@ bool Chair::IsVibratorOn()
 
 /*!
     @brief Function to handle incoming messages concerning changes in the pressure sensor.
-    @param[in] message The JSON message in string format.
+    @param[in] pressureValueReceived The pressure value in the message.
 */
-void Chair::PressureSensorChange(string message)
+void Chair::PressureSensorChange(int pressureValueReceived)
 {
 	//TODO: use vector with devices in stead of hardcoded website uuid
-	socketServer->SendMessage("0000000001", message);
-	json jsonMessage = json::parse(message);
-	pressureValue = jsonMessage["value"];
+	string sendmessage = "{\"UUID\":\"0000000001\",\"Type\":\"" + type + "\",\"command\":" + to_string(CHAIR_FORCESENSOR_CHANGE) + ",\"value\":" + to_string(pressureValueReceived) + "}";
+	socketServer->SendMessage("0000000001", sendmessage);
+	pressureValue = pressureValueReceived;
 }
 
 /*!
     @brief Function to handle incoming messages when the button is pressed or released
-    @param[in] message The JSON message in string format.
+    @param[in] buttonPressed Boolean on whether button is pressed
 */
-void Chair::ButtonPressed(string message)
+void Chair::ButtonPressed(bool buttonPressed)
 {
-	json jsonMessage = json::parse(message);
-	if (jsonMessage["value"] == 0)
-	{
-		buttonPressed = false;
-		LedStateOn(false);
-		VibratorStateOn(false);
-	}
-	else if (jsonMessage["value"] == 1)
+	if (buttonPressed)
 	{
 		buttonPressed = true;
 		LedStateOn(true);
 		VibratorStateOn(true);
+	}
+	else
+	{
+		buttonPressed = false;
+		LedStateOn(false);
+		VibratorStateOn(false);
 	}
 }
 
@@ -115,13 +114,13 @@ void Chair::LedStateOn(bool stateOn)
 {
 	if (stateOn)
 	{
-		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":4002,\"value\": \"1\"}";
+		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":" + to_string(CHAIR_LED_CHANGE) + ",\"value\": \"1\"}";
 		socketServer->SendMessage(uuid, sendmessage);
 		ledState = true;
 	}
 	else
 	{
-		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\": 4002, \"value\": \"0\"}";
+		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\":" + to_string(CHAIR_LED_CHANGE) + ", \"value\": \"0\"}";
 		socketServer->SendMessage(uuid, sendmessage);
 		ledState = false;
 	}
@@ -135,13 +134,13 @@ void Chair::VibratorStateOn(bool stateOn)
 {
 	if (stateOn)
 	{
-		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":4003,\"value\": \"1\"}";
+		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":" + to_string(CHAIR_VIBRATOR_CHANGE) + ",\"value\": \"1\"}";
 		socketServer->SendMessage(uuid, sendmessage);
 		vibratorState = true;
 	}
 	else
 	{
-		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\": 4003, \"value\": \"0\"}";
+		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\":" + to_string(CHAIR_VIBRATOR_CHANGE) + ", \"value\": \"0\"}";
 		socketServer->SendMessage(uuid, sendmessage);
 		vibratorState = false;
 	}
