@@ -1,7 +1,6 @@
 #include "Websocket/SocketServer.hpp"
 #include "Devices/Device.hpp"
 #include "Devices/ExampleDevice.hpp"
-#include "Devices/DeviceTypes.hpp"
 
 #include "json.hpp"
 
@@ -26,7 +25,6 @@ int main()
     SocketServer *Socket = SocketServer::Instance();
     string message;
     map<string, Device *> devices;
-    vector<ExampleDevice *> exampleDevices;
 
     while (true)
     {
@@ -44,12 +42,11 @@ int main()
         {
             string newUUID, newType;
 
-            if (jsonMessage["Type"] == EXAMPLEDEVICE)
+            if (jsonMessage["Type"] == "ExampleDevice")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
-                exampleDevices.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
         }
