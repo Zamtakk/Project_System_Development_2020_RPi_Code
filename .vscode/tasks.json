@@ -17,12 +17,31 @@
 				"clear": true,
 				"group": "default"
 			}
+		}, //=============================================== Sync webserver
+		{
+			"label": "upload",
+			"options": {
+				"statusbar": {
+					"label": "$(sync) Sync"
+				}
+			},
+			"type": "shell",
+			"command": "rsync",
+			"args": [
+				"-avzP",
+				"./website/*",
+				"pi@${env:RPI_ADDRESS}:/var/www/pjsdvgroup13.com/public_html/",
+			],
+			"presentation": {
+				"clear": true,
+				"group": "default"
+			}
 		},
 		{ //=============================================== Reboot
 			"label": "reboot",
 			"options": {
 				"statusbar": {
-					"label": "$(debug-restart) Reboot Pi"
+					"label": "$(debug-restart) Pi"
 				}
 			},
 			"type": "shell",
@@ -36,14 +55,15 @@
 				"now"
 			],
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		},
 		{ //=============================================== Shutdown Pi
 			"label": "shutdown",
 			"options": {
 				"statusbar": {
-					"label": "$(zap) Shutdown Pi"
+					"label": "$(zap) Pi"
 				}
 			},
 			"type": "shell",
@@ -57,7 +77,8 @@
 				"now"
 			],
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		},
 		{ //=============================================== clean
@@ -77,7 +98,8 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"clear": true
+				"clear": true,
+				"group": "default"
 			}
 		}, //=============================================== build
 		{
@@ -149,7 +171,7 @@
 			"label": "Kill remote",
 			"options": {
 				"statusbar": {
-					"label": "$(remove-close) Kill remote"
+					"label": "$(remove-close) Kill"
 				}
 			},
 			"type": "shell",
@@ -172,15 +194,14 @@
 				"isDefault": true
 			},
 			"presentation": {
-				"reveal": "never",
-				"clear": true
+				"group": "default"
 			}
 		}, //=============================================== debug
 		{
 			"label": "debug",
 			"options": {
 				"statusbar": {
-					"label": "$(debug) Start remote"
+					"label": "$(debug) Start"
 				}
 			},
 			"dependsOn": [

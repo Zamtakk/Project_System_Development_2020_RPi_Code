@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="header">
+        <img src="Images/Logo.png" class="logo-img" alt="logo">
+        <span class="title">Care Center "The Happy Fish"</span>
+    </div>
+
+    <div class="notificationscolumn">
+        <div class="notificationscard">
+            <h1>Notifications</h1>
+            <p id="log"></p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Fridge-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Fridge</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Temperature:</p>
+                    <span class="slider_whitespace">_</span>
+                    <p>Times opened today:</p>
+                </div>
+                <div class="device-values">
+                    <p id="fridge_uuid">0123456789</p>
+                    <p id="fridge_status" class="status">Disconnected</p>
+                    <span class="slider_text">Set:</span><span id="fridge_set_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
+                    <span class="slider_text">‏‏‎ ‎‏‏‎ ‏‏‎ ‏‏‎‎‎‎‏‏‎</span>
+                    <span id="fridge_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
+                    <input id="fridge_temperature_slider" type="range" min="1" max="20" value="11" class="dimmerslider">
+                    <p id="fridge_opened">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Lamp-icon.png" class="device-img" alt="fridge">
+                </div>
+                
+                <h1>Lamp</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Off/On:</p>
+                    <p>Dim level:</p>
+                    <p>Last movement:</p>
+                </div>
+                <div class="device-values">
+                    <p id="lamp_uuid">0123456789</p>
+                    <p id="lamp_status" class="status">Disconnected</p>
+                    <label class="switch">
+                        <input type="checkbox" id="lamp_onoff_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                    <input id="lamp_dimlevel_slider" type="range" min="1" max="100" value="50" class="dimmerslider">
+                    <p id="lamp_last_movement">2 min ago</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Door-icon.png" class="device-img" alt="door">
+                </div>
+
+                <h1>Door</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Close/Open:</p>
+                    <p>Unlock/Lock:</p>
+                    <p>Ring:</p>
+                </div>
+                <div class="device-values">
+                    <p id="door_uuid">0123456789</p>
+                    <p id="door_status" class="status">Disconnected</p>
+                    <label class="switch">
+                        <input type="checkbox" id="door_closeopen_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                    <br>
+                    <label class="switch">
+                        <input type="checkbox" id="door_unlocklock_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                    <p id="door_ring">[Button]</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Chair-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Chair</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Massage Off/On:</p>
+                    <p>Measured weight:</p>
+                </div>
+                <div class="device-values">
+                    <p id="chair_uuid">0123456789</p>
+                    <p id="chair_status" class="status">Disconnected</p>
+                    <label class="switch">
+                        <input type="checkbox" id="chair_massage_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                    <p id="chair_measured_weight">0 Kg</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Bed-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Bed</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Night light Off/On:</p>
+                    <p>Measured weight:</p>
+                </div>
+                <div class="device-values">
+                    <p id="bed_uuid">0123456789</p>
+                    <p id="bed_status" class="status">Disconnected</p>
+                    <label class="switch">
+                        <input type="checkbox" id="bed_light" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                    <p id="bed_measured_weight">0 Kg</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Smoke_detector-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Column</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Emergency light:</p>
+                    <p>Smoke level:</p>
+                    <p>Smoke threshold:</p>
+                </div>
+                <div class="device-values">
+                    <p id="column_uuid">0123456789</p>
+                    <p id="column_status" class="status">Disconnected</p>
+                    <p id="column_light">Off</p>
+                    <p id="column_smoke_level">0 ppm</p>
+                    <span id="column_smoke_threshold" class="slider_text">25</span><span class="slider_text"> ppm</span>
+                    <input id="column_smoke_threshold_slider" type="range" min="1" max="100" value="25" class="dimmerslider">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Sun-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Wall</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Outside light level:</p>
+                    <p>Curtains open/closed:</p>
+                    <p>LED strip:</p>
+                    <span class="normal_text">Dimmer: Light</span>
+                    <label class="switch">
+                        <input type="checkbox" id="wall_dimmer_light_enabled" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="device-values">
+                    <p id="wall_uuid">0123456789</p>
+                    <p id="wall_status" class="status">Disconnected</p>
+                    <p id="wall_light_level">5</p>
+                    <input id="wall_curtains_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
+                    <input id="wall_led_slider" type="range" min="1" max="100" value="75" class="dimmerslider">
+                    <span class="normal_text">Strip</span>
+                    <label class="switch">
+                        <input type="checkbox" id="wall_dimmer_strip_enabled" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Chip-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>Simulation</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <p>Light 1:</p>
+                    <p>Light 2:</p>
+                    <p>Light 3:</p>
+                </div>
+                <div class="device-values">
+                    <p id="simulation_uuid">0123456789</p>
+                    <p id="simulation_status" class="status">Disconnected</p>
+                    <input id="simulation_light_1_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
+                    <input id="simulation_light_2_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
+                    <input id="simulation_light_3_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
+                </div>
+            </div>
+        </div>
+
+        <div class="column">
+            <div class="card">
+                <div class="icon">
+                    <span class="helper"></span>
+                    <img src="Images/Chip-icon.png" class="device-img" alt="fridge">
+                </div>
+
+                <h1>WIB</h1>
+
+                <div class="device-status">
+                    <p>UUID:</p>
+                    <p>Status:</p>
+                    <label for="demoinput" class="normal_text">String to send:</label><br>
+                    <input type="text" id="demoinput" name="demoinput" class="normal_text"><br>
+                    <input type="submit" value="Submit" class="normal_text" onclick="sendString()">
+                </div>
+                <div class="device-values">
+                    <p id="wib_uuid">0123456789</p>
+                    <p id="wib_status" class="status">Disconnected</p>
+                </div>
+
+                <div class="device-status">
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="communication.js"></script>
+</body>
+
+</html>

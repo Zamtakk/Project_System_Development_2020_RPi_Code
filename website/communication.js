@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 
 /*!
 	@brief Log a string to the notifications screen
@@ -22,7 +22,7 @@ async function sendSocket(UUID, type, command, value) {
 		command: command,
 		value: value
 	};
-	socket.send(JSON.stringify(msg, null, 2));
+	socket.send(JSON.stringify(msg));
 }
 
 /*!
@@ -35,7 +35,7 @@ socket.onopen = function (event) {
 		command: 1001,
 		value: ""
 	}
-	socket.send(JSON.stringify(registration, null, 2));
+	socket.send(JSON.stringify(registration));
 };
 
 /*!
