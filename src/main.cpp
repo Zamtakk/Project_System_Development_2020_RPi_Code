@@ -67,6 +67,7 @@ int main()
         
                 map<string, Device *>::iterator it = devices.begin();
 
+                //Move to Website object
                 while(it != devices.end()) {
                     string deviceInfo = it -> second -> GetDeviceInfo();
                     string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": " + to_string(WEBSITE_UPDATE) + ", \"value\":[" + deviceInfo + "]}";
