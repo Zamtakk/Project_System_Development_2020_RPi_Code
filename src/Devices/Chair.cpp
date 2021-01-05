@@ -18,7 +18,7 @@ using std::to_string;
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
 */
-Chair::Chair(string uuid, string type, SocketServer *server) : Device(uuid, type, server), vibratorState(false), buttonPressed(false), ledState(false), pressureValue(0)
+Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), vibratorState(false), buttonPressed(false), ledState(false), pressureValue(0)
 {
 }
 

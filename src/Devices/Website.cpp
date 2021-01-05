@@ -16,7 +16,7 @@ using std::string;
     @param[in] 
     @return 
 */
-Website::Website(string uuid, string type, SocketServer *server) : Device(uuid, type, server)
+Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
 {
 }
 

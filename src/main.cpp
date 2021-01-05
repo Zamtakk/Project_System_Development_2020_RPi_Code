@@ -48,21 +48,21 @@ int main()
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
-                ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
+                ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
             else if (jsonMessage["Type"] == "Chair")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
-                Chair *newDevice = new Chair(newUUID, newType, Socket);
+                Chair *newDevice = new Chair(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
             else if (jsonMessage["Type"] == "Website")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
-                Website *newDevice = new Website(newUUID, newType, Socket);
+                Website *newDevice = new Website(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
         
                 map<string, Device *>::iterator it = devices.begin();
