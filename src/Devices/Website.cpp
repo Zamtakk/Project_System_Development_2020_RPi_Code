@@ -8,6 +8,7 @@
 using json = nlohmann::json;
 
 using std::string;
+using std::to_string;
 
 //TODO: website implementation, doesn't do anything yet except for being created in main
 
@@ -18,6 +19,21 @@ using std::string;
 */
 Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
 {
+    map<string, Device *>::iterator it;
+
+    json jsonMessage;
+    jsonMessage["UUID"] = uuid;
+    jsonMessage["Type"] = type;
+    jsonMessage["command"] = WEBSITE_UPDATE;
+
+    for (it = devices->begin(); it != devices->end(); it++)
+    {
+        string deviceInfo = it->second->GetDeviceInfo();
+        json deviceInformation = json::parse(deviceInfo);
+        jsonMessage["value"].push_back(deviceInformation);
+    }
+
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
