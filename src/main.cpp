@@ -76,7 +76,7 @@ int main()
 
                 while(it != devices.end()) {
                     string deviceInfo = it -> second -> GetDeviceInfo();
-                    string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": 4100, \"value\":[" + deviceInfo + "]}";
+                    string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": 5000, \"value\":[" + deviceInfo + "]}";
                     newDevice->HandleMessage(sendmessage);
                     it++;
                 }

@@ -18,7 +18,7 @@ using std::to_string;
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
 */
-Chair::Chair(string uuid, string type, SocketServer *server) : Device(uuid, type, server), vibratorState(false), buttonPressed(false), pressureValue(0)
+Chair::Chair(string uuid, string type, SocketServer *server) : Device(uuid, type, server), vibratorState(false), buttonPressed(false), ledState(false), pressureValue(0)
 {
 }
 
@@ -41,6 +41,7 @@ string Chair::GetDeviceInfo()
 		{"Status", status},
 		{"vibratorState", vibratorState},
 		{"buttonPressed", buttonPressed},
+		{"ledState", ledState},
 		{"pressureValue", pressureValue}};
 
 	return deviceInfo.dump();
@@ -95,15 +96,53 @@ void Chair::ButtonPressed(string message)
 	if (jsonMessage["value"] == 0)
 	{
 		buttonPressed = false;
-		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\": 4002, \"value\": \"0\"}";
-		socketServer->SendMessage(uuid, sendmessage);
-		vibratorState = false;
+		LedStateOn(false);
+		VibratorStateOn(false);
 	}
 	else if (jsonMessage["value"] == 1)
 	{
 		buttonPressed = true;
+		LedStateOn(true);
+		VibratorStateOn(true);
+	}
+}
+
+/*!
+    @brief Function to turn the led on or off
+    @param[in] stateOn Boolean on whether led needs to be on or off
+*/
+void Chair::LedStateOn(bool stateOn)
+{
+	if (stateOn)
+	{
 		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":4002,\"value\": \"1\"}";
 		socketServer->SendMessage(uuid, sendmessage);
+		ledState = true;
+	}
+	else
+	{
+		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\": 4002, \"value\": \"0\"}";
+		socketServer->SendMessage(uuid, sendmessage);
+		ledState = false;
+	}
+}
+
+/*!
+    @brief Function to turn the vibrator on or off
+    @param[in] stateOn Boolean on whether vibrator needs to be on or off
+*/
+void Chair::VibratorStateOn(bool stateOn)
+{
+	if (stateOn)
+	{
+		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":4003,\"value\": \"1\"}";
+		socketServer->SendMessage(uuid, sendmessage);
 		vibratorState = true;
+	}
+	else
+	{
+		string sendmessage = "{\"UUID\": \"" + uuid + "\", \"Type\": \"" + type + "\", \"command\": 4003, \"value\": \"0\"}";
+		socketServer->SendMessage(uuid, sendmessage);
+		vibratorState = false;
 	}
 }
