@@ -61,7 +61,7 @@ socket.onmessage = function (event) {
 	if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == 4000) {
 		document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
 	}
-	else if (jsonMessage["command"] == 4100) {
+	else if (jsonMessage["command"] == 5000) {
 		updateDeviceInformation(jsonMessage);
 	}
 

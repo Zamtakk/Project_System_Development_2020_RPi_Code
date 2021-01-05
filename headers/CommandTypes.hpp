@@ -21,14 +21,17 @@ enum DeviceStatus
     DISCONNECTED = 2002
 };
 
-enum DeviceCommands
+enum ChairCommands
 {
     CHAIR_FORCESENSOR_CHANGE = 4000,
     CHAIR_BUTTON_CHANGE = 4001,
     CHAIR_LED_CHANGE = 4002,
-    CHAIR_VIBRATOR_CHANGE = 4003,
+    CHAIR_VIBRATOR_CHANGE = 4003
+};
 
-    WEBSITE_UPDATE = 4100
+enum WebsiteCommands
+{
+    WEBSITE_UPDATE = 5000
 };
 
 #endif
