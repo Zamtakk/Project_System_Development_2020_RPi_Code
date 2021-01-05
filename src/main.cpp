@@ -64,16 +64,6 @@ int main()
                 newType = jsonMessage["Type"];
                 Website *newDevice = new Website(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
-        
-                map<string, Device *>::iterator it = devices.begin();
-
-                //Move to Website object
-                while(it != devices.end()) {
-                    string deviceInfo = it -> second -> GetDeviceInfo();
-                    string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": " + to_string(WEBSITE_UPDATE) + ", \"value\":[" + deviceInfo + "]}";
-                    newDevice->HandleMessage(sendmessage);
-                    it++;
-                }
             }
         }
         else
