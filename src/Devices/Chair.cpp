@@ -103,7 +103,6 @@ void Chair::ButtonPressed(string message)
 	{
 		buttonPressed = true;
 		string sendmessage = "{\"UUID\":\"" + uuid + "\",\"Type\":\"" + type + "\",\"command\":4002,\"value\": \"1\"}";
-		cout << sendmessage << endl;
 		socketServer->SendMessage(uuid, sendmessage);
 		vibratorState = true;
 	}
