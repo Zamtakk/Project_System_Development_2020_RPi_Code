@@ -2,6 +2,8 @@
 #include "Devices/Device.hpp"
 #include "Devices/ExampleDevice.hpp"
 #include "Devices/DeviceTypes.hpp"
+#include "Devices/Chair.hpp"
+#include "Devices/Website.hpp"
 
 #include "json.hpp"
 
@@ -27,6 +29,8 @@ int main()
     string message;
     map<string, Device *> devices;
     vector<ExampleDevice *> exampleDevices;
+    vector<Chair *> chairs;
+    vector<Website *> website;
 
     while (true)
     {
@@ -51,6 +55,31 @@ int main()
                 ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
                 exampleDevices.push_back(newDevice);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == CHAIR)
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Chair *newDevice = new Chair(newUUID, newType, Socket);
+                chairs.push_back(newDevice);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == WEBSITE)
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Website *newDevice = new Website(newUUID, newType, Socket);
+                website.push_back(newDevice);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+                
+                map<string, Device *>::iterator it = devices.begin();
+
+                while(it != devices.end()) {
+                    string deviceInfo = it -> second -> GetDeviceInfo();
+                    string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": 4100, \"value\":[" + deviceInfo + "]}";
+                    newDevice->HandleMessage(sendmessage);
+                    it++;
+                }
             }
         }
         else

@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 
 /*!
 	@brief Log a string to the notifications screen
@@ -15,36 +15,94 @@ function log(logstr) {
 	@param[in] command the command number
 	@param[in] value an optional value to be added to the message
 */
-async function sendSocket(UUID, type, command, value) {
-	var msg = {
-		UUID: UUID,
-		Type: type,
-		command: command,
-		value: value
-	};
-	socket.send(JSON.stringify(msg));
-}
-
-/*!
-	@brief Send registration message when the connection with server gets established
-*/
-socket.onopen = function (event) {
-	var registration = {
-		UUID: "0000000001",
-		Type: "Website",
-		command: 1001,
-		value: ""
+async function sendSocket(type, command) {
+	var msg;
+	var value = "";
+	if (type == "Chair") {
+		if (document.getElementById("chair_status").innerHTML === "Disconnected") return;
+		if (command == 4001) {
+			check = document.getElementById("chair_massage_switch");
+			if (check.checked) {
+				value = 1;
+			}
+			else {
+				value = 0;
+			}
+		}
+			msg = {
+				UUID: document.getElementById("chair_uuid").innerHTML,
+				Type: type,
+				command: command,
+				value: value
+			};
+		}
+		socket.send(JSON.stringify(msg));
 	}
-	socket.send(JSON.stringify(registration));
-};
 
-/*!
-	@brief Trigger an event when receiving a message
-*/
-socket.onmessage = function (event) {
-	log(event.data);
-}
+	/*!
+		@brief Send registration message when the connection with server gets established
+	*/
+	socket.onopen = function (event) {
+		var registration = {
+			UUID: "0000000001",
+			Type: "Website",
+			command: 1001,
+			value: ""
+		}
+		socket.send(JSON.stringify(registration));
+	};
 
-async function sendString() {
-	socket.send(document.getElementById("demoinput").value);
-}
+	/*!
+		@brief Trigger an event when receiving a message
+	*/
+	socket.onmessage = function (event) {
+		console.log(event.data);
+		var jsonMessage = JSON.parse(event.data);
+		if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == 4000) {
+			document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
+		}
+		else if (jsonMessage["command"] == 4100) {
+			updateDeviceInformation(jsonMessage);
+		}
+
+		if (jsonMessage["command"] < 4000) {
+			log(event.data);
+		}
+	}
+
+	async function sendString() {
+		socket.send(document.getElementById("demoinput").value);
+	}
+
+	async function updateDeviceInformation(deviceInformation) {
+		console.log(deviceInformation);
+		if (deviceInformation["value"][0]["Type"] == "Fridge") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Lamp") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Door") {
+			
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Chair") {
+			document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][0]["UUID"];
+			if (deviceInformation["value"][0]["Status"] == 2000)
+				document.getElementById("chair_status").innerHTML = "connected";
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Bed") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Column") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Wall") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "Simulation") {
+
+		}
+		else if (deviceInformation["value"][0]["Type"] == "WIB") {
+
+		}
+	}
