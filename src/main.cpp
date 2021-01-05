@@ -1,6 +1,8 @@
 #include "Websocket/SocketServer.hpp"
 #include "Devices/Device.hpp"
 #include "Devices/ExampleDevice.hpp"
+#include "Devices/Chair.hpp"
+#include "Devices/Website.hpp"
 
 #include "json.hpp"
 
@@ -48,6 +50,30 @@ int main()
                 newType = jsonMessage["Type"];
                 ExampleDevice *newDevice = new ExampleDevice(newUUID, newType, Socket);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Chair")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Chair *newDevice = new Chair(newUUID, newType, Socket);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Website")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Website *newDevice = new Website(newUUID, newType, Socket);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+        
+                map<string, Device *>::iterator it = devices.begin();
+
+                //Move to Website object
+                while(it != devices.end()) {
+                    string deviceInfo = it -> second -> GetDeviceInfo();
+                    string sendmessage = "{\"UUID\": \"" + newUUID + "\", \"Type\": \"" + newType + "\", \"command\": " + to_string(WEBSITE_UPDATE) + ", \"value\":[" + deviceInfo + "]}";
+                    newDevice->HandleMessage(sendmessage);
+                    it++;
+                }
             }
         }
         else
