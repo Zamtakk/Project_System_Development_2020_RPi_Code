@@ -23,6 +23,7 @@ public:
 
 protected:
     Device *getDeviceByType(string type);
+    string newMessage(string p_uuid, string p_type, int p_command);
 
     string uuid;
     string type;
