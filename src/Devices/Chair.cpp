@@ -124,14 +124,7 @@ void Chair::buttonPress(bool buttonPressed)
 */
 void Chair::ledStateOn(bool stateOn)
 {
-	if (stateOn)
-	{
-		ledState = true;
-	}
-	else
-	{
-		ledState = false;
-	}
+	ledState = stateOn;
 	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
 	jsonMessage["value"] = ledState;
 	socketServer->SendMessage(uuid, jsonMessage.dump());
@@ -143,14 +136,7 @@ void Chair::ledStateOn(bool stateOn)
 */
 void Chair::vibratorStateOn(bool stateOn)
 {
-	if (stateOn)
-	{
-		vibratorState = true;
-	}
-	else
-	{
-		vibratorState = false;
-	}
+	vibratorState = stateOn;
 	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
 	jsonMessage["value"] = vibratorState;
 	socketServer->SendMessage(uuid, jsonMessage.dump());

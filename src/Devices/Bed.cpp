@@ -105,14 +105,7 @@ void Bed::buttonPress(bool buttonPressed)
 */
 void Bed::ledStateOn(bool stateOn)
 {
-    if (stateOn)
-    {
-        ledState = true;
-    }
-    else
-    {
-        ledState = false;
-    }
+    ledState = stateOn;
     json jsonMessage = json::parse(newMessage(uuid, type, BED_LED_CHANGE));
     jsonMessage["value"] = ledState;
     socketServer->SendMessage(uuid, jsonMessage.dump());
