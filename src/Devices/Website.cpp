@@ -68,3 +68,13 @@ void Website::HandleMessage(string message)
 {
     socketServer->SendMessage(uuid, message);
 }
+
+void Website::updateWebsite()
+{
+    
+}
+    
+void Website::forwardMessage(string uuid, string message)
+{
+
+}

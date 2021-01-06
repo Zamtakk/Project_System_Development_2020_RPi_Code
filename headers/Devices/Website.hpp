@@ -15,6 +15,10 @@ public:
     ~Website();
     string GetDeviceInfo();
     void HandleMessage(string message);
+
+private:
+    void updateWebsite();
+    void forwardMessage(string uuid, string message);
 };
 
 #endif
