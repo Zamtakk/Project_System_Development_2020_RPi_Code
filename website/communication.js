@@ -132,6 +132,8 @@ async function updateDeviceInformation(deviceInformation) {
 	}
 }
 
+//Command types
+
 const ErrorCodes =
 {
 	NOT_REGISTERED: 0,
