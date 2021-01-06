@@ -84,47 +84,47 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("fridge_status").innerHTML = "connected";
+					document.getElementById("fridge_status").innerHTML = "Connected";
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("lamp_status").innerHTML = "connected";
+					document.getElementById("lamp_status").innerHTML = "Connected";
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("door_status").innerHTML = "connected";
+					document.getElementById("door_status").innerHTML = "Connected";
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("chair_status").innerHTML = "connected";
+					document.getElementById("chair_status").innerHTML = "Connected";
 				break;
 			case "Bed":
 				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("bed_status").innerHTML = "connected";
+					document.getElementById("bed_status").innerHTML = "Connected";
 				break;
 			case "Column":
 				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("column_status").innerHTML = "connected";
+					document.getElementById("column_status").innerHTML = "Connected";
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("wall_status").innerHTML = "connected";
+					document.getElementById("wall_status").innerHTML = "Connected";
 				break;
 			case "Simulation":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("simulation_status").innerHTML = "connected";
+					document.getElementById("simulation_status").innerHTML = "Connected";
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
-					document.getElementById("wib_status").innerHTML = "connected";
+					document.getElementById("wib_status").innerHTML = "Connected";
 				break;
 			default:
 				break;
