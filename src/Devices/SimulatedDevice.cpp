@@ -94,6 +94,22 @@ void SimulatedDevice::HandleMessage(string message)
 */
 bool SimulatedDevice::isLedOn(int ledNr)
 {
+    if (ledNr == 1)
+    {
+        return led1State;
+    }
+    else if (ledNr == 2)
+    {
+        return led2State;
+    }
+    else if (ledNr == 3)
+    {
+        return led3State;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /*!
