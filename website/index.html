@@ -38,9 +38,9 @@
                 <div class="device-values">
                     <p id="fridge_uuid">0123456789</p>
                     <p id="fridge_status" class="status">Disconnected</p>
-                    <span class="slider_text">Set:</span><span id="fridge_set_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
-                    <span class="slider_text">‏‏‎ ‎‏‏‎ ‏‏‎ ‏‏‎‎‎‎‏‏‎</span>
-                    <span id="fridge_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
+                    <span class="slider_text">Set:</span><span id="fridge_set_temperature" class="slider_text">11</span><span class="slider_text">&deg;c</span>
+                    <span class="slider_text">&#160;&#160;&#160;</span>
+                    <span id="fridge_temperature" class="slider_text">11</span><span class="slider_text">&deg;c</span>
                     <input id="fridge_temperature_slider" type="range" min="1" max="20" value="11" class="dimmerslider" onchange="sendSocket('fridge_temperature_slider')">
                     <p id="fridge_opened">0</p>
                 </div>
@@ -250,9 +250,9 @@
                 <div class="device-values">
                     <p id="simulation_uuid">0123456789</p>
                     <p id="simulation_status" class="status">Disconnected</p>
-                    <input id="simulation_light_1_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_1_slider')">
-                    <input id="simulation_light_2_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_2_slider')">
-                    <input id="simulation_light_3_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_3_slider')">
+                    <input id="simulation_light_1_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('simulation_light_1_slider')">
+                    <input id="simulation_light_2_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('simulation_light_2_slider')">
+                    <input id="simulation_light_3_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('simulation_light_3_slider')">
                 </div>
             </div>
         </div>
