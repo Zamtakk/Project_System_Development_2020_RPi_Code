@@ -9,6 +9,8 @@ using json = nlohmann::json;
 
 using std::string;
 using std::to_string;
+using std::cout;
+using std::endl;
 
 /*!
     @brief Constructor for the website class
@@ -19,21 +21,7 @@ using std::to_string;
 */
 Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
 {
-    map<string, Device *>::iterator it;
-
-    json jsonMessage;
-    jsonMessage["UUID"] = uuid;
-    jsonMessage["Type"] = type;
-    jsonMessage["command"] = WEBSITE_UPDATE;
-
-    for (it = devices->begin(); it != devices->end(); it++)
-    {
-        string deviceInfo = it->second->GetDeviceInfo();
-        json deviceInformation = json::parse(deviceInfo);
-        jsonMessage["value"].push_back(deviceInformation);
-    }
-
-    socketServer->SendMessage(uuid, jsonMessage.dump());
+    updateWebsite();
 }
 
 /*!
@@ -64,13 +52,15 @@ string Website::GetDeviceInfo()
 void Website::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
+    cout << jsonMessage["value"].dump() << endl;
     if (jsonMessage["command"] == WEBSITE_UPDATE)
     {
         updateWebsite();
     }
     else if (jsonMessage["command"] == WEBSITE_FORWARD)
     {
-        forwardMessage(jsonMessage["value"]);
+        string type = jsonMessage["value"]["Type"];
+        getDeviceByType(type)->HandleMessage(jsonMessage["value"].dump());
     }
 }
 
@@ -94,15 +84,4 @@ void Website::updateWebsite()
     }
 
     socketServer->SendMessage(uuid, jsonMessage.dump());
-}
-
-/*!
-    @brief Message handler for incoming messages for the website
-    @param[in] jsonMessage 
-*/
-void Website::forwardMessage(json jsonMessage)
-{
-    string forwarduuid = jsonMessage["UUID"];
-    string message = jsonMessage.dump();
-    socketServer->SendMessage(forwarduuid, message);
 }

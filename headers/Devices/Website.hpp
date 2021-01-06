@@ -18,7 +18,6 @@ public:
 
 private:
     void updateWebsite();
-    void forwardMessage(json message);
 };
 
 #endif
