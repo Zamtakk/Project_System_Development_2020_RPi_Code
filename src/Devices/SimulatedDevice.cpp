@@ -21,6 +21,12 @@ SimulatedDevice::SimulatedDevice(string uuid, string type, SocketServer *server,
       led3State(false),
       potmeterValue(0)
 {
+    json jsonMessage;
+    jsonMessage["UUID"] = uuid;
+    jsonMessage["Type"] = type;
+    jsonMessage["command"] = DEVICEINFO;
+    jsonMessage["value"] = "";
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
