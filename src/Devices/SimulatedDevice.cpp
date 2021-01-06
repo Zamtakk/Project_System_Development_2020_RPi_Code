@@ -42,6 +42,15 @@ SimulatedDevice::~SimulatedDevice()
 */
 string SimulatedDevice::GetDeviceInfo()
 {
+	json deviceInfo = {
+		{"UUID", uuid},
+		{"Type", type},
+		{"Status", status},
+		{"led1State", led1State},
+		{"led2State", led2State},
+		{"led3State", led3State}};
+
+	return deviceInfo.dump();
 }
 
 /*!
