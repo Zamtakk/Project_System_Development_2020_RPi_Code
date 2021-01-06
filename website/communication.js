@@ -30,6 +30,17 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "bed_light") {
+		if (document.getElementById("bed_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("bed_light");
+		value = {
+			UUID: document.getElementById("bed_uuid").innerHTML,
+			Type: "Bed",
+			command: BedCommands.BED_BUTTON_CHANGE,
+			value: check.checked
+		};
+	}
 	var msg = {
 		UUID: uuid,
 		Type: type,
@@ -70,6 +81,9 @@ socket.onmessage = function (event) {
 	}
 	else if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
 		updateDeviceInformation(jsonMessage);
+	}
+	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
+		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
 	}
 }
 

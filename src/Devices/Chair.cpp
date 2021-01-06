@@ -7,8 +7,6 @@
 
 using json = nlohmann::json;
 
-using std::cout;
-using std::endl;
 using std::string;
 using std::to_string;
 
@@ -101,8 +99,23 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 */
 void Chair::buttonPress(bool buttonPressed)
 {
-	ledStateOn(buttonPressed);
-	vibratorStateOn(buttonPressed);
+	if (ledState && buttonPressed)
+    {
+        ledStateOn(false);
+    }
+    else if (!ledState && buttonPressed)
+    {
+        ledStateOn(true);
+    }
+
+	if (vibratorState && buttonPressed)
+	{
+		vibratorStateOn(false);
+	}
+	else if (!vibratorState && buttonPressed)
+    {
+        vibratorStateOn(true);
+    }
 }
 
 /*!
@@ -112,20 +125,16 @@ void Chair::buttonPress(bool buttonPressed)
 void Chair::ledStateOn(bool stateOn)
 {
 	if (stateOn)
-	{
-		if (ledState)
-		{
-			ledState = false;
-		}
-		else
-		{
-			ledState = true;
-		}
-		json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
-		jsonMessage["value"] = ledState;
-
-		socketServer->SendMessage(uuid, jsonMessage.dump());
-	}
+    {
+        ledState = true;
+    }
+    else
+    {
+        ledState = false;
+    }
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
+	jsonMessage["value"] = ledState;
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -135,18 +144,14 @@ void Chair::ledStateOn(bool stateOn)
 void Chair::vibratorStateOn(bool stateOn)
 {
 	if (stateOn)
-	{
-		if (vibratorState)
-		{
-			vibratorState = false;
-		}
-		else
-		{
-			vibratorState = true;
-		}
-		json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
-		jsonMessage["value"] = vibratorState;
-
-		socketServer->SendMessage(uuid, jsonMessage.dump());
-	}
+    {
+        vibratorState = true;
+    }
+    else
+    {
+        vibratorState = false;
+    }
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
+	jsonMessage["value"] = vibratorState;
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
