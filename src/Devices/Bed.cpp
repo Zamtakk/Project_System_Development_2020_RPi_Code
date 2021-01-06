@@ -68,19 +68,15 @@ void Bed::pressureSensorChange(int pressureValueReceived)
 {
     pressureValue = pressureValueReceived;
 
-    map<string, Device *>::iterator it;
-
-    for (it = devices->begin(); it != devices->end(); it++)
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
     {
-        if (it->second->GetType() == "Website")
-        {
-            string senduuid = it->second->GetUUID();
-            json jsonMessage = json::parse(newMessage(uuid, type, BED_FORCESENSOR_CHANGE));
-            jsonMessage["value"] = pressureValueReceived;
-            socketServer->SendMessage(senduuid, jsonMessage.dump());
-            break;
-        }
+        return;
     }
+
+    json jsonMessage = json::parse(newMessage(uuid, type, BED_FORCESENSOR_CHANGE));
+    jsonMessage["value"] = pressureValueReceived;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
