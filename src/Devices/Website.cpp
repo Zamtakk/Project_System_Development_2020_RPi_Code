@@ -9,8 +9,6 @@ using json = nlohmann::json;
 
 using std::string;
 using std::to_string;
-using std::cout;
-using std::endl;
 
 /*!
     @brief Constructor for the website class
