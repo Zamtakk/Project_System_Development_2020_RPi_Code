@@ -16,9 +16,9 @@ using std::string;
 */
 SimulatedDevice::SimulatedDevice(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      led1State(false),
-      led2State(false),
-      led3State(false),
+      led1Value(0),
+      led2Value(0),
+      led3Value(0),
       potmeterValue(0),
       activeLed(1)
 {
@@ -47,9 +47,9 @@ string SimulatedDevice::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"led1State", led1State},
-        {"led2State", led2State},
-        {"led3State", led3State}};
+        {"led1Value", led1Value},
+        {"led2Value", led2Value},
+        {"led3Value", led3Value}};
 
     return deviceInfo.dump();
 }
@@ -97,15 +97,15 @@ bool SimulatedDevice::isLedOn(int ledNr)
 {
     if (ledNr == 1)
     {
-        return (led1State > 10);
+        return (led1Value > 10);
     }
     else if (ledNr == 2)
     {
-        return (led2State > 10);
+        return (led2Value > 10);
     }
     else if (ledNr == 3)
     {
-        return (led3State > 10);
+        return (led3Value > 10);
     }
     else
     {
@@ -145,6 +145,31 @@ void SimulatedDevice::buttonPress(int buttonNr, bool buttonPressed)
 */
 bool SimulatedDevice::ledStateUpdate(int ledNr, int value)
 {
+    json jsonMessage = json::parse(newMessage(uuid, type, 0));
+
+    if (ledNr == 1)
+    {
+        jsonMessage["command"] = SIMULATED_LED1_CHANGE;
+        led1Value = value;
+    }
+    else if (ledNr == 2)
+    {
+        jsonMessage["command"] = SIMULATED_LED2_CHANGE;
+        led2Value = value;
+    }
+    else if (ledNr == 3)
+    {
+        jsonMessage["command"] = SIMULATED_LED3_CHANGE;
+        led3Value = value;
+    }
+    else
+    {
+        return false;
+    }
+    
+    jsonMessage["value"] = value;
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+    return true;
 }
 
 /*!
