@@ -100,22 +100,22 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 void Chair::buttonPress(bool buttonPressed)
 {
 	if (ledState && buttonPressed)
-    {
-        ledStateOn(false);
-    }
-    else if (!ledState && buttonPressed)
-    {
-        ledStateOn(true);
-    }
+	{
+		ledStateOn(false);
+	}
+	else if (!ledState && buttonPressed)
+	{
+		ledStateOn(true);
+	}
 
 	if (vibratorState && buttonPressed)
 	{
 		vibratorStateOn(false);
 	}
 	else if (!vibratorState && buttonPressed)
-    {
-        vibratorStateOn(true);
-    }
+	{
+		vibratorStateOn(true);
+	}
 }
 
 /*!
@@ -125,13 +125,13 @@ void Chair::buttonPress(bool buttonPressed)
 void Chair::ledStateOn(bool stateOn)
 {
 	if (stateOn)
-    {
-        ledState = true;
-    }
-    else
-    {
-        ledState = false;
-    }
+	{
+		ledState = true;
+	}
+	else
+	{
+		ledState = false;
+	}
 	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
 	jsonMessage["value"] = ledState;
 	socketServer->SendMessage(uuid, jsonMessage.dump());
@@ -144,13 +144,13 @@ void Chair::ledStateOn(bool stateOn)
 void Chair::vibratorStateOn(bool stateOn)
 {
 	if (stateOn)
-    {
-        vibratorState = true;
-    }
-    else
-    {
-        vibratorState = false;
-    }
+	{
+		vibratorState = true;
+	}
+	else
+	{
+		vibratorState = false;
+	}
 	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
 	jsonMessage["value"] = vibratorState;
 	socketServer->SendMessage(uuid, jsonMessage.dump());
