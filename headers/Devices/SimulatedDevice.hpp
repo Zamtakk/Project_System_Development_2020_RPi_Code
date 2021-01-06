@@ -18,6 +18,7 @@ public:
     bool isLedOn(int ledNr);
     void buttonPress(int buttonNr, bool buttonPressed);
     bool ledStateOn(int ledNr, bool stateOn);
+    void potmeterChange(int value);
 
 private:
     bool led1State;

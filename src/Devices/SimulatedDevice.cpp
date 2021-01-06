@@ -88,3 +88,12 @@ void SimulatedDevice::buttonPress(int buttonNr, bool buttonPressed)
 bool SimulatedDevice::ledStateOn(int ledNr, bool stateOn)
 {
 }
+
+/*!
+    @brief 
+    @param[in] 
+    @return 
+*/
+void SimulatedDevice::potmeterChange(int value)
+{
+}
