@@ -169,6 +169,13 @@ bool SimulatedDevice::ledValueUpdate(int ledNr, int value)
     
     jsonMessage["value"] = value;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return false;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
+
     return true;
 }
 
