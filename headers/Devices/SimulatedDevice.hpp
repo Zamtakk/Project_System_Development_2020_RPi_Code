@@ -17,13 +17,13 @@ public:
     void HandleMessage(string message);
     bool isLedOn(int ledNr);
     void buttonPress(int buttonNr, bool buttonPressed);
-    bool ledStateOn(int ledNr, bool stateOn);
+    bool ledStateUpdate(int ledNr, int value);
     void potmeterChange(int value);
 
 private:
-    bool led1State;
-    bool led2State;
-    bool led3State;
+    int led1State;
+    int led2State;
+    int led3State;
     int potmeterValue;
     int activeLed;
 };

@@ -72,13 +72,13 @@ void SimulatedDevice::HandleMessage(string message)
         buttonPress(2, (bool)jsonMessage["value"]);
         break;
     case SIMULATED_LED1_CHANGE:
-        ledStateOn(1, (bool)jsonMessage["value"]);
+        ledStateUpdate(1, (int)jsonMessage["value"]);
         break;
     case SIMULATED_LED2_CHANGE:
-        ledStateOn(2, (bool)jsonMessage["value"]);
+        ledStateUpdate(2, (int)jsonMessage["value"]);
         break;
     case SIMULATED_LED3_CHANGE:
-        ledStateOn(3, (bool)jsonMessage["value"]);
+        ledStateUpdate(3, (int)jsonMessage["value"]);
         break;
     case SIMULATED_POTMETER_CHANGE:
         potmeterChange((int)jsonMessage["value"]);
@@ -97,15 +97,15 @@ bool SimulatedDevice::isLedOn(int ledNr)
 {
     if (ledNr == 1)
     {
-        return led1State;
+        return (led1State > 10);
     }
     else if (ledNr == 2)
     {
-        return led2State;
+        return (led2State > 10);
     }
     else if (ledNr == 3)
     {
-        return led3State;
+        return (led3State > 10);
     }
     else
     {
@@ -120,6 +120,22 @@ bool SimulatedDevice::isLedOn(int ledNr)
 */
 void SimulatedDevice::buttonPress(int buttonNr, bool buttonPressed)
 {
+    if (buttonNr == 1 && buttonPressed == true)
+    {
+        activeLed++;
+        if (activeLed > 3)
+        {
+            activeLed = 1;
+        }
+    }
+    else if (buttonNr == 2 && buttonPressed == true)
+    {
+        activeLed--;
+        if (activeLed < 1)
+        {
+            activeLed = 3;
+        }
+    }
 }
 
 /*!
@@ -127,7 +143,7 @@ void SimulatedDevice::buttonPress(int buttonNr, bool buttonPressed)
     @param[in] 
     @return 
 */
-bool SimulatedDevice::ledStateOn(int ledNr, bool stateOn)
+bool SimulatedDevice::ledStateUpdate(int ledNr, int value)
 {
 }
 
