@@ -2,7 +2,11 @@
 
 #include "Websocket/SocketServer.hpp"
 
+#include "json.hpp"
+
 #include <string>
+
+using json = nlohmann::json;
 
 using std::string;
 
@@ -46,4 +50,13 @@ Device *Device::getDeviceByType(string type)
         }
     }
     return nullptr;
+}
+
+string Device::newMessage(string p_uuid, string p_type, int p_command)
+{
+    json jsonMessage;
+    jsonMessage["UUID"] = p_uuid;
+    jsonMessage["Type"] = p_type;
+    jsonMessage["command"] = p_command;
+    return jsonMessage.dump();
 }
