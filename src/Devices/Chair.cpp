@@ -7,8 +7,6 @@
 
 using json = nlohmann::json;
 
-using std::cout;
-using std::endl;
 using std::string;
 using std::to_string;
 
@@ -82,17 +80,17 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 
 	map<string, Device *>::iterator it;
 
-    for (it = devices->begin(); it != devices->end(); it++)
-    {
-        if (it->second->GetType() == "Website")
-        {
-            string senduuid = it->second->GetUUID();
+	for (it = devices->begin(); it != devices->end(); it++)
+	{
+		if (it->second->GetType() == "Website")
+		{
+			string senduuid = it->second->GetUUID();
 			json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_FORCESENSOR_CHANGE));
 			jsonMessage["value"] = pressureValueReceived;
 			socketServer->SendMessage(senduuid, jsonMessage.dump());
 			break;
-        }
-    }
+		}
+	}
 }
 
 /*!

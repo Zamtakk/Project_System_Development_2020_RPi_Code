@@ -3,8 +3,8 @@ const uuid = Math.floor((random(1234) * 10000000000)).toString();
 const type = "Website";
 
 function random(seed) {
-    var x = Math.sin(seed++) * 10000;
-    return x - Math.floor(x);
+	var x = Math.sin(seed++) * 10000;
+	return x - Math.floor(x);
 }
 
 /*!
@@ -32,6 +32,17 @@ async function sendSocket(elementId) {
 			UUID: document.getElementById("chair_uuid").innerHTML,
 			Type: "Chair",
 			command: ChairCommands.CHAIR_BUTTON_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "bed_light") {
+		if (document.getElementById("bed_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("bed_light");
+		value = {
+			UUID: document.getElementById("bed_uuid").innerHTML,
+			Type: "Bed",
+			command: ChairCommands.BED_BUTTON_CHANGE,
 			value: check.checked
 		};
 	}
@@ -75,6 +86,9 @@ socket.onmessage = function (event) {
 	}
 	else if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
 		updateDeviceInformation(jsonMessage);
+	}
+	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
+		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
 	}
 }
 
