@@ -179,4 +179,5 @@ bool SimulatedDevice::ledStateUpdate(int ledNr, int value)
 */
 void SimulatedDevice::potmeterChange(int value)
 {
+    ledStateUpdate(activeLed, value);
 }
