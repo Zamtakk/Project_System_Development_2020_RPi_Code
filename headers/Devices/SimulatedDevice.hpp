@@ -25,6 +25,7 @@ private:
     bool led2State;
     bool led3State;
     int potmeterValue;
+    int activeLed;
 };
 
 #endif
