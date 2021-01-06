@@ -1,6 +1,11 @@
 var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
-const uuid = "0000000001";
+const uuid = Math.floor((random(1234) * 10000000000)).toString();
 const type = "Website";
+
+function random(seed) {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
 
 /*!
 	@brief Log a string to the notifications screen

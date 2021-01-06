@@ -83,10 +83,7 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 
 	string senduuid = getDeviceByType("Website")->GetUUID();
 
-	json jsonMessage;
-	jsonMessage["UUID"] = uuid;
-	jsonMessage["Type"] = type;
-	jsonMessage["command"] = CHAIR_FORCESENSOR_CHANGE;
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_FORCESENSOR_CHANGE));
 	jsonMessage["value"] = pressureValueReceived;
 
 	socketServer->SendMessage(senduuid, jsonMessage.dump());
@@ -128,10 +125,7 @@ void Chair::ledStateOn(bool stateOn)
 		{
 			ledState = true;
 		}
-		json jsonMessage;
-		jsonMessage["UUID"] = uuid;
-		jsonMessage["Type"] = type;
-		jsonMessage["command"] = CHAIR_LED_CHANGE;
+		json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
 		jsonMessage["value"] = ledState;
 
 		socketServer->SendMessage(uuid, jsonMessage.dump());
@@ -154,10 +148,7 @@ void Chair::vibratorStateOn(bool stateOn)
 		{
 			vibratorState = true;
 		}
-		json jsonMessage;
-		jsonMessage["UUID"] = uuid;
-		jsonMessage["Type"] = type;
-		jsonMessage["command"] = CHAIR_VIBRATOR_CHANGE;
+		json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
 		jsonMessage["value"] = vibratorState;
 
 		socketServer->SendMessage(uuid, jsonMessage.dump());
