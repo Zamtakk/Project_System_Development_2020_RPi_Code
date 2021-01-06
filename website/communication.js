@@ -17,9 +17,9 @@ function log(logstr) {
 	@param[in] command the command number
 	@param[in] value an optional value to be added to the message
 */
-async function sendSocket(devicetype) {
+async function sendSocket(elementId) {
 	var value = "";
-	if (devicetype == "chair_massage_switch") {
+	if (elementId == "chair_massage_switch") {
 		if (document.getElementById("chair_status").innerHTML === "Disconnected") return;
 
 		check = document.getElementById("chair_massage_switch");
