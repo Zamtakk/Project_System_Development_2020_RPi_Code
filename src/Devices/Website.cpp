@@ -68,10 +68,7 @@ void Website::updateWebsite()
 {
     map<string, Device *>::iterator it;
 
-    json jsonMessage;
-    jsonMessage["UUID"] = uuid;
-    jsonMessage["Type"] = type;
-    jsonMessage["command"] = WEBSITE_UPDATE;
+    json jsonMessage = json::parse(newMessage(uuid, type, WEBSITE_UPDATE));
 
     for (it = devices->begin(); it != devices->end(); it++)
     {
