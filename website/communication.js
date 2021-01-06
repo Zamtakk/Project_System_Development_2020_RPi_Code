@@ -37,7 +37,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("bed_uuid").innerHTML,
 			Type: "Bed",
-			command: ChairCommands.BED_BUTTON_CHANGE,
+			command: BedCommands.BED_BUTTON_CHANGE,
 			value: check.checked
 		};
 	}
