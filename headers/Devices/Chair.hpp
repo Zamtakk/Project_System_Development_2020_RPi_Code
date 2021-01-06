@@ -24,7 +24,6 @@ private:
     void ledStateOn(bool stateOn);
     void vibratorStateOn(bool stateOn);
     bool vibratorState;
-    bool buttonPressed;
     bool ledState;
     int pressureValue;
 };

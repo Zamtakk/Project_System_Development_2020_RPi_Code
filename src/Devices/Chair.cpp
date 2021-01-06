@@ -18,7 +18,7 @@ using std::to_string;
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
 */
-Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), vibratorState(false), buttonPressed(false), ledState(false), pressureValue(0)
+Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), vibratorState(false), ledState(false), pressureValue(0)
 {
 }
 
@@ -40,7 +40,6 @@ string Chair::GetDeviceInfo()
 		{"Type", type},
 		{"Status", status},
 		{"vibratorState", vibratorState},
-		{"buttonPressed", buttonPressed},
 		{"ledState", ledState},
 		{"pressureValue", pressureValue}};
 
@@ -56,11 +55,11 @@ void Chair::HandleMessage(string message)
 	json jsonMessage = json::parse(message);
 	if (jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE)
 	{
-		pressureSensorChange(jsonMessage["value"]);
+		pressureSensorChange((int)jsonMessage["value"]);
 	}
 	else if (jsonMessage["command"] == CHAIR_BUTTON_CHANGE)
 	{
-		buttonPress(jsonMessage["value"]);
+		buttonPress((bool)jsonMessage["value"]);
 	}
 }
 
@@ -81,12 +80,19 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 {
 	pressureValue = pressureValueReceived;
 
-	string senduuid = getDeviceByType("Website")->GetUUID();
+	map<string, Device *>::iterator it;
 
-	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_FORCESENSOR_CHANGE));
-	jsonMessage["value"] = pressureValueReceived;
-
-	socketServer->SendMessage(senduuid, jsonMessage.dump());
+    for (it = devices->begin(); it != devices->end(); it++)
+    {
+        if (it->second->GetType() == "Website")
+        {
+            string senduuid = it->second->GetUUID();
+			json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_FORCESENSOR_CHANGE));
+			jsonMessage["value"] = pressureValueReceived;
+			socketServer->SendMessage(senduuid, jsonMessage.dump());
+			break;
+        }
+    }
 }
 
 /*!
@@ -95,18 +101,8 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 */
 void Chair::buttonPress(bool buttonPressed)
 {
-	if (buttonPressed)
-	{
-		buttonPressed = true;
-		ledStateOn(true);
-		vibratorStateOn(true);
-	}
-	else
-	{
-		buttonPressed = false;
-		ledStateOn(false);
-		vibratorStateOn(false);
-	}
+	ledStateOn(buttonPressed);
+	vibratorStateOn(buttonPressed);
 }
 
 /*!
