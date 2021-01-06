@@ -42,15 +42,15 @@ SimulatedDevice::~SimulatedDevice()
 */
 string SimulatedDevice::GetDeviceInfo()
 {
-	json deviceInfo = {
-		{"UUID", uuid},
-		{"Type", type},
-		{"Status", status},
-		{"led1State", led1State},
-		{"led2State", led2State},
-		{"led3State", led3State}};
+    json deviceInfo = {
+        {"UUID", uuid},
+        {"Type", type},
+        {"Status", status},
+        {"led1State", led1State},
+        {"led2State", led2State},
+        {"led3State", led3State}};
 
-	return deviceInfo.dump();
+    return deviceInfo.dump();
 }
 
 /*!
@@ -60,6 +60,31 @@ string SimulatedDevice::GetDeviceInfo()
 */
 void SimulatedDevice::HandleMessage(string message)
 {
+    json jsonMessage = json::parse(message);
+
+    switch ((SimulatedDeviceCommands)jsonMessage["command"])
+    {
+    case SIMULATED_BUTTON1_CHANGE:
+        buttonPress(1, (bool)jsonMessage["value"]);
+        break;
+    case SIMULATED_BUTTON2_CHANGE:
+        buttonPress(2, (bool)jsonMessage["value"]);
+        break;
+    case SIMULATED_LED1_CHANGE:
+        ledStateOn(1, (bool)jsonMessage["value"]);
+        break;
+    case SIMULATED_LED2_CHANGE:
+        ledStateOn(2, (bool)jsonMessage["value"]);
+        break;
+    case SIMULATED_LED3_CHANGE:
+        ledStateOn(3, (bool)jsonMessage["value"]);
+        break;
+    case SIMULATED_POTMETER_CHANGE:
+        potmeterChange((int)jsonMessage["value"]);
+        break;
+    default:
+        break;
+    }
 }
 
 /*!
