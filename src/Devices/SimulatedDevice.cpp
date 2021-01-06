@@ -72,13 +72,13 @@ void SimulatedDevice::HandleMessage(string message)
         buttonPress(2, (bool)jsonMessage["value"]);
         break;
     case SIMULATED_LED1_CHANGE:
-        ledStateUpdate(1, (int)jsonMessage["value"]);
+        ledValueUpdate(1, (int)jsonMessage["value"]);
         break;
     case SIMULATED_LED2_CHANGE:
-        ledStateUpdate(2, (int)jsonMessage["value"]);
+        ledValueUpdate(2, (int)jsonMessage["value"]);
         break;
     case SIMULATED_LED3_CHANGE:
-        ledStateUpdate(3, (int)jsonMessage["value"]);
+        ledValueUpdate(3, (int)jsonMessage["value"]);
         break;
     case SIMULATED_POTMETER_CHANGE:
         potmeterChange((int)jsonMessage["value"]);
@@ -143,7 +143,7 @@ void SimulatedDevice::buttonPress(int buttonNr, bool buttonPressed)
     @param[in] 
     @return 
 */
-bool SimulatedDevice::ledStateUpdate(int ledNr, int value)
+bool SimulatedDevice::ledValueUpdate(int ledNr, int value)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, 0));
 
@@ -179,5 +179,5 @@ bool SimulatedDevice::ledStateUpdate(int ledNr, int value)
 */
 void SimulatedDevice::potmeterChange(int value)
 {
-    ledStateUpdate(activeLed, value);
+    ledValueUpdate(activeLed, value);
 }
