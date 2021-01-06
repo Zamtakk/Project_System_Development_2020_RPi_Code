@@ -41,7 +41,7 @@
                     <span class="slider_text">Set:</span><span id="fridge_set_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
                     <span class="slider_text">‏‏‎ ‎‏‏‎ ‏‏‎ ‏‏‎‎‎‎‏‏‎</span>
                     <span id="fridge_temperature" class="slider_text">11</span><span class="slider_text">°c</span>
-                    <input id="fridge_temperature_slider" type="range" min="1" max="20" value="11" class="dimmerslider">
+                    <input id="fridge_temperature_slider" type="range" min="1" max="20" value="11" class="dimmerslider" onchange="sendSocket('fridge_temperature_slider')">
                     <p id="fridge_opened">0</p>
                 </div>
             </div>
@@ -67,10 +67,10 @@
                     <p id="lamp_uuid">0123456789</p>
                     <p id="lamp_status" class="status">Disconnected</p>
                     <label class="switch">
-                        <input type="checkbox" id="lamp_onoff_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="lamp_onoff_switch" onclick="sendSocket('lamp_onoff_switch')">
                         <span class="slider round"></span>
                     </label>
-                    <input id="lamp_dimlevel_slider" type="range" min="1" max="100" value="50" class="dimmerslider">
+                    <input id="lamp_dimlevel_slider" type="range" min="1" max="100" value="50" class="dimmerslider" onchange="sendSocket('lamp_dimlevel_slider')">
                     <p id="lamp_last_movement">2 min ago</p>
                 </div>
             </div>
@@ -96,15 +96,16 @@
                     <p id="door_uuid">0123456789</p>
                     <p id="door_status" class="status">Disconnected</p>
                     <label class="switch">
-                        <input type="checkbox" id="door_closeopen_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="door_closeopen_switch" onclick="sendSocket('door_closeopen_switch')">
                         <span class="slider round"></span>
                     </label>
                     <br>
                     <label class="switch">
-                        <input type="checkbox" id="door_unlocklock_switch" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="door_unlocklock_switch" onclick="sendSocket('door_unlocklock_switch')">
                         <span class="slider round"></span>
                     </label>
-                    <p id="door_ring">[Button]</p>
+                    <br>
+                    <button type="door_ring_button" onclick="sendSocket('door_ring_button')">Ring</button> 
                 </div>
             </div>
         </div>
@@ -130,7 +131,7 @@
                     <p id="chair_uuid">0123456789</p>
                     <p id="chair_status" class="status">Disconnected</p>
                     <label class="switch">
-                        <input type="checkbox" id="chair_massage_switch" onclick="sendSocket('Chair', 4001)">
+                        <input type="checkbox" id="chair_massage_switch" onclick="sendSocket('chair_massage_switch')">
                         <span class="slider round"></span>
                     </label>
                     <p id="chair_measured_weight">0 Kg</p>
@@ -157,7 +158,7 @@
                     <p id="bed_uuid">0123456789</p>
                     <p id="bed_status" class="status">Disconnected</p>
                     <label class="switch">
-                        <input type="checkbox" id="bed_light" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="bed_light" onclick="sendSocket('bed_light')">
                         <span class="slider round"></span>
                     </label>
                     <p id="bed_measured_weight">0 Kg</p>
@@ -187,7 +188,7 @@
                     <p id="column_light">Off</p>
                     <p id="column_smoke_level">0 ppm</p>
                     <span id="column_smoke_threshold" class="slider_text">25</span><span class="slider_text"> ppm</span>
-                    <input id="column_smoke_threshold_slider" type="range" min="1" max="100" value="25" class="dimmerslider">
+                    <input id="column_smoke_threshold_slider" type="range" min="1" max="100" value="25" class="dimmerslider" onchange="sendSocket('column_smoke_threshold_slider')">
                 </div>
             </div>
         </div>
@@ -211,7 +212,7 @@
                     <p>LED strip:</p>
                     <span class="normal_text">Dimmer: Light</span>
                     <label class="switch">
-                        <input type="checkbox" id="wall_dimmer_light_enabled" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="wall_dimmer_light_enabled" onclick="sendSocket('wall_dimmer_light_enabled')">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -219,11 +220,11 @@
                     <p id="wall_uuid">0123456789</p>
                     <p id="wall_status" class="status">Disconnected</p>
                     <p id="wall_light_level">5</p>
-                    <input id="wall_curtains_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
-                    <input id="wall_led_slider" type="range" min="1" max="100" value="75" class="dimmerslider">
+                    <input id="wall_curtains_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('wall_curtains_slider')">
+                    <input id="wall_led_slider" type="range" min="1" max="100" value="75" class="dimmerslider" onchange="sendSocket('wall_led_slider')">
                     <span class="normal_text">Strip</span>
                     <label class="switch">
-                        <input type="checkbox" id="wall_dimmer_strip_enabled" onclick="sendSocket('1234567890', 'Fridge', 1, '')">
+                        <input type="checkbox" id="wall_dimmer_strip_enabled" onclick="sendSocket('wall_dimmer_strip_enabled')">
                         <span class="slider round"></span>
                     </label>
                 </div>
@@ -249,9 +250,9 @@
                 <div class="device-values">
                     <p id="simulation_uuid">0123456789</p>
                     <p id="simulation_status" class="status">Disconnected</p>
-                    <input id="simulation_light_1_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
-                    <input id="simulation_light_2_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
-                    <input id="simulation_light_3_slider" type="range" min="1" max="100" value="1" class="dimmerslider">
+                    <input id="simulation_light_1_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_1_slider')">
+                    <input id="simulation_light_2_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_2_slider')">
+                    <input id="simulation_light_3_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('simulation_light_3_slider')">
                 </div>
             </div>
         </div>
@@ -270,7 +271,7 @@
                     <p>Status:</p>
                     <label for="demoinput" class="normal_text">String to send:</label><br>
                     <input type="text" id="demoinput" name="demoinput" class="normal_text"><br>
-                    <input type="submit" value="Submit" class="normal_text" onclick="sendString()">
+                    <input type="submit" value="Submit" id="wib_submit" class="normal_text" onclick="sendSocket('wib_submit')">
                 </div>
                 <div class="device-values">
                     <p id="wib_uuid">0123456789</p>

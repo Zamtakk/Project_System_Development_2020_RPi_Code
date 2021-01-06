@@ -18,7 +18,7 @@ public:
 
 private:
     void updateWebsite();
-    void forwardMessage(string uuid, string message);
+    void forwardMessage(json message);
 };
 
 #endif

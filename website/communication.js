@@ -15,7 +15,7 @@ function log(logstr) {
 	@param[in] command the command number
 	@param[in] value an optional value to be added to the message
 */
-async function sendSocket(type, command) {
+async function sendSocket(type) {
 	var msg;
 	var value = "";
 	if (type == "Chair") {
@@ -45,7 +45,14 @@ socket.onopen = function (event) {
 		command: GeneralDeviceCommands.REGISTRATION,
 		value: ""
 	}
+	var update = {
+		UUID: "0000000001",
+		Type: "Website",
+		command: GeneralDeviceCommands.WebsiteCommands.WEBSITE_UPDATE,
+		value: ""
+	}
 	socket.send(JSON.stringify(registration));
+	socket.send(JSON.stringify(update));
 };
 
 /*!

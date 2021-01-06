@@ -10,12 +10,12 @@ using json = nlohmann::json;
 using std::string;
 using std::to_string;
 
-//TODO: website implementation, doesn't do anything yet except for being created in main
-
 /*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
+    @brief Constructor for the website class
+    @param[in] uuid The UUID of the device where the message needs to go to.
+    @param[in] type The device type
+	@param[in] server A pointer to the socketserver instance
+    @param[in] devices A mapping with all the connected devices
 */
 Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
 {
@@ -37,16 +37,14 @@ Website::Website(string uuid, string type, SocketServer *server, map<string, Dev
 }
 
 /*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
+    @brief Deconstructor for the website class
 */
 Website::~Website()
 {
 }
 
 /*!
-    @brief Packs all device variables in a JSON object, no variables implemented
+    @brief Packs all device variables in a JSON object
     @return Returns a JSON string with all device info.
 */
 string Website::GetDeviceInfo()
@@ -60,21 +58,51 @@ string Website::GetDeviceInfo()
 }
 
 /*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
+    @brief Message handler for incoming messages for the website
+    @param[in] message The incoming message
 */
 void Website::HandleMessage(string message)
 {
-    socketServer->SendMessage(uuid, message);
+    json jsonMessage = json::parse(message);
+    if (jsonMessage["command"] == WEBSITE_UPDATE)
+    {
+        updateWebsite();
+    }
+    else if (jsonMessage["command"] == WEBSITE_FORWARD)
+    {
+        forwardMessage(jsonMessage["value"]);
+    }
 }
 
+/*!
+    @brief Sends message to the website with updated information.
+*/
 void Website::updateWebsite()
 {
-    
-}
-    
-void Website::forwardMessage(string uuid, string message)
-{
+    map<string, Device *>::iterator it;
 
+    json jsonMessage;
+    jsonMessage["UUID"] = uuid;
+    jsonMessage["Type"] = type;
+    jsonMessage["command"] = WEBSITE_UPDATE;
+
+    for (it = devices->begin(); it != devices->end(); it++)
+    {
+        string deviceInfo = it->second->GetDeviceInfo();
+        json deviceInformation = json::parse(deviceInfo);
+        jsonMessage["value"].push_back(deviceInformation);
+    }
+
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+/*!
+    @brief Message handler for incoming messages for the website
+    @param[in] jsonMessage 
+*/
+void Website::forwardMessage(json jsonMessage)
+{
+    string forwarduuid = jsonMessage["UUID"];
+    string message = jsonMessage.dump();
+    socketServer->SendMessage(forwarduuid, message);
 }
