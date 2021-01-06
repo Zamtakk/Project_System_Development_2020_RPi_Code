@@ -10,14 +10,61 @@ using json = nlohmann::json;
 using std::string;
 using std::to_string;
 
-//TODO: website implementation, doesn't do anything yet except for being created in main
-
 /*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
+    @brief Constructor for the website class
+    @param[in] uuid The UUID of the device where the message needs to go to.
+    @param[in] type The device type
+	@param[in] server A pointer to the socketserver instance
+    @param[in] devices A mapping with all the connected devices
 */
 Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
+{
+    updateWebsite();
+}
+
+/*!
+    @brief Deconstructor for the website class
+*/
+Website::~Website()
+{
+}
+
+/*!
+    @brief Packs all device variables in a JSON object
+    @return Returns a JSON string with all device info.
+*/
+string Website::GetDeviceInfo()
+{
+    json deviceInfo = {
+        {"UUID", uuid},
+        {"Type", type},
+        {"Status", status}};
+
+    return deviceInfo.dump();
+}
+
+/*!
+    @brief Message handler for incoming messages for the website
+    @param[in] message The incoming message
+*/
+void Website::HandleMessage(string message)
+{
+    json jsonMessage = json::parse(message);
+    if (jsonMessage["command"] == WEBSITE_UPDATE)
+    {
+        updateWebsite();
+    }
+    else if (jsonMessage["command"] == WEBSITE_FORWARD)
+    {
+        string type = jsonMessage["value"]["Type"];
+        getDeviceByType(type)->HandleMessage(jsonMessage["value"].dump());
+    }
+}
+
+/*!
+    @brief Sends message to the website with updated information.
+*/
+void Website::updateWebsite()
 {
     map<string, Device *>::iterator it;
 
@@ -34,37 +81,4 @@ Website::Website(string uuid, string type, SocketServer *server, map<string, Dev
     }
 
     socketServer->SendMessage(uuid, jsonMessage.dump());
-}
-
-/*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
-*/
-Website::~Website()
-{
-}
-
-/*!
-    @brief Packs all device variables in a JSON object, no variables implemented
-    @return Returns a JSON string with all device info.
-*/
-string Website::GetDeviceInfo()
-{
-    json deviceInfo = {
-        {"UUID", uuid},
-        {"Type", type},
-        {"Status", status}};
-
-    return deviceInfo.dump();
-}
-
-/*!
-    @brief Temporary, needs implementation
-    @param[in] 
-    @return 
-*/
-void Website::HandleMessage(string message)
-{
-    socketServer->SendMessage(uuid, message);
 }
