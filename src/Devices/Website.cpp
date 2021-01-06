@@ -50,7 +50,6 @@ string Website::GetDeviceInfo()
 void Website::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
-    cout << jsonMessage["value"].dump() << endl;
     if (jsonMessage["command"] == WEBSITE_UPDATE)
     {
         updateWebsite();
