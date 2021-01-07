@@ -5,25 +5,31 @@
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
+#include <map>
 
+using std::map;
 using std::string;
 
 class Device
 {
 public:
-    Device(string uuid, string type, SocketServer *server);
+    Device(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
     ~Device();
-    string getUUID();
-    string getType();
-    DeviceStatus getStatus();
-    virtual string getDeviceInfo() = 0;
-    virtual void handleMessage(string message) = 0;
+    string GetUUID();
+    string GetType();
+    DeviceStatus GetStatus();
+    virtual string GetDeviceInfo() = 0;
+    virtual void HandleMessage(string message) = 0;
 
 protected:
+    Device *getDeviceByType(string type);
+    string newMessage(string p_uuid, string p_type, int p_command);
+
     string uuid;
     string type;
     DeviceStatus status;
     SocketServer *socketServer;
+    map<string, Device *> *devices;
 };
 
 #endif

@@ -14,7 +14,7 @@ using std::string;
     @param[in] 
     @return 
 */
-ExampleDevice::ExampleDevice(string uuid, string type, SocketServer *server) : Device(uuid, type, server), aVariable(false)
+ExampleDevice::ExampleDevice(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), aVariable(false)
 {
 }
 
@@ -31,7 +31,7 @@ ExampleDevice::~ExampleDevice()
     @brief Packs all device variables in a JSON object.
     @return Returns a JSON string with all device info.
 */
-string ExampleDevice::getDeviceInfo()
+string ExampleDevice::GetDeviceInfo()
 {
     json deviceInfo = {
         {"UUID", uuid},
@@ -42,6 +42,6 @@ string ExampleDevice::getDeviceInfo()
     return deviceInfo.dump();
 }
 
-void ExampleDevice::handleMessage(string message){
+void ExampleDevice::HandleMessage(string message){
     socketServer->SendMessage(uuid, message);
 }

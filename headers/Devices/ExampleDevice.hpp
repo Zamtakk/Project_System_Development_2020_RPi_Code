@@ -11,10 +11,10 @@ using std::string;
 class ExampleDevice : public Device
 {
 public:
-    ExampleDevice(string uuid, string type, SocketServer *server);
+    ExampleDevice(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
     ~ExampleDevice();
-    string getDeviceInfo();
-    void handleMessage(string message);
+    string GetDeviceInfo();
+    void HandleMessage(string message);
 
 private:
     bool aVariable;
