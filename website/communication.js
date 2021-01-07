@@ -143,9 +143,9 @@ socket.onmessage = function (event) {
 	}
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_SWITCH_CHANGE) {
 		if(jsonMessage["value"]){
-			document.getElementById("wib_switch").value = "on";
+			document.getElementById("wib_switch").innerHTML = "on";
 		}else{
-			document.getElementById("wib_switch").value = "off";
+			document.getElementById("wib_switch").innerHTML = "off";
 		}
 	}
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_LED_CHANGE) {

@@ -19,10 +19,10 @@ using std::to_string;
     @return 
 */
 WIB::WIB(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
-	: Device(uuid, type, server, devices),
-	  ledState(false),
-	  switchState(false),
-	  potValue(0)
+    : Device(uuid, type, server, devices),
+      ledState(false),
+      switchState(false),
+      potValue(0)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
     jsonMessage["value"] = "";
@@ -45,15 +45,15 @@ WIB::~WIB()
 */
 string WIB::GetDeviceInfo()
 {
-	json deviceInfo = {
-		{"UUID", uuid},
-		{"Type", type},
-		{"Status", status},
-		{"ledState", ledState},
-		{"switchState", switchState},
-		{"potValue", potValue}};
+    json deviceInfo = {
+        {"UUID", uuid},
+        {"Type", type},
+        {"Status", status},
+        {"ledState", ledState},
+        {"switchState", switchState},
+        {"potValue", potValue}};
 
-	return deviceInfo.dump();
+    return deviceInfo.dump();
 }
 
 /*!
@@ -65,28 +65,36 @@ void WIB::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
 
-    switch ((WibCommands)jsonMessage["command"])
+    switch ((int)jsonMessage["command"])
     {
     case DEVICEINFO:
+    {
         ledState = (bool)jsonMessage["ledState"];
         switchState = (bool)jsonMessage["switchState"];
         potValue = (int)jsonMessage["potValue"];
-        
+
         Device *website = getDeviceByType("Website");
         if (website == nullptr)
             break;
 
-        dynamic_cast<Website*>(website)->updateWebsite();
+        dynamic_cast<Website *>(website)->updateWebsite();
         break;
+    }
     case WIB_SWITCH_CHANGE:
+    {
         switchStateOn((bool)jsonMessage["value"]);
         break;
+    }
     case WIB_LED_CHANGE:
+    {
         ledStateOn((bool)jsonMessage["value"]);
         break;
+    }
     case WIB_POTMETER_CHANGE:
+    {
         potValueChange((int)jsonMessage["value"]);
         break;
+    }
     default:
         break;
     }
