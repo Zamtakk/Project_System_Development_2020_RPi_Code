@@ -1,4 +1,5 @@
 #include "Devices/WIB.hpp"
+#include "Devices/Website.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -66,7 +67,19 @@ void WIB::HandleMessage(string message)
 
     switch ((WibCommands)jsonMessage["command"])
     {
-    case WIB_BUTTON_CHANGE:
+    case DEVICEINFO:
+        ledState = (bool)jsonMessage["ledState"];
+        switchState = (bool)jsonMessage["switchState"];
+        potValue = (bool)jsonMessage["potValue"];
+        
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        // dynamic_cast<Website*>(website)->
+
+        break;
+    case WIB_SWITCH_CHANGE:
         switchStateOn((bool)jsonMessage["value"]);
         break;
     case WIB_LED_CHANGE:
@@ -107,6 +120,14 @@ bool WIB::getSwitchState()
 */
 void WIB::potValueChange(int potValue)
 {
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, WIB_POTMETER_CHANGE));
+    jsonMessage["value"] = potValue;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
@@ -116,6 +137,16 @@ void WIB::potValueChange(int potValue)
 */
 void WIB::switchStateOn(bool stateOn)
 {
+    ledStateOn(stateOn);
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, WIB_SWITCH_CHANGE));
+    jsonMessage["value"] = stateOn;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
@@ -125,4 +156,14 @@ void WIB::switchStateOn(bool stateOn)
 */
 void WIB::ledStateOn(bool stateOn)
 {
+    json jsonMessage = json::parse(newMessage(uuid, type, WIB_LED_CHANGE));
+    jsonMessage["value"] = stateOn;
+
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
