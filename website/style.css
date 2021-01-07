@@ -127,6 +127,11 @@ p {
   color: red;
 }
 
+.status_connected {
+  color: green;
+  font-weight: bold;
+}
+
 .device-status {
   /* vertical-align: top; */
   width: 200px;

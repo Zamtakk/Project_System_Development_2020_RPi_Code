@@ -3,6 +3,8 @@
 #include "Devices/ExampleDevice.hpp"
 #include "Devices/Chair.hpp"
 #include "Devices/Website.hpp"
+#include "Devices/SimulatedDevice.hpp"
+#include "Devices/Bed.hpp"
 
 #include "json.hpp"
 
@@ -63,6 +65,20 @@ int main()
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Website *newDevice = new Website(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "SimulatedDevice")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                SimulatedDevice *newDevice = new SimulatedDevice(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Bed")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Bed *newDevice = new Bed(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
         }

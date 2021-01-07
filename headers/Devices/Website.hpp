@@ -15,6 +15,9 @@ public:
     ~Website();
     string GetDeviceInfo();
     void HandleMessage(string message);
+
+private:
+    void updateWebsite();
 };
 
 #endif

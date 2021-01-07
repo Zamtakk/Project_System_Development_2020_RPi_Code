@@ -1,5 +1,5 @@
-#ifndef CHAIR_HPP
-#define CHAIR_HPP
+#ifndef BED_HPP
+#define BED_HPP
 
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
@@ -8,22 +8,19 @@
 
 using std::string;
 
-class Chair : public Device
+class Bed : public Device
 {
 public:
-    Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
-    ~Chair();
+    Bed(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
+    ~Bed();
     string GetDeviceInfo();
     void HandleMessage(string message);
     bool IsLedOn();
-    bool IsVibratorOn();
 
 private:
     void pressureSensorChange(int pressureValue);
     void buttonPress(bool buttonPressed);
     void ledStateOn(bool stateOn);
-    void vibratorStateOn(bool stateOn);
-    bool vibratorState;
     bool ledState;
     int pressureValue;
 };
