@@ -1,4 +1,5 @@
 #include "Devices/Bed.hpp"
+#include "Devices/Website.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -21,6 +22,13 @@ Bed::Bed(string uuid, string type, SocketServer *server, map<string, Device *> *
       ledState(false),
       pressureValue(0)
 {
+    Device *website = getDeviceByType("Website");
+	if (website == nullptr)
+	{
+		return;
+	}
+
+	dynamic_cast<Website*>(website)->updateWebsite();
 }
 
 /*!

@@ -1,4 +1,5 @@
 #include "Devices/Door.hpp"
+#include "Devices/Website.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -21,6 +22,13 @@ Door::Door(string uuid, string type, SocketServer *server, map<string, Device *>
       doorState(false),
       doorLocked(false)
 {
+    Device *website = getDeviceByType("Website");
+	if (website == nullptr)
+	{
+		return;
+	}
+
+	dynamic_cast<Website*>(website)->updateWebsite();
 }
 
 /*!
