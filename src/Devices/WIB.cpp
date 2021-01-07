@@ -70,7 +70,7 @@ void WIB::HandleMessage(string message)
     case DEVICEINFO:
         ledState = (bool)jsonMessage["ledState"];
         switchState = (bool)jsonMessage["switchState"];
-        potValue = (bool)jsonMessage["potValue"];
+        potValue = (int)jsonMessage["potValue"];
         
         Device *website = getDeviceByType("Website");
         if (website == nullptr)
