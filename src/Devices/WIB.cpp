@@ -76,8 +76,7 @@ void WIB::HandleMessage(string message)
         if (website == nullptr)
             break;
 
-        // dynamic_cast<Website*>(website)->
-
+        dynamic_cast<Website*>(website)->updateWebsite();
         break;
     case WIB_SWITCH_CHANGE:
         switchStateOn((bool)jsonMessage["value"]);
