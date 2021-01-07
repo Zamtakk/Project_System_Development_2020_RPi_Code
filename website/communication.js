@@ -74,6 +74,17 @@ async function sendSocket(elementId) {
 			value: parseInt(check.value)
 		};
 	}
+	else if (elementId == "wib_led") {
+		if (document.getElementById("wib_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("wib_led");
+		value = {
+			UUID: document.getElementById("wib_uuid").innerHTML,
+			Type: "WIB",
+			command: WibCommands.WIB_LED_CHANGE,
+			value: check.checked
+		};
+	}
 	else {
 		return;
 	}
@@ -130,6 +141,19 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED3_CHANGE) {
 		document.getElementById("simulation_light_3_slider").value = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_SWITCH_CHANGE) {
+		if(jsonMessage["value"]){
+			document.getElementById("wib_switch").value = "on";
+		}else{
+			document.getElementById("wib_switch").value = "off";
+		}
+	}
+	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_LED_CHANGE) {
+		document.getElementById("wib_led").checked = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_POTMETER_CHANGE) {
+		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
+	}
 }
 
 /*!
@@ -142,7 +166,7 @@ async function updateDeviceInformation(deviceInformation) {
 		switch (deviceInformation["value"][i]["Type"]) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("fridge_status").innerHTML = "Connected";
 					document.getElementById("fridge_status").className = "status_connected";
@@ -150,7 +174,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("lamp_status").innerHTML = "Connected";
 					document.getElementById("lamp_status").className = "status_connected";
@@ -158,7 +182,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("door_status").innerHTML = "Connected";
 					document.getElementById("door_status").className = "status_connected";
@@ -166,7 +190,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("chair_status").innerHTML = "Connected";
 					document.getElementById("chair_status").className = "status_connected";
@@ -174,7 +198,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Bed":
 				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("bed_status").innerHTML = "Connected";
 					document.getElementById("bed_status").className = "status_connected";
@@ -182,7 +206,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Column":
 				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("column_status").innerHTML = "Connected";
 					document.getElementById("column_status").className = "status_connected";
@@ -190,7 +214,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("wall_status").innerHTML = "Connected";
 					document.getElementById("wall_status").className = "status_connected";
@@ -198,7 +222,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("simulation_status").innerHTML = "Connected";
 					document.getElementById("simulation_status").className = "status_connected";
@@ -206,11 +230,14 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
 				{
 					document.getElementById("wib_status").innerHTML = "Connected";
 					document.getElementById("wib_status").className = "status_connected";
 				}
+				document.getElementById("wib_switch").checked = deviceInformation["value"][i]["switchState"];
+				document.getElementById("wib_led").checked = deviceInformation["value"][i]["ledState"];
+				document.getElementById("wib_potmeter").checked = deviceInformation["value"][i]["potValue"];
 				break;
 			default:
 				break;
