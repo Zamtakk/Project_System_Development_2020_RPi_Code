@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 const uuid = "0000000001";
 const type = "Website";
 
@@ -40,6 +40,42 @@ async function sendSocket(elementId) {
 			command: BedCommands.BED_BUTTON_CHANGE,
 			value: check.checked
 		};
+	}
+	else if (elementId == "simulation_light_1_slider") {
+		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("simulation_light_1_slider");
+		value = {
+			UUID: document.getElementById("simulation_uuid").innerHTML,
+			Type: "SimulatedDevice",
+			command: SimulatedDeviceCommands.SIMULATED_LED1_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
+	else if (elementId == "simulation_light_2_slider") {
+		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("simulation_light_2_slider");
+		value = {
+			UUID: document.getElementById("simulation_uuid").innerHTML,
+			Type: "SimulatedDevice",
+			command: SimulatedDeviceCommands.SIMULATED_LED2_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
+	else if (elementId == "simulation_light_3_slider") {
+		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("simulation_light_3_slider");
+		value = {
+			UUID: document.getElementById("simulation_uuid").innerHTML,
+			Type: "SimulatedDevice",
+			command: SimulatedDeviceCommands.SIMULATED_LED3_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
+	else {
+		return;
 	}
 	var msg = {
 		UUID: uuid,
@@ -85,6 +121,15 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
 		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED1_CHANGE) {
+		document.getElementById("simulation_light_1_slider").value = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED2_CHANGE) {
+		document.getElementById("simulation_light_2_slider").value = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED3_CHANGE) {
+		document.getElementById("simulation_light_3_slider").value = jsonMessage["value"];
+	}
 }
 
 /*!
@@ -99,46 +144,55 @@ async function updateDeviceInformation(deviceInformation) {
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("fridge_status").innerHTML = "Connected";
+					document.getElementById("fridge_status").className = "status_connected";
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("lamp_status").innerHTML = "Connected";
+					document.getElementById("lamp_status").className = "status_connected";
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("door_status").innerHTML = "Connected";
+					document.getElementById("door_status").className = "status_connected";
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("chair_status").innerHTML = "Connected";
+					document.getElementById("chair_status").className = "status_connected";
 				break;
 			case "Bed":
 				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("bed_status").innerHTML = "Connected";
+					document.getElementById("bed_status").className = "status_connected";
 				break;
 			case "Column":
 				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("column_status").innerHTML = "Connected";
+					document.getElementById("column_status").className = "status_connected";
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("wall_status").innerHTML = "Connected";
+					document.getElementById("wall_status").className = "status_connected";
 				break;
-			case "Simulation":
+			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("simulation_status").innerHTML = "Connected";
+					document.getElementById("simulation_status").className = "status_connected";
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
 					document.getElementById("wib_status").innerHTML = "Connected";
+					document.getElementById("wib_status").className = "status_connected";
 				break;
 			default:
 				break;
@@ -233,8 +287,8 @@ const SimulatedDeviceCommands =
 	SIMULATED_BUTTON2_CHANGE: 11001,
 	SIMULATED_LED1_CHANGE: 11002,
 	SIMULATED_LED2_CHANGE: 11003,
-	SIMULATED_LED3_CHANGE: 11003,
-	SIMULATED_POTMETER_CHANGE: 11004
+	SIMULATED_LED3_CHANGE: 11004,
+	SIMULATED_POTMETER_CHANGE: 11005
 };
 
 const WibCommands =
