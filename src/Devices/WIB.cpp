@@ -19,10 +19,8 @@ using std::to_string;
 */
 WIB::WIB(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
 	: Device(uuid, type, server, devices),
-	  ledState1(false),
-	  ledState2(false),
-	  ledState3(false),
-	  ledState4(false),
+	  ledState(false),
+	  switchState(false),
 	  potValue(0)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
@@ -50,10 +48,8 @@ string WIB::GetDeviceInfo()
 		{"UUID", uuid},
 		{"Type", type},
 		{"Status", status},
-		{"ledState0", ledState1},
-		{"ledState1", ledState2},
-		{"ledState2", ledState3},
-		{"ledState3", ledState4},
+		{"ledState", ledState},
+		{"switchState", switchState},
 		{"potValue", potValue}};
 
 	return deviceInfo.dump();
@@ -70,29 +66,11 @@ void WIB::HandleMessage(string message)
 
     switch ((WibCommands)jsonMessage["command"])
     {
-    case WIB_BUTTON1_CHANGE:
-        swtichStateOn(1, (bool)jsonMessage["value"]);
+    case WIB_BUTTON_CHANGE:
+        switchStateOn((bool)jsonMessage["value"]);
         break;
-    case WIB_BUTTON2_CHANGE:
-        swtichStateOn(2, (bool)jsonMessage["value"]);
-        break;
-    case WIB_BUTTON3_CHANGE:
-        swtichStateOn(3, (bool)jsonMessage["value"]);
-        break;
-    case WIB_BUTTON4_CHANGE:
-        swtichStateOn(4, (bool)jsonMessage["value"]);
-        break;
-    case WIB_LED1_CHANGE:
-        ledStateOn(1, (bool)jsonMessage["value"]);
-        break;
-    case WIB_LED2_CHANGE:
-        ledStateOn(2, (bool)jsonMessage["value"]);
-        break;
-    case WIB_LED3_CHANGE:
-        ledStateOn(3, (bool)jsonMessage["value"]);
-        break;
-    case WIB_LED4_CHANGE:
-        ledStateOn(4, (bool)jsonMessage["value"]);
+    case WIB_LED_CHANGE:
+        ledStateOn((bool)jsonMessage["value"]);
         break;
     case WIB_POTMETER_CHANGE:
         potValueChange((int)jsonMessage["value"]);
@@ -107,28 +85,9 @@ void WIB::HandleMessage(string message)
     @param[in] 
     @return 
 */
-bool WIB::isLedOn(int ledNr)
+bool WIB::isLedOn()
 {
-    if (ledNr == 1)
-    {
-        return ledState1;
-    }
-    else if (ledNr == 2)
-    {
-        return ledState2;
-    }
-    else if (ledNr == 3)
-    {
-        return ledState3;
-    }
-    else if (ledNr == 4)
-    {
-        return ledState4;
-    }
-    else
-    {
-        return false;
-    }
+    return ledState;
 }
 
 /*!
@@ -136,8 +95,9 @@ bool WIB::isLedOn(int ledNr)
     @param[in] 
     @return 
 */
-bool WIB::getSwitchState(int switchNr)
+bool WIB::getSwitchState()
 {
+    return switchState;
 }
 
 /*!
@@ -154,7 +114,7 @@ void WIB::potValueChange(int potValue)
     @param[in] 
     @return 
 */
-void WIB::swtichStateOn(int switchNr, bool stateOn)
+void WIB::switchStateOn(bool stateOn)
 {
 }
 
@@ -163,6 +123,6 @@ void WIB::swtichStateOn(int switchNr, bool stateOn)
     @param[in] 
     @return 
 */
-void WIB::ledStateOn(int LedNr, bool stateOn)
+void WIB::ledStateOn(bool stateOn)
 {
 }

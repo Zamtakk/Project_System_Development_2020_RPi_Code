@@ -15,18 +15,16 @@ public:
     ~WIB();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool isLedOn(int ledNr);
-    bool getSwitchState(int switchNr);
+    bool isLedOn();
+    bool getSwitchState();
 
 private:
     void potValueChange(int potValue);
-    void swtichStateOn(int switchNr, bool stateOn);
-    void ledStateOn(int LedNr, bool stateOn);
+    void switchStateOn(bool stateOn);
+    void ledStateOn(bool stateOn);
 
-    bool ledState1;
-    bool ledState2;
-    bool ledState3;
-    bool ledState4;
+    bool ledState;
+    bool switchState;
     int potValue;
 };
 
