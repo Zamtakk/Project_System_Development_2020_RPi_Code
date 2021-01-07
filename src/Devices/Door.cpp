@@ -22,13 +22,9 @@ Door::Door(string uuid, string type, SocketServer *server, map<string, Device *>
       doorState(false),
       doorLocked(false)
 {
-    Device *website = getDeviceByType("Website");
-	if (website == nullptr)
-	{
-		return;
-	}
-
-	dynamic_cast<Website*>(website)->updateWebsite();
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+    jsonMessage["value"] = "";
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -52,7 +48,8 @@ string Door::GetDeviceInfo()
         {"Status", status},
         {"ledStateInside", ledStateInside},
         {"ledStateOutside", ledStateOutside},
-        {"doorState", doorState}};
+        {"doorState", doorState},
+        {"doorLocked", doorLocked}};
 
     return deviceInfo.dump();
 }
@@ -60,17 +57,40 @@ string Door::GetDeviceInfo()
 void Door::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
-    if (jsonMessage["command"] == DOOR_BUTTON1_CHANGE)
+
+    switch ((int)jsonMessage["command"])
+    {
+    case DEVICEINFO:
+    {
+        ledStateInside = (bool)jsonMessage["ledStateInside"];
+        ledStateOutside = (bool)jsonMessage["ledStateOutside"];
+        doorState = (bool)jsonMessage["doorState"];
+        doorLocked = (bool)jsonMessage["doorLocked"];
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+        break;
+    }
+    case DOOR_BUTTON1_CHANGE:
     {
         buttonPressInside((bool)jsonMessage["value"]);
+        break;
     }
-    else if (jsonMessage["command"] == DOOR_BUTTON2_CHANGE)
+    case DOOR_BUTTON2_CHANGE:
     {
         buttonPressOutside((bool)jsonMessage["value"]);
+        break;
     }
-    else if (jsonMessage["command"] == DOOR_LOCK_CHANGE)
+    case DOOR_LOCK_CHANGE:
     {
         changeDoorLockState((bool)jsonMessage["value"]);
+        break;
+    }
+    default:
+        break;
     }
 }
 

@@ -175,9 +175,9 @@ socket.onmessage = function (event) {
 		document.getElementById("simulation_light_3_slider").value = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_SWITCH_CHANGE) {
-		if(jsonMessage["value"]){
+		if (jsonMessage["value"]) {
 			document.getElementById("wib_switch").innerHTML = "on";
-		}else{
+		} else {
 			document.getElementById("wib_switch").innerHTML = "off";
 		}
 	}
@@ -199,72 +199,67 @@ async function updateDeviceInformation(deviceInformation) {
 		switch (deviceInformation["value"][i]["Type"]) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("fridge_status").innerHTML = "Connected";
 					document.getElementById("fridge_status").className = "status_connected";
 				}
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("lamp_status").innerHTML = "Connected";
 					document.getElementById("lamp_status").className = "status_connected";
 				}
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("door_status").innerHTML = "Connected";
 					document.getElementById("door_status").className = "status_connected";
 				}
+				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorState"];
+				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorLocked"];
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("chair_status").innerHTML = "Connected";
 					document.getElementById("chair_status").className = "status_connected";
 				}
+				document.getElementById("chair_massage_switch").innerHTML = deviceInformation["value"][i]["vibratorState"];
 				break;
 			case "Bed":
 				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("bed_status").innerHTML = "Connected";
 					document.getElementById("bed_status").className = "status_connected";
 				}
+				document.getElementById("bed_light").innerHTML = deviceInformation["value"][i]["ledState"];
 				break;
 			case "Column":
 				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("column_status").innerHTML = "Connected";
 					document.getElementById("column_status").className = "status_connected";
 				}
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("wall_status").innerHTML = "Connected";
 					document.getElementById("wall_status").className = "status_connected";
 				}
 				break;
 			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("simulation_status").innerHTML = "Connected";
 					document.getElementById("simulation_status").className = "status_connected";
 				}
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED)
-				{
+				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
 					document.getElementById("wib_status").innerHTML = "Connected";
 					document.getElementById("wib_status").className = "status_connected";
 				}
@@ -349,7 +344,7 @@ const DoorCommands =
 	DOOR_LED1_CHANGE: 9002,
 	DOOR_LED2_CHANGE: 9003,
 	DOOR_SERVO_CHANGE: 9004,
-	DOOR_LOCK_CHANGE : 9005
+	DOOR_LOCK_CHANGE: 9005
 };
 
 const WallCommands =

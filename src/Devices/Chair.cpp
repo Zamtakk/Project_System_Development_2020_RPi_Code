@@ -23,13 +23,9 @@ Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device 
 	  ledState(false),
 	  pressureValue(0)
 {
-	Device *website = getDeviceByType("Website");
-	if (website == nullptr)
-	{
-		return;
-	}
-
-	dynamic_cast<Website*>(website)->updateWebsite();
+	json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+	jsonMessage["value"] = "";
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -63,13 +59,34 @@ string Chair::GetDeviceInfo()
 void Chair::HandleMessage(string message)
 {
 	json jsonMessage = json::parse(message);
-	if (jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE)
+
+	switch ((int)jsonMessage["command"])
 	{
-		pressureSensorChange((int)jsonMessage["value"]);
+	case DEVICEINFO:
+	{
+		vibratorState = (bool)jsonMessage["vibratorState"];
+		ledState = (bool)jsonMessage["ledState"];
+		pressureValue = (int)jsonMessage["pressureValue"];
+
+		Device *website = getDeviceByType("Website");
+		if (website == nullptr)
+			break;
+
+		dynamic_cast<Website *>(website)->updateWebsite();
+		break;
 	}
-	else if (jsonMessage["command"] == CHAIR_BUTTON_CHANGE)
+	case CHAIR_BUTTON_CHANGE:
 	{
 		buttonPress((bool)jsonMessage["value"]);
+		break;
+	}
+	case CHAIR_FORCESENSOR_CHANGE:
+	{
+		pressureSensorChange((int)jsonMessage["value"]);
+		break;
+	}
+	default:
+		break;
 	}
 }
 

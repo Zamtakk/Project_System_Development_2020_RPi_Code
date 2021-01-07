@@ -22,13 +22,9 @@ Bed::Bed(string uuid, string type, SocketServer *server, map<string, Device *> *
       ledState(false),
       pressureValue(0)
 {
-    Device *website = getDeviceByType("Website");
-	if (website == nullptr)
-	{
-		return;
-	}
-
-	dynamic_cast<Website*>(website)->updateWebsite();
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+	jsonMessage["value"] = "";
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -61,14 +57,34 @@ string Bed::GetDeviceInfo()
 void Bed::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
-    if (jsonMessage["command"] == BED_FORCESENSOR_CHANGE)
-    {
-        pressureSensorChange((int)jsonMessage["value"]);
-    }
-    else if (jsonMessage["command"] == BED_BUTTON_CHANGE)
-    {
-        buttonPress((bool)jsonMessage["value"]);
-    }
+
+	switch ((int)jsonMessage["command"])
+	{
+	case DEVICEINFO:
+	{
+		ledState = (bool)jsonMessage["ledState"];
+		pressureValue = (int)jsonMessage["pressureValue"];
+
+		Device *website = getDeviceByType("Website");
+		if (website == nullptr)
+			break;
+
+		dynamic_cast<Website *>(website)->updateWebsite();
+		break;
+	}
+	case BED_BUTTON_CHANGE:
+	{
+		buttonPress((bool)jsonMessage["value"]);
+		break;
+	}
+	case BED_FORCESENSOR_CHANGE:
+	{
+		pressureSensorChange((int)jsonMessage["value"]);
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 /*!
