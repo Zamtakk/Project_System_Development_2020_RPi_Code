@@ -8,13 +8,13 @@
 #include "Devices/Door.hpp"
 #include "Devices/WIB.hpp"
 
-    #include "json.hpp"
+#include "json.hpp"
 
 #include <iostream>
 #include <thread>
 #include <string>
 
-    using json = nlohmann::json;
+using json = nlohmann::json;
 
 using std::cout;
 using std::endl;
