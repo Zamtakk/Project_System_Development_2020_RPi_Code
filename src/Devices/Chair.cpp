@@ -62,6 +62,15 @@ void Chair::HandleMessage(string message)
 }
 
 /*!
+    @brief Getter for the led state
+    @returns A boolean to check whether led is on or off
+*/
+bool Chair::IsLedOn()
+{
+	return ledState;
+}
+
+/*!
     @brief Getter for the vibrator state
     @returns A boolean to check whether vibrator is on or off
 */

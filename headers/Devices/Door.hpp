@@ -11,13 +11,24 @@ using std::string;
 class Door : public Device
 {
 public:
-    Door(string uuid, string type, SocketServer *server);
+    Door(string uuid, string type, SocketServer *server, map<string, Device *> *devices);
     ~Door();
-    string getDeviceInfo();
-    void handleMessage(string message);
+    string GetDeviceInfo();
+    void HandleMessage(string message);
+    bool IsLedOnInside();
+    bool IsLedOnOutside();
 
 private:
-    bool aVariable;
+    void changeDoorState(bool doorState);
+    void changeDoorLockState(bool doorLockState);
+    void buttonPressInside(bool buttonPressedInside);
+    void buttonPressOutside(bool buttonPressedOutside);
+    void ledStateOnInside(bool stateOn);
+    void ledStateOnOutside(bool stateOn);
+    bool ledStateInside;
+    bool ledStateOutside;
+    bool doorState;
+    bool doorLocked;
 };
 
 #endif

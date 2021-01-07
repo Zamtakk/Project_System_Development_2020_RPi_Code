@@ -5,6 +5,7 @@
 #include "Devices/Website.hpp"
 #include "Devices/SimulatedDevice.hpp"
 #include "Devices/Bed.hpp"
+#include "Devices/Door.hpp"
 
 #include "json.hpp"
 
@@ -79,6 +80,13 @@ int main()
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Bed *newDevice = new Bed(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Door")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Door *newDevice = new Door(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
         }

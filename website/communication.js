@@ -74,6 +74,39 @@ async function sendSocket(elementId) {
 			value: parseInt(check.value)
 		};
 	}
+	else if (elementId == "door_closeopen_switch") {
+		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("door_closeopen_switch");
+		value = {
+			UUID: document.getElementById("door_uuid").innerHTML,
+			Type: "Door",
+			command: DoorCommands.DOOR_BUTTON1_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "door_unlocklock_switch") {
+		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("door_unlocklock_switch");
+		value = {
+			UUID: document.getElementById("door_uuid").innerHTML,
+			Type: "Door",
+			command: DoorCommands.DOOR_LOCK_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "door_ring_button") {
+		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("door_ring_button");
+		value = {
+			UUID: document.getElementById("door_uuid").innerHTML,
+			Type: "Door",
+			command: DoorCommands.DOOR_BUTTON2_CHANGE,
+			value: check.checked
+		};
+	}
 	else {
 		return;
 	}
@@ -270,7 +303,8 @@ const DoorCommands =
 	DOOR_BUTTON2_CHANGE: 9001,
 	DOOR_LED1_CHANGE: 9002,
 	DOOR_LED2_CHANGE: 9003,
-	DOOR_SERVO_CHANGE: 9004
+	DOOR_SERVO_CHANGE: 9004,
+	DOOR_LOCK_CHANGE : 9005
 };
 
 const WallCommands =
