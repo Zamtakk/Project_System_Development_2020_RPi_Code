@@ -109,6 +109,26 @@ void WIB::HandleMessage(string message)
 */
 bool WIB::isLedOn(int ledNr)
 {
+    if (ledNr == 1)
+    {
+        return ledState1;
+    }
+    else if (ledNr == 2)
+    {
+        return ledState2;
+    }
+    else if (ledNr == 3)
+    {
+        return ledState3;
+    }
+    else if (ledNr == 4)
+    {
+        return ledState4;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /*!
