@@ -14,7 +14,12 @@ using std::string;
     @param[in] 
     @return 
 */
-Door::Door(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), ledStateInside(false), ledStateOutside(false), doorState(false), doorLocked(false)
+Door::Door(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
+    : Device(uuid, type, server, devices),
+      ledStateInside(false),
+      ledStateOutside(false),
+      doorState(false),
+      doorLocked(false)
 {
 }
 
@@ -88,7 +93,8 @@ void Door::changeDoorState(bool stateDoor)
     socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
-void Door::changeDoorLockState(bool doorLockState) {
+void Door::changeDoorLockState(bool doorLockState)
+{
     doorLocked = doorLockState;
 }
 

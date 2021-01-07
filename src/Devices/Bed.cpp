@@ -16,7 +16,10 @@ using std::to_string;
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
 */
-Bed::Bed(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), ledState(false), pressureValue(0)
+Bed::Bed(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
+    : Device(uuid, type, server, devices),
+      ledState(false),
+      pressureValue(0)
 {
 }
 
