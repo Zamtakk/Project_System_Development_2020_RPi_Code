@@ -45,6 +45,9 @@ void StartSocket()
         // Register our message handler
         Server.set_message_handler(bind(&MessageReceived, &Server, ::_1, ::_2));
 
+        //Reuse the port
+        Server.set_reuse_addr(true);
+
         // Listen on port 9002
         Server.listen(9002);
 

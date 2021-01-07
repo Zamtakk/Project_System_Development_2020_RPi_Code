@@ -1,4 +1,5 @@
 #include "Devices/SimulatedDevice.hpp"
+#include "Devices/Website.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -63,8 +64,21 @@ void SimulatedDevice::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
 
-    switch ((SimulatedDeviceCommands)jsonMessage["command"])
+    switch ((int)jsonMessage["command"])
     {
+    case DEVICEINFO:
+    {
+        led1Value = (int)jsonMessage["led1Value"];
+        led2Value = (int)jsonMessage["led2Value"];
+        led3Value = (int)jsonMessage["led3Value"];
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+        break;
+    }
     case SIMULATED_BUTTON1_CHANGE:
         buttonPress(1, (bool)jsonMessage["value"]);
         break;
