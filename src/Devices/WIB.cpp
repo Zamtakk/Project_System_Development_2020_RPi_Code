@@ -19,10 +19,10 @@ using std::to_string;
 */
 WIB::WIB(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
 	: Device(uuid, type, server, devices),
-	  ledState0(false),
 	  ledState1(false),
 	  ledState2(false),
 	  ledState3(false),
+	  ledState4(false),
 	  potValue(0)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
@@ -50,10 +50,10 @@ string WIB::GetDeviceInfo()
 		{"UUID", uuid},
 		{"Type", type},
 		{"Status", status},
-		{"ledState0", ledState0},
-		{"ledState1", ledState1},
-		{"ledState2", ledState2},
-		{"ledState3", ledState3},
+		{"ledState0", ledState1},
+		{"ledState1", ledState2},
+		{"ledState2", ledState3},
+		{"ledState3", ledState4},
 		{"potValue", potValue}};
 
 	return deviceInfo.dump();
