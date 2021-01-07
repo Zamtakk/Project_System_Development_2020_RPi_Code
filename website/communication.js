@@ -143,56 +143,74 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("fridge_status").innerHTML = "Connected";
 					document.getElementById("fridge_status").className = "status_connected";
+				}
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("lamp_status").innerHTML = "Connected";
 					document.getElementById("lamp_status").className = "status_connected";
+				}
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("door_status").innerHTML = "Connected";
 					document.getElementById("door_status").className = "status_connected";
+				}
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("chair_status").innerHTML = "Connected";
 					document.getElementById("chair_status").className = "status_connected";
+				}
 				break;
 			case "Bed":
 				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("bed_status").innerHTML = "Connected";
 					document.getElementById("bed_status").className = "status_connected";
+				}
 				break;
 			case "Column":
 				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("column_status").innerHTML = "Connected";
 					document.getElementById("column_status").className = "status_connected";
+				}
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("wall_status").innerHTML = "Connected";
 					document.getElementById("wall_status").className = "status_connected";
+				}
 				break;
 			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("simulation_status").innerHTML = "Connected";
 					document.getElementById("simulation_status").className = "status_connected";
+				}
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				if (deviceInformation["value"][0]["Status"] == DeviceStatus.CONNECTED)
+				{
 					document.getElementById("wib_status").innerHTML = "Connected";
 					document.getElementById("wib_status").className = "status_connected";
+				}
 				break;
 			default:
 				break;
@@ -293,13 +311,7 @@ const SimulatedDeviceCommands =
 
 const WibCommands =
 {
-	WIB_BUTTON1_CHANGE: 12000,
-	WIB_BUTTON2_CHANGE: 12001,
-	WIB_BUTTON3_CHANGE: 12002,
-	WIB_BUTTON4_CHANGE: 12003,
-	WIB_LED1_CHANGE: 12004,
-	WIB_LED2_CHANGE: 12005,
-	WIB_LED3_CHANGE: 12006,
-	WIB_LED4_CHANGE: 12007,
-	WIB_POTMETER_CHANGE: 12008
+	WIB_SWITCH_CHANGE: 12000,
+	WIB_LED_CHANGE: 12001,
+	WIB_POTMETER_CHANGE: 12002
 };
