@@ -256,6 +256,9 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("simulation_status").innerHTML = "Connected";
 					document.getElementById("simulation_status").className = "status_connected";
 				}
+				document.getElementById("simulation_light_1_slider").value = deviceInformation["value"][i]["led1Value"];
+				document.getElementById("simulation_light_2_slider").value = deviceInformation["value"][i]["led2Value"];
+				document.getElementById("simulation_light_3_slider").value = deviceInformation["value"][i]["led3Value"];
 				break;
 			case "WIB":
 				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
