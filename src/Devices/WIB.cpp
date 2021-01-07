@@ -66,6 +66,40 @@ string WIB::GetDeviceInfo()
 */
 void WIB::HandleMessage(string message)
 {
+    json jsonMessage = json::parse(message);
+
+    switch ((WibCommands)jsonMessage["command"])
+    {
+    case WIB_BUTTON1_CHANGE:
+        swtichStateOn(1, (bool)jsonMessage["value"]);
+        break;
+    case WIB_BUTTON2_CHANGE:
+        swtichStateOn(2, (bool)jsonMessage["value"]);
+        break;
+    case WIB_BUTTON3_CHANGE:
+        swtichStateOn(3, (bool)jsonMessage["value"]);
+        break;
+    case WIB_BUTTON4_CHANGE:
+        swtichStateOn(4, (bool)jsonMessage["value"]);
+        break;
+    case WIB_LED1_CHANGE:
+        ledStateOn(1, (bool)jsonMessage["value"]);
+        break;
+    case WIB_LED2_CHANGE:
+        ledStateOn(2, (bool)jsonMessage["value"]);
+        break;
+    case WIB_LED3_CHANGE:
+        ledStateOn(3, (bool)jsonMessage["value"]);
+        break;
+    case WIB_LED4_CHANGE:
+        ledStateOn(4, (bool)jsonMessage["value"]);
+        break;
+    case WIB_POTMETER_CHANGE:
+        potValueChange((int)jsonMessage["value"]);
+        break;
+    default:
+        break;
+    }
 }
 
 /*!

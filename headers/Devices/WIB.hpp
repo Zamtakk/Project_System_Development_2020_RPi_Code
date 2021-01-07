@@ -23,10 +23,10 @@ private:
     void swtichStateOn(int switchNr, bool stateOn);
     void ledStateOn(int LedNr, bool stateOn);
 
-    bool ledState0;
     bool ledState1;
     bool ledState2;
     bool ledState3;
+    bool ledState4;
     int potValue;
 };
 
