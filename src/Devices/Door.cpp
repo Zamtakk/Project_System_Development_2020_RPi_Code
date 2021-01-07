@@ -132,7 +132,7 @@ void Door::buttonPressInside(bool buttonPressedInside)
     {
         changeDoorState(false);
     }
-    else if (!doorState && buttonPressedInside)
+    else if (!doorState && buttonPressedInside && !doorLocked) 
     {
         changeDoorState(true);
     }
