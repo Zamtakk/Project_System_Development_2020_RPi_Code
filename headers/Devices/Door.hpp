@@ -27,7 +27,7 @@ private:
     void ledStateOnOutside(bool stateOn);
     bool ledStateInside;
     bool ledStateOutside;
-    bool doorState;
+    bool doorOpen;
     bool doorLocked;
 };
 

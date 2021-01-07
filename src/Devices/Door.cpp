@@ -19,7 +19,7 @@ Door::Door(string uuid, string type, SocketServer *server, map<string, Device *>
     : Device(uuid, type, server, devices),
       ledStateInside(false),
       ledStateOutside(false),
-      doorState(false),
+      doorOpen(false),
       doorLocked(false)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
@@ -48,7 +48,7 @@ string Door::GetDeviceInfo()
         {"Status", status},
         {"ledStateInside", ledStateInside},
         {"ledStateOutside", ledStateOutside},
-        {"doorState", doorState},
+        {"doorOpen", doorOpen},
         {"doorLocked", doorLocked}};
 
     return deviceInfo.dump();
@@ -64,7 +64,7 @@ void Door::HandleMessage(string message)
     {
         ledStateInside = (bool)jsonMessage["ledStateInside"];
         ledStateOutside = (bool)jsonMessage["ledStateOutside"];
-        doorState = (bool)jsonMessage["doorState"];
+        doorOpen = (bool)jsonMessage["doorOpen"];
         doorLocked = (bool)jsonMessage["doorLocked"];
 
         Device *website = getDeviceByType("Website");
@@ -114,10 +114,10 @@ bool Door::IsLedOnOutside()
 
 void Door::changeDoorState(bool stateDoor)
 {
-    doorState = stateDoor;
+    doorOpen = stateDoor;
 
     json jsonMessage = json::parse(newMessage(uuid, type, DOOR_SERVO_CHANGE));
-    jsonMessage["value"] = doorState;
+    jsonMessage["value"] = doorOpen;
     socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
@@ -128,11 +128,11 @@ void Door::changeDoorLockState(bool doorLockState)
 
 void Door::buttonPressInside(bool buttonPressedInside)
 {
-    if (doorState && buttonPressedInside)
+    if (doorOpen && buttonPressedInside)
     {
         changeDoorState(false);
     }
-    else if (!doorState && buttonPressedInside && !doorLocked)
+    else if (!doorOpen && buttonPressedInside && !doorLocked)
     {
         changeDoorState(true);
     }
@@ -150,15 +150,15 @@ void Door::buttonPressInside(bool buttonPressedInside)
 
 void Door::buttonPressOutside(bool buttonPressedOutside)
 {
-    if (doorState && buttonPressedOutside)
+    if (doorOpen && buttonPressedOutside)
     {
         changeDoorState(false);
     }
-    else if (!doorState && buttonPressedOutside && !doorLocked)
+    else if (!doorOpen && buttonPressedOutside && !doorLocked)
     {
         changeDoorState(true);
     }
-    else if (!doorState && buttonPressedOutside && doorLocked)
+    else if (!doorOpen && buttonPressedOutside && doorLocked)
     {
         //TODO: make call to ring the doorbell
     }
