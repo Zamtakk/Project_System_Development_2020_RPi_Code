@@ -1,4 +1,5 @@
 #include "Devices/Chair.hpp"
+#include "Devices/Website.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -16,8 +17,15 @@ using std::to_string;
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
 */
-Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices), vibratorState(false), ledState(false), pressureValue(0)
+Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
+	: Device(uuid, type, server, devices),
+	  vibratorState(false),
+	  ledState(false),
+	  pressureValue(0)
 {
+	json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+	jsonMessage["value"] = "";
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -51,14 +59,44 @@ string Chair::GetDeviceInfo()
 void Chair::HandleMessage(string message)
 {
 	json jsonMessage = json::parse(message);
-	if (jsonMessage["command"] == CHAIR_FORCESENSOR_CHANGE)
+
+	switch ((int)jsonMessage["command"])
 	{
-		pressureSensorChange((int)jsonMessage["value"]);
+	case DEVICEINFO:
+	{
+		vibratorState = (bool)jsonMessage["vibratorState"];
+		ledState = (bool)jsonMessage["ledState"];
+		pressureValue = (int)jsonMessage["pressureValue"];
+
+		Device *website = getDeviceByType("Website");
+		if (website == nullptr)
+			break;
+
+		dynamic_cast<Website *>(website)->updateWebsite();
+		break;
 	}
-	else if (jsonMessage["command"] == CHAIR_BUTTON_CHANGE)
+	case CHAIR_BUTTON_CHANGE:
 	{
 		buttonPress((bool)jsonMessage["value"]);
+		break;
 	}
+	case CHAIR_FORCESENSOR_CHANGE:
+	{
+		pressureSensorChange((int)jsonMessage["value"]);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+/*!
+    @brief Getter for the led state
+    @returns A boolean to check whether led is on or off
+*/
+bool Chair::IsLedOn()
+{
+	return ledState;
 }
 
 /*!
