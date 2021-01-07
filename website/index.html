@@ -269,13 +269,19 @@
                 <div class="device-status">
                     <p>UUID:</p>
                     <p>Status:</p>
-                    <label for="demoinput" class="normal_text">String to send:</label><br>
-                    <input type="text" id="demoinput" name="demoinput" class="normal_text"><br>
-                    <input type="submit" value="Submit" id="wib_submit" class="normal_text" onclick="sendSocket('wib_submit')">
+                    <p>Switch:</p>
+                    <p>LED off/on:</p>
+                    <p>Potmeter:</p>
                 </div>
                 <div class="device-values">
                     <p id="wib_uuid">0123456789</p>
                     <p id="wib_status" class="status">Disconnected</p>
+                    <p id="wib_switch">off</p>
+                    <label class="switch">
+                        <input type="checkbox" id="wib_led" onclick="sendSocket('wib_led')">
+                        <span class="slider round"></span>
+                    </label>
+                    <p id="wib_potmeter">0</p>
                 </div>
 
                 <div class="device-status">

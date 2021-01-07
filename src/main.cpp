@@ -5,7 +5,11 @@
 #include "Devices/Website.hpp"
 #include "Devices/SimulatedDevice.hpp"
 #include "Devices/Bed.hpp"
+<<<<<<< HEAD
 #include "Devices/Door.hpp"
+=======
+#include "Devices/WIB.hpp"
+>>>>>>> origin/master
 
 #include "json.hpp"
 
@@ -82,11 +86,19 @@ int main()
                 Bed *newDevice = new Bed(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
+<<<<<<< HEAD
             else if (jsonMessage["Type"] == "Door")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Door *newDevice = new Door(newUUID, newType, Socket, &devices);
+=======
+            else if (jsonMessage["Type"] == "WIB")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                WIB *newDevice = new WIB(newUUID, newType, Socket, &devices);
+>>>>>>> origin/master
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
         }
