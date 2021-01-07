@@ -235,9 +235,9 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("wib_status").innerHTML = "Connected";
 					document.getElementById("wib_status").className = "status_connected";
 				}
-				document.getElementById("wib_switch").checked = deviceInformation["value"][i]["switchState"];
+				document.getElementById("wib_switch").innerHTML = deviceInformation["value"][i]["switchState"];
 				document.getElementById("wib_led").checked = deviceInformation["value"][i]["ledState"];
-				document.getElementById("wib_potmeter").checked = deviceInformation["value"][i]["potValue"];
+				document.getElementById("wib_potmeter").innerHTML = deviceInformation["value"][i]["potValue"];
 				break;
 			default:
 				break;
