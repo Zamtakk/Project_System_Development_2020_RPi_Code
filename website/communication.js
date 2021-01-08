@@ -187,6 +187,20 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_POTMETER_CHANGE) {
 		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_SERVO_CHANGE) {
+		if (jsonMessage["value"]) {
+			document.getElementById("door_closeopen_switch").innerHTML = "on";
+		} else {
+			document.getElementById("door_closeopen_switch").innerHTML = "off";
+		}
+	}
+	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
+		if (jsonMessage["value"]) {
+			document.getElementById("door_unlocklock_switch").innerHTML = "on";
+		} else {
+			document.getElementById("door_unlocklock_switch").innerHTML = "off";
+		}
+	}
 }
 
 /*!

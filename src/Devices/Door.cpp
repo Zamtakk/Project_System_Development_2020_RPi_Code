@@ -118,11 +118,25 @@ void Door::changeDoorState(bool stateDoor)
     json jsonMessage = json::parse(newMessage(uuid, type, DOOR_SERVO_CHANGE));
     jsonMessage["value"] = doorOpen;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 void Door::changeDoorLockState(bool doorLockState)
 {
     doorLocked = doorLockState;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, DOOR_LOCK_CHANGE));
+    jsonMessage["value"] = doorLocked;
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 void Door::buttonPressInside(bool buttonPressedInside)
@@ -131,7 +145,7 @@ void Door::buttonPressInside(bool buttonPressedInside)
     {
         changeDoorState(false);
     }
-    else if (!doorOpen && buttonPressedInside)
+    else if (!doorOpen && buttonPressedInside && !doorLocked)
     {
         changeDoorState(true);
     }
