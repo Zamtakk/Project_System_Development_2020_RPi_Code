@@ -223,8 +223,8 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("door_status").innerHTML = "Connected";
 					document.getElementById("door_status").className = "status_connected";
 				}
-				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorOpen"];
-				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorLocked"];
+				document.getElementById("door_closeopen_switch").checked = deviceInformation["value"][i]["doorOpen"];
+				document.getElementById("door_unlocklock_switch").checked = deviceInformation["value"][i]["doorLocked"];
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
