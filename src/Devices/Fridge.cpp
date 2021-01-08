@@ -22,7 +22,9 @@ Fridge::Fridge(string uuid, string type, SocketServer *server, map<string, Devic
       doorOpen(false),
       temperatureValueInside(0),
       temperatureValueOutside(0),
-      coolingValue(0);
+      coolingValue(0),
+      fanState(false),
+      tecState(false)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
     jsonMessage["value"] = "";
@@ -49,7 +51,9 @@ string Fridge::GetDeviceInfo()
         {"doorOpen", doorOpen},
         {"temperatureValueInside", temperatureValueInside},
         {"temperatureValueOutside", temperatureValueOutside},
-        {"coolingValue", coolingValue}};
+        {"coolingValue", coolingValue},
+        {"tecState", tecState},
+        {"fanState", fanState}};
 
     return deviceInfo.dump();
 }
@@ -60,6 +64,43 @@ string Fridge::GetDeviceInfo()
 */
 void Fridge::HandleMessage(string message)
 {
+    json jsonMessage = json::parse(message);
+
+    switch ((int)jsonMessage["command"])
+    {
+    case DEVICEINFO:
+    {
+        doorOpen = (bool)jsonMessage["doorOpen"];
+        temperatureValueInside = (int)jsonMessage["temperatureValueInside"];
+        temperatureValueOutside = (int)jsonMessage["temperatureValueOutside"];
+        tecState = (bool)jsonMessage["tecState"];
+        fanState = (bool)jsonMessage["fanState"];
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+        break;
+    }
+    case FRIDGE_TEMPERATURESENSORINSIDE_CHANGE:
+    {
+        changeCoolingValue(coolingValue);
+        break;
+    }
+    case FRIDGE_COOLINGVALUE_CHANGE:
+    {
+        changeCoolingValue((int)jsonMessage["value"]);
+        break;
+    }
+    case FRIDGE_SWITCH_CHANGE:
+    {
+        doorStateChange((bool)jsonMessage["value"]);
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 /*!
@@ -82,7 +123,7 @@ void Fridge::temperatureSensorChangeInside(int value)
     json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEMPERATURESENSORINSIDE_CHANGE));
     jsonMessage["value"] = temperatureValueInside;
     socketServer->SendMessage(uuid, jsonMessage.dump());
-    
+
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
     {
@@ -104,7 +145,48 @@ void Fridge::temperatureSensorChangeOutside(int value)
     socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
-void Fridge::changeCoolingValue(int value){
+void Fridge::changeCoolingValue(int value)
+{
     coolingValue = value;
+    if (temperatureValueInside > coolingValue + 2)
+    {
+        tecStateOn(true);
+        fanStateOn(true);
+    }
+    else if (temperatureValueInside < coolingValue - 2)
+    {
+        tecStateOn(false);
+        fanStateOn(false);
+    }
+}
 
+void Fridge::tecStateOn(bool stateOn)
+{
+    tecState = stateOn;
+    json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEC_CHANGE));
+    jsonMessage["value"] = tecState;
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+void Fridge::fanStateOn(bool stateOn)
+{
+    fanState = stateOn;
+    json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_FAN_CHANGE));
+    jsonMessage["value"] = fanState;
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+void Fridge::doorStateChange(bool stateOpen)
+{
+    doorOpen = stateOpen;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_SWITCH_CHANGE));
+    jsonMessage["value"] = doorOpen;
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+    {
+        return;
+    }
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

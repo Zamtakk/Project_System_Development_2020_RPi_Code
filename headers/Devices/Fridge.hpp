@@ -20,8 +20,13 @@ public:
 private:
     void temperatureSensorChangeInside(int value);
     void temperatureSensorChangeOutside(int value);
-    void changeCoolingValue (int value);
+    void doorStateChange(bool stateOpen);
+    void changeCoolingValue(int value);
+    void tecStateOn(bool stateOn);
+    void fanStateOn(bool stateOn);
     bool doorOpen;
+    bool fanState;
+    bool tecState;
     int temperatureValueInside;
     int temperatureValueOutside;
     int coolingValue;
