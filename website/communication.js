@@ -81,7 +81,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("door_uuid").innerHTML,
 			Type: "Door",
-			command: DoorCommands.DOOR_BUTTON1_CHANGE,
+			command: DoorCommands.DOOR_SERVO_CHANGE,
 			value: check.checked
 		};
 	}
