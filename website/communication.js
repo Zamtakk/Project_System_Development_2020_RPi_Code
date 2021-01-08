@@ -191,7 +191,7 @@ socket.onmessage = function (event) {
 		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
-		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
+		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
 }
 
