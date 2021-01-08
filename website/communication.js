@@ -37,7 +37,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("bed_uuid").innerHTML,
 			Type: "Bed",
-			command: BedCommands.BED_BUTTON_CHANGE,
+			command: BedCommands.BED_LED_CHANGE,
 			value: check.checked
 		};
 	}
@@ -164,6 +164,9 @@ socket.onmessage = function (event) {
 	}
 	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
 		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_LED_CHANGE) {
+		document.getElementById("bed_light").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED1_CHANGE) {
 		document.getElementById("simulation_light_1_slider").value = jsonMessage["value"];
