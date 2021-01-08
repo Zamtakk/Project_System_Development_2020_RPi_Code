@@ -133,22 +133,15 @@ void Chair::pressureSensorChange(int pressureValueReceived)
 */
 void Chair::buttonPress(bool buttonPressed)
 {
-	if (ledState && buttonPressed)
-	{
-		ledStateOn(false);
-	}
-	else if (!ledState && buttonPressed)
-	{
-		ledStateOn(true);
-	}
-
 	if (vibratorState && buttonPressed)
 	{
 		vibratorStateOn(false);
+		ledStateOn(false);
 	}
 	else if (!vibratorState && buttonPressed)
 	{
 		vibratorStateOn(true);
+		ledStateOn(true);
 	}
 }
 
