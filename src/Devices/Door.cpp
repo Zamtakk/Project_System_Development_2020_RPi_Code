@@ -65,7 +65,6 @@ void Door::HandleMessage(string message)
         ledStateInside = (bool)jsonMessage["ledStateInside"];
         ledStateOutside = (bool)jsonMessage["ledStateOutside"];
         doorOpen = (bool)jsonMessage["doorOpen"];
-        doorLocked = (bool)jsonMessage["doorLocked"];
 
         Device *website = getDeviceByType("Website");
         if (website == nullptr)
