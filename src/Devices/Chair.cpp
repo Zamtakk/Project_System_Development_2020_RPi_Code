@@ -85,6 +85,11 @@ void Chair::HandleMessage(string message)
 		pressureSensorChange((int)jsonMessage["value"]);
 		break;
 	}
+	case CHAIR_VIBRATOR_CHANGE:
+	{
+		vibratorStateOn((bool)jsonMessage["value"]);
+		break;
+	}
 	default:
 		break;
 	}
@@ -136,12 +141,10 @@ void Chair::buttonPress(bool buttonPressed)
 	if (vibratorState && buttonPressed)
 	{
 		vibratorStateOn(false);
-		ledStateOn(false);
 	}
 	else if (!vibratorState && buttonPressed)
 	{
 		vibratorStateOn(true);
-		ledStateOn(true);
 	}
 }
 
@@ -163,8 +166,15 @@ void Chair::ledStateOn(bool stateOn)
 */
 void Chair::vibratorStateOn(bool stateOn)
 {
+	ledStateOn(stateOn);
 	vibratorState = stateOn;
 	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
 	jsonMessage["value"] = vibratorState;
 	socketServer->SendMessage(uuid, jsonMessage.dump());
+
+	Device *website = getDeviceByType("Website");
+	if (website == nullptr)
+		return;
+
+	socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

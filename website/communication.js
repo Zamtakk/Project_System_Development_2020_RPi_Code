@@ -26,7 +26,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("chair_uuid").innerHTML,
 			Type: "Chair",
-			command: ChairCommands.CHAIR_BUTTON_CHANGE,
+			command: ChairCommands.CHAIR_VIBRATOR_CHANGE,
 			value: check.checked
 		};
 	}
@@ -156,11 +156,14 @@ socket.onopen = function (event) {
 */
 socket.onmessage = function (event) {
 	var jsonMessage = JSON.parse(event.data);
-	if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_FORCESENSOR_CHANGE) {
+	if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
+		updateDeviceInformation(jsonMessage);
+	}
+	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_FORCESENSOR_CHANGE) {
 		document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
 	}
-	else if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
-		updateDeviceInformation(jsonMessage);
+	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_VIBRATOR_CHANGE) {
+		document.getElementById("chair_massage_switch").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
 		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
