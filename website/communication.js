@@ -188,18 +188,10 @@ socket.onmessage = function (event) {
 		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_SERVO_CHANGE) {
-		if (jsonMessage["value"]) {
-			document.getElementById("door_closeopen_switch").innerHTML = "on";
-		} else {
-			document.getElementById("door_closeopen_switch").innerHTML = "off";
-		}
+		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
-		if (jsonMessage["value"]) {
-			document.getElementById("door_unlocklock_switch").innerHTML = "on";
-		} else {
-			document.getElementById("door_unlocklock_switch").innerHTML = "off";
-		}
+		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
 	}
 }
 
