@@ -82,6 +82,11 @@ void Bed::HandleMessage(string message)
 		pressureSensorChange((int)jsonMessage["value"]);
 		break;
 	}
+	case BED_LED_CHANGE:
+	{
+		ledStateOn((bool)jsonMessage["value"]);
+		break;
+	}
 	default:
 		break;
 	}
@@ -132,4 +137,12 @@ void Bed::ledStateOn(bool stateOn)
     json jsonMessage = json::parse(newMessage(uuid, type, BED_LED_CHANGE));
     jsonMessage["value"] = ledState;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+    {
+        return;
+    }
+
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
