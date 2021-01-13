@@ -1,5 +1,6 @@
 #include "Devices/Column.hpp"
 #include "CommandTypes.hpp"
+#include "Devices/Website.hpp"
 
 #include "json.hpp"
 
@@ -57,17 +58,40 @@ string Column::GetDeviceInfo()
 void Column::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
-    if (jsonMessage["command"] == COLUMN_GASSENSOR_CHANGE)
+
+    switch ((int)jsonMessage["command"])
+    {
+    case DEVICEINFO:
+    {
+        buzzerState = (bool)jsonMessage["buzzerState"];
+        ledState = (bool)jsonMessage["ledState"];
+        gasSensorValue = (int)jsonMessage["gasSensorValue"];
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+        break;
+    }
+    case COLUMN_GASSENSOR_CHANGE:
     {
         gasSensorChange((int)jsonMessage["value"]);
+        break;
     }
-    else if (jsonMessage["command"] == COLUMN_BUTTON_CHANGE)
+    case COLUMN_BUTTON_CHANGE:
     {
         buttonPress((bool)jsonMessage["value"]);
+        break;
     }
-    else if (jsonMessage["command"] == COLUMN_GASTRESHOLD_CHANGE)
+    case COLUMN_GASTRESHOLD_CHANGE:
     {
         changeGasTreshold((int)jsonMessage["value"]);
+        break;
+    }
+
+    default:
+        break;
     }
 }
 
