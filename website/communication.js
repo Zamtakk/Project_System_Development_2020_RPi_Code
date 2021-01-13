@@ -118,6 +118,17 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "column_smoke_threshold_slider") {
+		if (document.getElementById("column_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("column_smoke_threshold_slider");
+		value = {
+			UUID: document.getElementById("column_uuid").innerHTML,
+			Type: "Column",
+			command: ColumnCommands.COLUMN_GASTRESHOLD_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
 	else {
 		return;
 	}
@@ -199,6 +210,12 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
 		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_LED_CHANGE) {
+		document.getElementById("column_light").innerHTML = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_GASSENSOR_CHANGE) {
+		document.getElementById("column_smoke_level").innerHTML = jsonMessage["value"];
+	}
 }
 
 /*!
@@ -254,6 +271,9 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("column_status").innerHTML = "Connected";
 					document.getElementById("column_status").className = "status_connected";
 				}
+				document.getElementById("column_light").innerHTML = deviceInformation["value"][i]["ledState"];
+				document.getElementById("column_smoke_level").innerHTML = deviceInformation["value"][i]["gasSensorValue"];
+				document.getElementById("column_smoke_threshold_slider").value = deviceInformation["value"][i]["gasSensorTreshold"];
 				break;
 			case "Wall":
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
@@ -336,7 +356,8 @@ const ColumnCommands =
 	COLUMN_BUTTON_CHANGE: 6000,
 	COLUMN_BUZZER_CHANGE: 6001,
 	COLUMN_LED_CHANGE: 6002,
-	COLUMN_GASSENSOR_CHANGE: 6003
+	COLUMN_GASSENSOR_CHANGE: 6003,
+	COLUMN_GASTRESHOLD_CHANGE : 6004
 };
 
 const BedCommands =

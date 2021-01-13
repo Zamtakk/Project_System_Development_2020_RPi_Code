@@ -186,9 +186,9 @@
                     <p id="column_uuid">-</p>
                     <p id="column_status" class="status">Disconnected</p>
                     <p id="column_light">-</p>
-                    <p id="column_smoke_level">- ppm</p>
+                    <p id="column_smoke_level">-</p>
                     <span id="column_smoke_threshold" class="slider_text">-</span><span class="slider_text"> ppm</span>
-                    <input id="column_smoke_threshold_slider" type="range" min="1" max="100" value="25" class="dimmerslider" onchange="sendSocket('column_smoke_threshold_slider')">
+                    <input id="column_smoke_threshold_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('column_smoke_threshold_slider')">
                 </div>
             </div>
         </div>

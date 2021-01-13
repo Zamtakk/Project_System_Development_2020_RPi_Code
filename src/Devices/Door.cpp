@@ -1,5 +1,6 @@
 #include "Devices/Door.hpp"
 #include "Devices/Website.hpp"
+#include "Devices/Column.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -186,13 +187,26 @@ void Door::buttonPressOutside(bool buttonPressedOutside)
     }
     else if (buttonPressedOutside && doorLocked)
     {
-        // Ring doorbell!
         ledStateOnOutside(false);
+
+        Device *column = getDeviceByType("Column");
+        if (column == nullptr)
+            return;
+
+        dynamic_cast<Column*>(column)->BuzzerStateOn(true);
     }
     else if (buttonPressedOutside && !doorLocked && !doorOpen)
     {
         changeDoorState(true);
         ledStateOnOutside(true);
+    }
+    else if(!buttonPressedOutside)
+    {
+        Device *column = getDeviceByType("Column");
+        if (column == nullptr)
+            return;
+
+        dynamic_cast<Column*>(column)->BuzzerStateOn(false);
     }
 }
 
