@@ -118,6 +118,17 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "lamp_dimlevel_slider") {
+		if (document.getElementById("lamp_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("lamp_dimlevel_slider");
+		value = {
+			UUID: document.getElementById("lamp_uuid").innerHTML,
+			Type: "Lamp",
+			command: SimulatedDeviceCommands.LAMP_LED_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
 	else {
 		return;
 	}
@@ -199,6 +210,12 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
 		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_LED_CHANGE) {
+		document.getElementById("lamp_dimlevel_slider").value = deviceInformation["value"][i]["ledValue"];
+	}
+	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_MOVEMENTSENSOR_CHANGE) {
+		document.getElementById("lamp_last_movement").innerHTML = deviceInformation["value"][i]["movementSensorValue"];
+	}
 }
 
 /*!
@@ -222,6 +239,8 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("lamp_status").innerHTML = "Connected";
 					document.getElementById("lamp_status").className = "status_connected";
 				}
+				document.getElementById("lamp_last_movement").innerHTML = deviceInformation["value"][i]["movementSensorValue"];
+				document.getElementById("lamp_dimlevel_slider").value = deviceInformation["value"][i]["ledValue"];
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
