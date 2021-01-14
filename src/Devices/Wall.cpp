@@ -1,5 +1,6 @@
 #include "Devices/Wall.hpp"
 #include "Devices/Website.hpp"
+//#include "Devices/Lamp.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -178,15 +179,21 @@ void Wall::potmeterChange(int value)
 {
     potmeterValue = value;
 
-    Device *website = getDeviceByType("Website");
-    if (website == nullptr)
+    if (useDimmerLamp)
     {
-        return;
-    }
+        //Lamp not yet merge, code should be:
+        /*
+        Device *lamp = getDeviceByType("Lamp");
+        if (lamp == nullptr)
+            return;
 
-    json jsonMessage = json::parse(newMessage(uuid, type, WALL_POTMETER_CHANGE));
-    jsonMessage["value"] = potmeterValue;
-    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
+        dynamic_cast<Lamp *>(lamp)->ledStateUpdate(potmeterValue);
+        */
+    }
+    else if (useDimmerLedstrip)
+    {
+        ledStateUpdate(potmeterValue);
+    }
 }
 
 void Wall::dimmerStateUpdate(string value, bool stateOn)

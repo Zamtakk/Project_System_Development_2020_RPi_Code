@@ -118,6 +118,50 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "wall_curtains_open_closed") {
+		if (document.getElementById("wall_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("wall_curtains_open_closed");
+		value = {
+			UUID: document.getElementById("wall_uuid").innerHTML,
+			Type: "Wall",
+			command: WallCommands.WALL_SCREEN_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "wall_dimmer_strip_enabled") {
+		if (document.getElementById("wall_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("wall_dimmer_strip_enabled");
+		value = {
+			UUID: document.getElementById("wall_uuid").innerHTML,
+			Type: "Wall",
+			command: WallCommands.WALL_LEDSTRIPDIMMER_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "wall_dimmer_light_enabled") {
+		if (document.getElementById("wall_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("wall_dimmer_light_enabled");
+		value = {
+			UUID: document.getElementById("wall_uuid").innerHTML,
+			Type: "Wall",
+			command: WallCommands.WALL_LAMPDIMMER_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "wall_led_slider") {
+		if (document.getElementById("wall_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("wall_led_slider");
+		value = {
+			UUID: document.getElementById("wall_uuid").innerHTML,
+			Type: "Wall",
+			command: WallCommands.WALL_LEDSTRIP_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
 	else {
 		return;
 	}
@@ -199,6 +243,12 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
 		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LEDSTRIP_CHANGE) {
+		document.getElementById("wall_led_slider").value = deviceInformation["value"][i]["ledValue"];
+	}
+	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LDR_CHANGE) {
+		document.getElementById("wall_light_level").innerHTML = deviceInformation["value"][i]["lightSensorValue"];
+	}
 }
 
 /*!
@@ -261,6 +311,10 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("wall_status").innerHTML = "Connected";
 					document.getElementById("wall_status").className = "status_connected";
 				}
+				document.getElementById("wall_led_slider").value = deviceInformation["value"][i]["ledValue"];
+				document.getElementById("wall_curtains_open_closed").checked = deviceInformation["value"][i]["curtainsState"];
+				document.getElementById("wall_dimmer_strip_enabled").checked = deviceInformation["value"][i]["useDimmerLedstrip"];
+				document.getElementById("wall_dimmer_light_enabled").checked = deviceInformation["value"][i]["useDimmerLamp"];
 				break;
 			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
@@ -367,7 +421,9 @@ const WallCommands =
 	WALL_SCREEN_CHANGE: 10000,
 	WALL_LDR_CHANGE: 10001,
 	WALL_POTMETER_CHANGE: 10002,
-	WALL_LEDSTRIP_CHANGE: 10003
+	WALL_LEDSTRIP_CHANGE: 10003,
+	WALL_LAMPDIMMER_CHANGE : 10004,
+    WALL_LEDSTRIPDIMMER_CHANGE : 10005
 };
 
 const SimulatedDeviceCommands =
