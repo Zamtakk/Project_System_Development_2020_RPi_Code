@@ -15,12 +15,13 @@ public:
     ~Lamp();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    int IsLedOn();
+    bool IsLedOn();
 
 private:
     void movementValueChange(int value);
-    void ledStateUpdate(int value);
-    int ledValue;
+    void ledStateUpdate(bool stateOn, int value);
+    int ledDimValue;
+    bool ledOn;
     int movementSensorValue;
 };
 

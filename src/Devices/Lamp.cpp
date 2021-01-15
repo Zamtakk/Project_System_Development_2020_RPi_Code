@@ -17,7 +17,8 @@ using std::string;
 */
 Lamp::Lamp(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      ledValue(0),
+      ledDimValue(0),
+      ledOn(false),
       movementSensorValue(0)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
@@ -44,7 +45,8 @@ string Lamp::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"ledValue", ledValue},
+        {"ledOn", ledOn},
+        {"ledDimValue", ledDimValue},
         {"movementSensorValue", movementSensorValue}};
 
     return deviceInfo.dump();
@@ -58,8 +60,16 @@ void Lamp::HandleMessage(string message)
     {
     case DEVICEINFO:
     {
-        ledValue = (int)jsonMessage["ledValue"];
-        movementSensorValue = (int)jsonMessage["movemenSensorValue"];
+        ledDimValue = (int)jsonMessage["ledValue"];
+        movementSensorValue = (int)jsonMessage["movementSensorValue"];
+        if (ledDimValue > 0)
+        {
+            ledOn = true;
+        }
+        else
+        {
+            ledOn = false;
+        }
 
         Device *website = getDeviceByType("Website");
         if (website == nullptr)
@@ -68,9 +78,14 @@ void Lamp::HandleMessage(string message)
         dynamic_cast<Website *>(website)->updateWebsite();
         break;
     }
-    case LAMP_LED_CHANGE:
+    case LAMP_LED_DIMMER_CHANGE:
     {
-        ledStateUpdate((int)jsonMessage["value"]);
+        ledStateUpdate(ledOn, (int)jsonMessage["value"]);
+        break;
+    }
+    case LAMP_LED_ONOFF_CHANGE:
+    {
+        ledStateUpdate((bool)jsonMessage["value"], ledDimValue);
         break;
     }
     case LAMP_MOVEMENTSENSOR_CHANGE:
@@ -87,9 +102,9 @@ void Lamp::HandleMessage(string message)
     @brief Getter for the inside led state
     @returns A boolean to check whether inside led is on or off
 */
-int Lamp::IsLedOn()
+bool Lamp::IsLedOn()
 {
-    return ledValue;
+    return ledOn;
 }
 
 void Lamp::movementValueChange(int value)
@@ -107,12 +122,21 @@ void Lamp::movementValueChange(int value)
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
-void Lamp::ledStateUpdate(int value)
+void Lamp::ledStateUpdate(bool stateOn, int value)
 {
-    ledValue = value;
+    ledDimValue = value;
+    ledOn = stateOn;
 
-    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_CHANGE));
-    jsonMessage["value"] = ledValue;
+    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_DIMMER_CHANGE));
+
+    if (ledOn)
+    {
+        jsonMessage["value"] = ledDimValue;
+    }
+    else
+    {
+        jsonMessage["value"] = 0;
+    }
     socketServer->SendMessage(uuid, jsonMessage.dump());
 
     Device *website = getDeviceByType("Website");
@@ -120,5 +144,10 @@ void Lamp::ledStateUpdate(int value)
     {
         return;
     }
+    jsonMessage["value"] = ledDimValue;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
+
+    jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_ONOFF_CHANGE));
+    jsonMessage["value"] = ledOn;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
