@@ -282,81 +282,89 @@ void SocketServer::heartbeat()
     vector<string> heartbeats;
     uint64_t curTime;
 
-    while (1)
+    try
     {
-        // Wait before parsing new heartbeats to not overload the system
-        sleep_for(milliseconds(250));
-
-        curTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
-
-        // Aquire lock and get all new messages and update the heartbeat records
-        const lock_guard<mutex> _heartbeatLock(heartbeatLock);
-        while (!heartbeatQueue.empty())
+        while (1)
         {
-            // Get new heartbeat message from the queue
-            msgString = heartbeatQueue.front();
-            heartbeatQueue.pop();
+            // Wait before parsing new heartbeats to not overload the system
+            sleep_for(milliseconds(50));
 
-            // Parse the message to JSON so we can read/write to it.
-            msgJSON = json::parse(msgString);
+            curTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 
-            // Check if we already have a record of this device
-            vector<string>::iterator storedHB = find_if(
-                heartbeats.begin(),
-                heartbeats.end(),
-                [msgJSON](const string &item) {
-                    return (string)json::parse(item)["UUID"] == (string)msgJSON["UUID"];
-                });
-
-            // If we have an earlier record, update it.
-            if (storedHB != heartbeats.end())
+            // Aquire lock and get all new messages and update the heartbeat records
+            const lock_guard<mutex> _heartbeatLock(heartbeatLock);
+            while (!heartbeatQueue.empty())
             {
-                msgJSON = json::parse(*storedHB);
-                msgJSON["heartbeat"]["time"] = curTime;
-                *storedHB = msgJSON.dump();
-            }
-            else
-            {
-                // Add the current unix timestamp as an integer to the value and set the status to connected
-                msgJSON["heartbeat"]["status"] = DISCONNECTED;
-                msgJSON["heartbeat"]["time"] = curTime;
+                // Get new heartbeat message from the queue
+                msgString = heartbeatQueue.front();
+                heartbeatQueue.pop();
 
-                // Add the new record.
-                heartbeats.push_back(msgJSON.dump());
+                // Parse the message to JSON so we can read/write to it.
+                msgJSON = json::parse(msgString);
+
+                // Check if we already have a record of this device
+                vector<string>::iterator storedHB = find_if(
+                    heartbeats.begin(),
+                    heartbeats.end(),
+                    [msgJSON](const string &item) {
+                        return (string)json::parse(item)["UUID"] == (string)msgJSON["UUID"];
+                    });
+
+                // If we have an earlier record, update it.
+                if (storedHB != heartbeats.end())
+                {
+                    msgJSON = json::parse(*storedHB);
+                    msgJSON["heartbeat"]["time"] = curTime;
+                    *storedHB = msgJSON.dump();
+                }
+                else
+                {
+                    // Add the current unix timestamp as an integer to the value and set the status to connected
+                    msgJSON["heartbeat"]["status"] = DISCONNECTED;
+                    msgJSON["heartbeat"]["time"] = curTime;
+
+                    // Add the new record.
+                    heartbeats.push_back(msgJSON.dump());
+                }
             }
+            _heartbeatLock.~lock_guard();
+
+            // Check if any of the heartbeat records is out-of-time and send a new status to the object.
+            const lock_guard<mutex> _messageLock(messageLock);
+            for (vector<string>::iterator hb = heartbeats.begin(); hb != heartbeats.end(); hb++)
+            {
+                msgJSON = json::parse(*hb);
+
+                if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 10000)
+                {
+                    if (msgJSON["heartbeat"]["status"] == DISCONNECTED)
+                        continue;
+                    msgJSON["heartbeat"]["status"] = DISCONNECTED;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+                else if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 1000)
+                {
+                    if (msgJSON["heartbeat"]["status"] == UNSTABLE)
+                        continue;
+                    msgJSON["heartbeat"]["status"] = UNSTABLE;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+                else if (msgJSON["heartbeat"]["status"] != CONNECTED)
+                {
+                    msgJSON["heartbeat"]["status"] = CONNECTED;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+            }
+            _messageLock.~lock_guard();
+            std::fflush(stdout);
         }
-        _heartbeatLock.~lock_guard();
-
-        // Check if any of the heartbeat records is out-of-time and send a new status to the object.
-        const lock_guard<mutex> _messageLock(messageLock);
-        for (vector<string>::iterator hb = heartbeats.begin(); hb != heartbeats.end(); hb++)
-        {
-            msgJSON = json::parse(*hb);
-
-            if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 10000)
-            {
-                if (msgJSON["heartbeat"]["status"] == DISCONNECTED)
-                    break;
-                msgJSON["heartbeat"]["status"] = DISCONNECTED;
-                *hb = msgJSON.dump();
-                messageQueue.push(msgJSON.dump());
-            }
-            else if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 1000)
-            {
-                if (msgJSON["heartbeat"]["status"] == UNSTABLE)
-                    break;
-                msgJSON["heartbeat"]["status"] = UNSTABLE;
-                *hb = msgJSON.dump();
-                messageQueue.push(msgJSON.dump());
-            }
-            else if (msgJSON["heartbeat"]["status"] != CONNECTED)
-            {
-                msgJSON["heartbeat"]["status"] = CONNECTED;
-                *hb = msgJSON.dump();
-                messageQueue.push(msgJSON.dump());
-            }
-        }
-        _messageLock.~lock_guard();
+    }
+    catch (...)
+    {
+        printf("[Heartbeat] HEARTBEAT THREAD ENDED!\n");
         std::fflush(stdout);
     }
 }
