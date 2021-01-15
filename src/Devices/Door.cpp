@@ -94,6 +94,16 @@ void Door::HandleMessage(string message)
         changeDoorState((bool)jsonMessage["value"]);
         break;
     }
+    case HEARTBEAT:
+    {
+        status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+    }
     default:
         break;
     }
