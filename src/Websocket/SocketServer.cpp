@@ -8,13 +8,16 @@ using json = nlohmann::json;
 
 using std::cout;
 using std::endl;
+using std::find_if;
 using std::lock_guard;
 using std::mutex;
 using std::string;
 using std::thread;
 using std::to_string;
 using std::vector;
+using std::chrono::duration_cast;
 using std::chrono::milliseconds;
+using std::chrono::system_clock;
 using std::this_thread::sleep_for;
 
 // Global static pointer used to ensure a single instance of the class.
@@ -82,6 +85,7 @@ SocketServer::SocketServer()
 
     websocketppThread = new thread(StartSocket);
     processRxThread = new thread(&SocketServer::parseIncomingMessages, this);
+    heartbeatThread = new thread(&SocketServer::heartbeat, this);
 }
 
 /*!
@@ -126,11 +130,13 @@ void SocketServer::parseIncomingMessages()
             continue;
         }
 
-        //Display incoming message
-        cout << "[Socket Server] " << "New message: " << websocketppMessage.MessagePointer->get_payload() << endl;
-
         // Parse the message for easy use
         json jsonMessage = json::parse(websocketppMessage.MessagePointer->get_payload());
+
+        //Display incoming message
+        if (jsonMessage["command"] != HEARTBEAT)
+            cout << "[Socket Server] "
+                 << "New message: " << websocketppMessage.MessagePointer->get_payload() << endl;
 
         // Check if the message comes from a registered device
         // If it doesn't, register it if it is a registration message
@@ -149,7 +155,8 @@ void SocketServer::parseIncomingMessages()
         // If a device is registered but a new one comes in, delete the old registration.
         else if (jsonMessage["command"] == REGISTRATION)
         {
-            cout << "[Socket Server] " << "New registration for existing device received." << endl;
+            cout << "[Socket Server] "
+                 << "New registration for existing device received." << endl;
             for (std::vector<DeviceRegistration>::iterator it = registeredDevices.begin(); it != registeredDevices.end(); it++)
             {
                 if (it->UUID.compare(jsonMessage["UUID"]) == 0)
@@ -158,15 +165,16 @@ void SocketServer::parseIncomingMessages()
                     break;
                 }
             }
-            cout << "[Socket Server] " << "Old registration removed!" << endl;
+            cout << "[Socket Server] "
+                 << "Old registration removed!" << endl;
             registerDevice(websocketppMessage);
             continue;
         }
         else if (jsonMessage["command"] == HEARTBEAT)
         {
-            cout << "[Socket Server] " << "Heartbeat received!" << endl;
-            cout << "[Socket Server] " << "The heartbeat function is not yet implemented..." << endl;
-            // Todo: implement heartbeat system
+            const lock_guard<mutex> _heartbeatLock(heartbeatLock);
+            heartbeatQueue.push(websocketppMessage.MessagePointer->get_payload());
+            _heartbeatLock.~lock_guard();
             continue;
         }
 
@@ -263,5 +271,100 @@ void SocketServer::registerDevice(WebsocketMessage websocketppMessage)
 
     registeredDevices.push_back(newDevice);
 
-    cout << "[Socket Server] " << "New device registered with UUID: " << jsonMessage["UUID"] << endl;
+    cout << "[Socket Server] "
+         << "New device registered with UUID: " << jsonMessage["UUID"] << endl;
+}
+
+void SocketServer::heartbeat()
+{
+    string msgString;
+    json msgJSON;
+    vector<string> heartbeats;
+    uint64_t curTime;
+
+    try
+    {
+        while (1)
+        {
+            // Wait before parsing new heartbeats to not overload the system
+            sleep_for(milliseconds(50));
+
+            curTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+
+            // Aquire lock and get all new messages and update the heartbeat records
+            const lock_guard<mutex> _heartbeatLock(heartbeatLock);
+            while (!heartbeatQueue.empty())
+            {
+                // Get new heartbeat message from the queue
+                msgString = heartbeatQueue.front();
+                heartbeatQueue.pop();
+
+                // Parse the message to JSON so we can read/write to it.
+                msgJSON = json::parse(msgString);
+
+                // Check if we already have a record of this device
+                vector<string>::iterator storedHB = find_if(
+                    heartbeats.begin(),
+                    heartbeats.end(),
+                    [msgJSON](const string &item) {
+                        return (string)json::parse(item)["UUID"] == (string)msgJSON["UUID"];
+                    });
+
+                // If we have an earlier record, update it.
+                if (storedHB != heartbeats.end())
+                {
+                    msgJSON = json::parse(*storedHB);
+                    msgJSON["heartbeat"]["time"] = curTime;
+                    *storedHB = msgJSON.dump();
+                }
+                else
+                {
+                    // Add the current unix timestamp as an integer to the value and set the status to connected
+                    msgJSON["heartbeat"]["status"] = DISCONNECTED;
+                    msgJSON["heartbeat"]["time"] = curTime;
+
+                    // Add the new record.
+                    heartbeats.push_back(msgJSON.dump());
+                }
+            }
+            _heartbeatLock.~lock_guard();
+
+            // Check if any of the heartbeat records is out-of-time and send a new status to the object.
+            const lock_guard<mutex> _messageLock(messageLock);
+            for (vector<string>::iterator hb = heartbeats.begin(); hb != heartbeats.end(); hb++)
+            {
+                msgJSON = json::parse(*hb);
+
+                if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 10000)
+                {
+                    if (msgJSON["heartbeat"]["status"] == DISCONNECTED)
+                        continue;
+                    msgJSON["heartbeat"]["status"] = DISCONNECTED;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+                else if ((curTime - (uint64_t)msgJSON["heartbeat"]["time"]) > 1000)
+                {
+                    if (msgJSON["heartbeat"]["status"] == UNSTABLE)
+                        continue;
+                    msgJSON["heartbeat"]["status"] = UNSTABLE;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+                else if (msgJSON["heartbeat"]["status"] != CONNECTED)
+                {
+                    msgJSON["heartbeat"]["status"] = CONNECTED;
+                    *hb = msgJSON.dump();
+                    messageQueue.push(msgJSON.dump());
+                }
+            }
+            _messageLock.~lock_guard();
+            std::fflush(stdout);
+        }
+    }
+    catch (...)
+    {
+        printf("[Heartbeat] HEARTBEAT THREAD ENDED!\n");
+        std::fflush(stdout);
+    }
 }

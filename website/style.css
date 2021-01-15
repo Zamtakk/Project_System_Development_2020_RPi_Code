@@ -123,8 +123,12 @@ p {
   font-size: 0pt;
 }
 
-.status {
+.status_disconnected {
   color: red;
+}
+
+.status_lost {
+  color: orange;
 }
 
 .status_connected {
