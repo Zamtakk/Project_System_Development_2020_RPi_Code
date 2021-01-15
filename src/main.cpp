@@ -38,7 +38,7 @@ int main()
         if (message == "")
         {
             // When no messages are available, wait a bit to prevent overloading the system.
-            sleep_for(milliseconds(50));
+            sleep_for(milliseconds(10));
             continue;
         }
 
