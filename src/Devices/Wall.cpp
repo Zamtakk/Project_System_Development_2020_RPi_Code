@@ -67,8 +67,8 @@ void Wall::HandleMessage(string message)
     {
         ledValue = (int)jsonMessage["ledValue"];
         lightSensorValue = (int)jsonMessage["lightSensorValue"];
-        curtainsState = (bool)jsonMessage["curtainsState"];
         potmeterValue = (int)jsonMessage["potmeterValue"];
+        curtainsState = (bool)jsonMessage["curtainsState"];
 
         Device *website = getDeviceByType("Website");
         if (website == nullptr)
