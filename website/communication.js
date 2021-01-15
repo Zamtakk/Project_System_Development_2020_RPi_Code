@@ -244,10 +244,10 @@ socket.onmessage = function (event) {
 		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LEDSTRIP_CHANGE) {
-		document.getElementById("wall_led_slider").value = deviceInformation["value"][i]["ledValue"];
+		document.getElementById("wall_led_slider").value = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LDR_CHANGE) {
-		document.getElementById("wall_light_level").innerHTML = deviceInformation["value"][i]["lightSensorValue"];
+		document.getElementById("wall_light_level").innerHTML = jsonMessage["value"];
 	}
 }
 
@@ -291,6 +291,7 @@ async function updateDeviceInformation(deviceInformation) {
 				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				updateStatus(deviceInformation["value"][i]["Status"], "wall_status");
 				document.getElementById("wall_led_slider").value = deviceInformation["value"][i]["ledValue"];
+				document.getElementById("wall_light_level").innerHTML = deviceInformation["value"][i]["lightSensorValue"];
 				document.getElementById("wall_curtains_open_closed").checked = deviceInformation["value"][i]["curtainsState"];
 				document.getElementById("wall_dimmer_strip_enabled").checked = deviceInformation["value"][i]["useDimmerLedstrip"];
 				document.getElementById("wall_dimmer_light_enabled").checked = deviceInformation["value"][i]["useDimmerLamp"];
