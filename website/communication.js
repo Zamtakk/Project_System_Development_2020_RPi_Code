@@ -264,10 +264,7 @@ async function updateDeviceInformation(deviceInformation) {
 				break;
 			case "SimulatedDevice":
 				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				if (deviceInformation["value"][i]["Status"] == DeviceStatus.CONNECTED) {
-					document.getElementById("simulation_status").innerHTML = "Connected";
-					document.getElementById("simulation_status").className = "status_connected";
-				}
+				updateStatus(deviceInformation["value"][i]["Status"], "simulation_status");
 				document.getElementById("simulation_light_1_slider").value = deviceInformation["value"][i]["led1Value"];
 				document.getElementById("simulation_light_2_slider").value = deviceInformation["value"][i]["led2Value"];
 				document.getElementById("simulation_light_3_slider").value = deviceInformation["value"][i]["led3Value"];
@@ -285,6 +282,19 @@ async function updateDeviceInformation(deviceInformation) {
 			default:
 				break;
 		}
+	}
+}
+
+function updateStatus(newStatus, statusElementName){
+	if (newStatus == DeviceStatus.CONNECTED) {
+		document.getElementById(statusElementName).innerHTML = "Connected";
+		document.getElementById(statusElementName).className = "status_connected";
+	}else if (newStatus == DeviceStatus.UNSTABLE) {
+		document.getElementById(statusElementName).innerHTML = "Lost";
+		document.getElementById(statusElementName).className = "status_lost";
+	}else if (newStatus == DeviceStatus.DISCONNECTED) {
+		document.getElementById(statusElementName).innerHTML = "Disconnected";
+		document.getElementById(statusElementName).className = "status_disconnected";
 	}
 }
 
