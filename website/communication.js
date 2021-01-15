@@ -162,6 +162,18 @@ async function sendSocket(elementId) {
 			value: parseInt(check.value)
 		};
 	}
+	else if (elementId == "fridge_temperature_slider") {
+		if (document.getElementById("fridge_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("fridge_temperature_slider");
+		value = {
+			UUID: document.getElementById("fridge_uuid").innerHTML,
+			Type: "Fridge",
+			command: FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE,
+			value: parseInt(check.value)
+		};
+		document.getElementById("fridge_set_temperature").innerHTML = parseInt(check.value);
+	}
 	else {
 		return;
 	}
@@ -237,6 +249,16 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_POTMETER_CHANGE) {
 		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE) {
+		document.getElementById("fridge_set_temperature").innerHTML = jsonMessage["value"];
+		document.getElementById("fridge_temperature_slider").value = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_TEMPERATURESENSORINSIDE_CHANGE) {
+		document.getElementById("fridge_temperature").innerHTML = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_SWITCH_CHANGE) {
+		document.getElementById("fridge_opened").innerHTML = jsonMessage["value"];
+	}
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_SERVO_CHANGE) {
 		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
 	}
@@ -262,6 +284,10 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Fridge":
 				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				updateStatus(deviceInformation["value"][i]["Status"], "fridge_status");
+				document.getElementById("fridge_opened").innerHTML = deviceInformation["value"][i]["doorOpenTimes"];
+				document.getElementById("fridge_temperature").innerHTML = deviceInformation["value"][i]["temperatureValueInside"];
+				document.getElementById("fridge_set_temperature").innerHTML = deviceInformation["value"][i]["coolingValue"];
+				document.getElementById("fridge_temperature_slider").value = deviceInformation["value"][i]["coolingValue"];
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
@@ -316,14 +342,14 @@ async function updateDeviceInformation(deviceInformation) {
 	}
 }
 
-function updateStatus(newStatus, statusElementName){
+function updateStatus(newStatus, statusElementName) {
 	if (newStatus == DeviceStatus.CONNECTED) {
 		document.getElementById(statusElementName).innerHTML = "Connected";
 		document.getElementById(statusElementName).className = "status_connected";
-	}else if (newStatus == DeviceStatus.UNSTABLE) {
+	} else if (newStatus == DeviceStatus.UNSTABLE) {
 		document.getElementById(statusElementName).innerHTML = "Lost";
 		document.getElementById(statusElementName).className = "status_lost";
-	}else if (newStatus == DeviceStatus.DISCONNECTED) {
+	} else if (newStatus == DeviceStatus.DISCONNECTED) {
 		document.getElementById(statusElementName).innerHTML = "Disconnected";
 		document.getElementById(statusElementName).className = "status_disconnected";
 	}
@@ -369,7 +395,10 @@ const FridgeCommands =
 {
 	FRIDGE_SWITCH_CHANGE: 5000,
 	FRIDGE_FAN_CHANGE: 5001,
-	FRIDGE_TEMPERATURESENSOR_CHANGE: 5002
+	FRIDGE_TEC_CHANGE: 5002,
+	FRIDGE_TEMPERATURESENSORINSIDE_CHANGE: 5003,
+	FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE: 5004,
+	FRIDGE_COOLINGVALUE_CHANGE: 5005
 };
 
 const ColumnCommands =
@@ -409,8 +438,8 @@ const WallCommands =
 	WALL_LDR_CHANGE: 10001,
 	WALL_POTMETER_CHANGE: 10002,
 	WALL_LEDSTRIP_CHANGE: 10003,
-	WALL_LAMPDIMMER_CHANGE : 10004,
-    WALL_LEDSTRIPDIMMER_CHANGE : 10005
+	WALL_LAMPDIMMER_CHANGE: 10004,
+	WALL_LEDSTRIPDIMMER_CHANGE: 10005
 };
 
 const SimulatedDeviceCommands =
