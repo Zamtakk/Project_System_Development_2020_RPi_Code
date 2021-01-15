@@ -1,6 +1,6 @@
 #include "Devices/Wall.hpp"
 #include "Devices/Website.hpp"
-//#include "Devices/Lamp.hpp"
+#include "Devices/Lamp.hpp"
 #include "CommandTypes.hpp"
 
 #include "json.hpp"
@@ -181,14 +181,11 @@ void Wall::potmeterChange(int value)
 
     if (useDimmerLamp)
     {
-        //Lamp not yet merge, code should be:
-        /*
         Device *lamp = getDeviceByType("Lamp");
         if (lamp == nullptr)
             return;
 
         dynamic_cast<Lamp *>(lamp)->ledStateUpdate(potmeterValue);
-        */
     }
     else if (useDimmerLedstrip)
     {
