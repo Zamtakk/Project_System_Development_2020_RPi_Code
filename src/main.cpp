@@ -7,6 +7,7 @@
 #include "Devices/Bed.hpp"
 #include "Devices/Door.hpp"
 #include "Devices/Wall.hpp"
+#include "Devices/Lamp.hpp"
 #include "Devices/Fridge.hpp"
 #include "Devices/WIB.hpp"
 
@@ -97,6 +98,13 @@ int main()
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
                 Wall *newDevice = new Wall(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Lamp")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Lamp *newDevice = new Lamp(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
             else if (jsonMessage["Type"] == "Fridge")
