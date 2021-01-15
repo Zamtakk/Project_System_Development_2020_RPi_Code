@@ -93,6 +93,18 @@ void Lamp::HandleMessage(string message)
         movementValueChange((int)jsonMessage["value"]);
         break;
     }
+    case HEARTBEAT:
+    {
+        status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
+
+        ledStateUpdate(ledOn, ledDimValue);
+
+        Device *website = getDeviceByType("Website");
+        if (website == nullptr)
+            break;
+
+        dynamic_cast<Website *>(website)->updateWebsite();
+    }
     default:
         break;
     }
