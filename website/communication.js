@@ -118,6 +118,18 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "fridge_temperature_slider") {
+		if (document.getElementById("fridge_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("fridge_temperature_slider");
+		value = {
+			UUID: document.getElementById("fridge_uuid").innerHTML,
+			Type: "Fridge",
+			command: FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE,
+			value: parseInt(check.value)
+		};
+		document.getElementById("fridge_set_temperature").innerHTML = parseInt(check.value);
+	}
 	else {
 		return;
 	}
@@ -190,6 +202,13 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_POTMETER_CHANGE) {
 		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE) {
+		document.getElementById("fridge_set_temperature").innerHTML = jsonMessage["value"];
+		document.getElementById("fridge_temperature_slider").value = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_TEMPERATURESENSORINSIDE_CHANGE) {
+		document.getElementById("fridge_temperature").innerHTML = jsonMessage["temperatureValueInside"];
+	}
 }
 
 /*!
@@ -206,6 +225,8 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("fridge_status").innerHTML = "Connected";
 					document.getElementById("fridge_status").className = "status_connected";
 				}
+				document.getElementById("fridge_set_temperature").innerHTML = jsonMessage["value"][i]["coolingValue"];
+				document.getElementById("fridge_temperature_slider").value = jsonMessage["value"][i]["coolingValue"];
 				break;
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
@@ -317,9 +338,12 @@ const ChairCommands =
 
 const FridgeCommands =
 {
-	FRIDGE_SWITCH_CHANGE: 5000,
-	FRIDGE_FAN_CHANGE: 5001,
-	FRIDGE_TEMPERATURESENSOR_CHANGE: 5002
+	FRIDGE_SWITCH_CHANGE : 5000,
+    FRIDGE_FAN_CHANGE : 5001,
+    FRIDGE_TEC_CHANGE : 5002,
+    FRIDGE_TEMPERATURESENSORINSIDE_CHANGE : 5003,
+    FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE : 5004,
+    FRIDGE_COOLINGVALUE_CHANGE : 5005
 };
 
 const ColumnCommands =
