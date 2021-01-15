@@ -209,6 +209,13 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_TEMPERATURESENSORINSIDE_CHANGE) {
 		document.getElementById("fridge_temperature").innerHTML = jsonMessage["temperatureValueInside"];
 	}
+	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_SWITCH_CHANGE) {
+		var value = parseInt(document.getElementById("fridge_opened").innerHTML);
+		if (jsonMessage["value"]) {
+			value += 1;
+		}
+		document.getElementById("fridge_opened").innerHTML = value;
+	}
 }
 
 /*!
