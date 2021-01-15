@@ -22,7 +22,7 @@ Column::Column(string uuid, string type, SocketServer *server, map<string, Devic
       buzzerState(false),
       ledState(false),
       gasSensorValue(0),
-      gasSensorTreshold(20)
+      gasSensorTreshold(0)
 {
 }
 
@@ -43,8 +43,8 @@ string Column::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"buzzerState", buzzerState},
         {"ledState", ledState},
+        {"buzzerState", buzzerState},
         {"gasSensorValue", gasSensorValue},
         {"gasSensorTreshold", gasSensorTreshold}};
 
@@ -63,8 +63,8 @@ void Column::HandleMessage(string message)
     {
     case DEVICEINFO:
     {
-        buzzerState = (bool)jsonMessage["buzzerState"];
         ledState = (bool)jsonMessage["ledState"];
+        buzzerState = (bool)jsonMessage["buzzerState"];
         gasSensorValue = (int)jsonMessage["gasSensorValue"];
 
         Device *website = getDeviceByType("Website");
