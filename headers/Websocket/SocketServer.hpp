@@ -32,6 +32,7 @@ private:
     void sendDeviceNotRegistered(WebsocketMessage websocketppMessage);
     void sendIncorrectMessageFormat(WebsocketMessage websocketppMessage);
     void registerDevice(WebsocketMessage websocketppMessage);
+    void heartbeat();
 
     DeviceRegistration *getRegisteredDevice(string uuid);
 
@@ -43,8 +44,12 @@ private:
     queue<WebsocketMessage> websocketppRxQueue;
     mutex websocketppRxLock;
 
+    queue<string> heartbeatQueue;
+    mutex heartbeatLock;
+
     thread *websocketppThread;
     thread *processRxThread;
+    thread *heartbeatThread;
 
     vector<DeviceRegistration> registeredDevices;
 };
