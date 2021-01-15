@@ -24,12 +24,14 @@ private:
     void changeCoolingValue(int value);
     void tecStateOn(bool stateOn);
     void fanStateOn(bool stateOn);
+    void updateCoolingState();
     bool doorOpen;
     bool fanState;
     bool tecState;
     int temperatureValueInside;
     int temperatureValueOutside;
     int coolingValue;
+    int doorOpenTimes;
 };
 
 #endif
