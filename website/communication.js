@@ -118,6 +118,28 @@ async function sendSocket(elementId) {
 			value: check.checked
 		};
 	}
+	else if (elementId == "lamp_onoff_switch") {
+		if (document.getElementById("lamp_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("lamp_onoff_switch");
+		value = {
+			UUID: document.getElementById("lamp_uuid").innerHTML,
+			Type: "Lamp",
+			command: LampCommands.LAMP_LED_ONOFF_CHANGE,
+			value: check.checked
+		};
+	}
+	else if (elementId == "lamp_dimlevel_slider") {
+		if (document.getElementById("lamp_status").innerHTML === "Disconnected") return;
+
+		check = document.getElementById("lamp_dimlevel_slider");
+		value = {
+			UUID: document.getElementById("lamp_uuid").innerHTML,
+			Type: "Lamp",
+			command: LampCommands.LAMP_LED_DIMMER_CHANGE,
+			value: parseInt(check.value)
+		};
+	}
 	else if (elementId == "fridge_temperature_slider") {
 		if (document.getElementById("fridge_status").innerHTML === "Disconnected") return;
 
@@ -221,6 +243,15 @@ socket.onmessage = function (event) {
 	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
 		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
 	}
+	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_LED_DIMMER_CHANGE) {
+		document.getElementById("lamp_dimlevel_slider").value = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_LED_ONOFF_CHANGE) {
+		document.getElementById("lamp_onoff_switch").checked = jsonMessage["value"];
+	}
+	// else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_MOVEMENTSENSOR_CHANGE) {
+	// 	document.getElementById("lamp_last_movement").innerHTML = jsonMessage["value"];
+	// }
 }
 
 /*!
@@ -242,6 +273,9 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Lamp":
 				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
 				updateStatus(deviceInformation["value"][i]["Status"], "lamp_status");
+				// document.getElementById("lamp_last_movement").innerHTML = deviceInformation["value"][i]["movementSensorValue"];
+				document.getElementById("lamp_onoff_switch").checked = deviceInformation["value"][i]["ledOn"];
+				document.getElementById("lamp_dimlevel_slider").value = deviceInformation["value"][i]["ledDimValue"];
 				break;
 			case "Door":
 				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
@@ -287,14 +321,14 @@ async function updateDeviceInformation(deviceInformation) {
 	}
 }
 
-function updateStatus(newStatus, statusElementName){
+function updateStatus(newStatus, statusElementName) {
 	if (newStatus == DeviceStatus.CONNECTED) {
 		document.getElementById(statusElementName).innerHTML = "Connected";
 		document.getElementById(statusElementName).className = "status_connected";
-	}else if (newStatus == DeviceStatus.UNSTABLE) {
+	} else if (newStatus == DeviceStatus.UNSTABLE) {
 		document.getElementById(statusElementName).innerHTML = "Lost";
 		document.getElementById(statusElementName).className = "status_lost";
-	}else if (newStatus == DeviceStatus.DISCONNECTED) {
+	} else if (newStatus == DeviceStatus.DISCONNECTED) {
 		document.getElementById(statusElementName).innerHTML = "Disconnected";
 		document.getElementById(statusElementName).className = "status_disconnected";
 	}
@@ -338,12 +372,12 @@ const ChairCommands =
 
 const FridgeCommands =
 {
-	FRIDGE_SWITCH_CHANGE : 5000,
-    FRIDGE_FAN_CHANGE : 5001,
-    FRIDGE_TEC_CHANGE : 5002,
-    FRIDGE_TEMPERATURESENSORINSIDE_CHANGE : 5003,
-    FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE : 5004,
-    FRIDGE_COOLINGVALUE_CHANGE : 5005
+	FRIDGE_SWITCH_CHANGE: 5000,
+	FRIDGE_FAN_CHANGE: 5001,
+	FRIDGE_TEC_CHANGE: 5002,
+	FRIDGE_TEMPERATURESENSORINSIDE_CHANGE: 5003,
+	FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE: 5004,
+	FRIDGE_COOLINGVALUE_CHANGE: 5005
 };
 
 const ColumnCommands =
@@ -364,7 +398,8 @@ const BedCommands =
 const LampCommands =
 {
 	LAMP_MOVEMENTSENSOR_CHANGE: 8000,
-	LAMP_LED_CHANGE: 8001
+	LAMP_LED_DIMMER_CHANGE: 8001,
+	LAMP_LED_ONOFF_CHANGE: 8002
 };
 
 const DoorCommands =
