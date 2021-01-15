@@ -26,7 +26,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("chair_uuid").innerHTML,
 			Type: "Chair",
-			command: ChairCommands.CHAIR_BUTTON_CHANGE,
+			command: ChairCommands.CHAIR_VIBRATOR_CHANGE,
 			value: check.checked
 		};
 	}
@@ -81,7 +81,7 @@ async function sendSocket(elementId) {
 		value = {
 			UUID: document.getElementById("door_uuid").innerHTML,
 			Type: "Door",
-			command: DoorCommands.DOOR_BUTTON1_CHANGE,
+			command: DoorCommands.DOOR_SERVO_CHANGE,
 			value: check.checked
 		};
 	}
@@ -168,11 +168,14 @@ socket.onopen = function (event) {
 */
 socket.onmessage = function (event) {
 	var jsonMessage = JSON.parse(event.data);
-	if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_FORCESENSOR_CHANGE) {
+	if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
+		updateDeviceInformation(jsonMessage);
+	}
+	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_FORCESENSOR_CHANGE) {
 		document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
 	}
-	else if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
-		updateDeviceInformation(jsonMessage);
+	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_VIBRATOR_CHANGE) {
+		document.getElementById("chair_massage_switch").checked = jsonMessage["value"];
 	}
 	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
 		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
@@ -216,6 +219,12 @@ socket.onmessage = function (event) {
 		}
 		document.getElementById("fridge_opened").innerHTML = value;
 	}
+	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_SERVO_CHANGE) {
+		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
+		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
+	}
 }
 
 /*!
@@ -248,8 +257,8 @@ async function updateDeviceInformation(deviceInformation) {
 					document.getElementById("door_status").innerHTML = "Connected";
 					document.getElementById("door_status").className = "status_connected";
 				}
-				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorOpen"];
-				document.getElementById("door_closeopen_switch").innerHTML = deviceInformation["value"][i]["doorLocked"];
+				document.getElementById("door_closeopen_switch").checked = deviceInformation["value"][i]["doorOpen"];
+				document.getElementById("door_unlocklock_switch").checked = deviceInformation["value"][i]["doorLocked"];
 				break;
 			case "Chair":
 				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
