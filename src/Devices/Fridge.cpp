@@ -5,6 +5,7 @@
 #include "json.hpp"
 
 #include <string>
+#include <math.h>
 
 using json = nlohmann::json;
 
@@ -133,7 +134,8 @@ bool Fridge::GetDoorState()
 */
 void Fridge::temperatureSensorChangeInside(int value)
 {
-    temperatureValueInside = value;
+    // float resistance = adc_to_resistance((float)value);
+    // float temperatureValueInside = resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
     updateCoolingState();
 
     json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEMPERATURESENSORINSIDE_CHANGE));
@@ -153,7 +155,8 @@ void Fridge::temperatureSensorChangeInside(int value)
 */
 void Fridge::temperatureSensorChangeOutside(int value)
 {
-    temperatureValueOutside = value;
+    // float resistance = adc_to_resistance((float)value);
+    // float temperatureValueOutside = resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
 
     json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE));
     jsonMessage["value"] = temperatureValueOutside;
@@ -213,4 +216,25 @@ void Fridge::doorStateChange(bool stateOpen)
         }
         socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
     }
+}
+
+float Fridge::adc_to_resistance(float p_adc)
+{
+    p_adc = 1023 - p_adc;
+    p_adc += p_adc - 512;
+    p_adc = 1023 / p_adc - 1;
+    p_adc = TEMP_CALC_SERIES_RESISTOR / p_adc;
+    return p_adc;
+}
+
+float Fridge::resistance_to_celcius(float p_resistance, uint16_t p_nominal)
+{
+    float steinhart;
+    steinhart = p_resistance / p_nominal;              // (R/Ro)
+    steinhart = log(steinhart);                        // ln(R/Ro)
+    steinhart /= TEMP_CALC_B_COEFFICIENT;              // 1/B * ln(R/Ro)
+    steinhart += 1.0 / (NOMINAL_TEMPERATURE + 273.15); // + (1/To)
+    steinhart = 1.0 / steinhart;                       // Invert
+    steinhart -= 273.15;                               // convert to C
+    return steinhart;
 }

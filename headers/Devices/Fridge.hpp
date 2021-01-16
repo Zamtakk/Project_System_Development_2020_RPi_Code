@@ -6,6 +6,11 @@
 
 #include <string>
 
+#define THERMISTOR_NOMINAL 10000
+#define NOMINAL_TEMPERATURE 25
+#define TEMP_CALC_B_COEFFICIENT 3435
+#define TEMP_CALC_SERIES_RESISTOR 10000
+
 using std::string;
 
 class Fridge : public Device
@@ -25,6 +30,8 @@ private:
     void tecStateOn(bool stateOn);
     void fanStateOn(bool stateOn);
     void updateCoolingState();
+    float adc_to_resistance(float p_adc);
+    float resistance_to_celcius(float p_resistance, uint16_t p_nominal);
     bool doorOpen;
     bool fanState;
     bool tecState;
