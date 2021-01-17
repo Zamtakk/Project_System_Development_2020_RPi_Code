@@ -23,9 +23,9 @@ public:
     void HandleMessage(string message);
 
 private:
-    void newPressureSensorValue(int pressureValue);
     void buttonWasPressed(bool buttonPressed);
-    void turnLedOn(bool stateOn);
+    void turnLedOn(bool p_ledOn);
+    void newPressureSensorValue(uint16_t p_pressureValue);
 
     bool ledOn;
     uint8_t pressureValue;
