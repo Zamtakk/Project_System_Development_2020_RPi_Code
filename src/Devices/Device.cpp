@@ -2,6 +2,7 @@
 
 #include "Devices/Device.hpp"
 #include "Websocket/SocketServer.hpp"
+#include "Devices/Website.hpp"
 
 #include "json.hpp"
 #include <string>
@@ -88,4 +89,16 @@ string Device::newMessage(string p_uuid, string p_type, int p_command)
     jsonMessage["Type"] = p_type;
     jsonMessage["command"] = p_command;
     return jsonMessage.dump();
+}
+
+/*!
+    @brief Sends a request to the connected website to update all values
+*/
+void Device::updateWebsite()
+{
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    dynamic_cast<Website *>(website)->update();
 }
