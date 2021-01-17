@@ -1,29 +1,34 @@
-#include "Devices/Website.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
 
-#include "json.hpp"
+#include "Devices/Website.hpp"
 
+#include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 using std::to_string;
 
+// Function definitions
+
 /*!
-    @brief Constructor for the website class
+    @brief Constructor for the Website object
     @param[in] uuid The UUID of the device where the message needs to go to.
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
-    @param[in] devices A mapping with all the connected devices
+	@param[in] devices A pointer to the map containing all devices
 */
 Website::Website(string uuid, string type, SocketServer *server, map<string, Device *> *devices) : Device(uuid, type, server, devices)
 {
-    updateWebsite();
+    update();
 }
 
 /*!
-    @brief Deconstructor for the website class
+    @brief Deconstructor for Website objects
 */
 Website::~Website()
 {
@@ -52,7 +57,7 @@ void Website::HandleMessage(string message)
     json jsonMessage = json::parse(message);
     if (jsonMessage["command"] == WEBSITE_UPDATE)
     {
-        updateWebsite();
+        update();
     }
     else if (jsonMessage["command"] == WEBSITE_FORWARD)
     {
@@ -64,7 +69,7 @@ void Website::HandleMessage(string message)
 /*!
     @brief Sends message to the website with updated information.
 */
-void Website::updateWebsite()
+void Website::update()
 {
     map<string, Device *>::iterator it;
 
