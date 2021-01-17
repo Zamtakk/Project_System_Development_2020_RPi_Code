@@ -30,7 +30,6 @@ private:
     int led1Value;
     int led2Value;
     int led3Value;
-    int potmeterValue;
     int activeLed;
 };
 

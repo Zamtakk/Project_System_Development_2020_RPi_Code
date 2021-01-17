@@ -27,7 +27,6 @@ SimulatedDevice::SimulatedDevice(string uuid, string type, SocketServer *server,
       led1Value(0),
       led2Value(0),
       led3Value(0),
-      potmeterValue(0),
       activeLed(1)
 {
     json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
