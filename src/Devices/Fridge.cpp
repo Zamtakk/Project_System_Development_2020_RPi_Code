@@ -141,16 +141,16 @@ void Fridge::newRawTemperatureSensorInsideValue(uint16_t value)
 */
 void Fridge::newRawTemperatureSensorOutsideValue(uint16_t value)
 {
-    // float resistance = adc_to_resistance((float)value);
-    // float temperatureValueOutside = resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
+    float resistance = adc_to_resistance((float)value);
+    float temperatureValueOutside = resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
 
-    // Device *website = getDeviceByType("Website");
-    // if (website == nullptr)
-    //     return;
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
 
-    // json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEMPERATURE_OUTSIDE_VALUE));
-    // jsonMessage["value"] = temperatureValueOutside;
-    // socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
+    json jsonMessage = json::parse(newMessage(uuid, type, FRIDGE_TEMPERATURE_OUTSIDE_VALUE));
+    jsonMessage["value"] = temperatureValueOutside;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
