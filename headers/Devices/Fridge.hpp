@@ -30,8 +30,8 @@ public:
     void HandleMessage(string message);
 
 private:
-    void newRawTemperatureSensorInsideValue(int value);
-    void newRawTemperatureSensorOutsideValue(int value);
+    void newRawTemperatureSensorInsideValue(uint16_t value);
+    void newRawTemperatureSensorOutsideValue(uint16_t value);
     void doorWasClosed(bool p_doorClosed);
     void newRequestedFridgeTemperature(int newTemperatureValue);
     void turnCoolerOn(bool p_coolerOn);
