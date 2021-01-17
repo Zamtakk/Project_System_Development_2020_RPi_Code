@@ -24,9 +24,9 @@ public:
 
 private:
     void buttonWasPressed(bool buttonPressed);
-    void turnLedOn(bool stateOn);
-    void turnVibratorOn(bool stateOn);
-    void newPressureSensorValue(uint8_t pressureValue);
+    void turnLedOn(bool p_ledOn);
+    void turnVibratorOn(bool p_vibratorOn);
+    void newPressureSensorValue(uint8_t p_pressureValue);
 
     bool ledOn;
     bool vibratorOn;
