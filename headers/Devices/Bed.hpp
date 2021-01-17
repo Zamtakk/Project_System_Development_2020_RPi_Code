@@ -1,12 +1,18 @@
 #ifndef BED_HPP
 #define BED_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class Bed : public Device
 {
@@ -15,14 +21,14 @@ public:
     ~Bed();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool IsLedOn();
 
 private:
-    void pressureSensorChange(int pressureValue);
-    void buttonPress(bool buttonPressed);
-    void ledStateOn(bool stateOn);
-    bool ledState;
-    int pressureValue;
+    void newPressureSensorValue(int pressureValue);
+    void buttonWasPressed(bool buttonPressed);
+    void turnLedOn(bool stateOn);
+
+    bool ledOn;
+    uint8_t pressureValue;
 };
 
 #endif

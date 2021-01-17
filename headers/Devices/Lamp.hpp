@@ -1,12 +1,18 @@
 #ifndef LAMP_HPP
 #define LAMP_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class Lamp : public Device
 {
@@ -15,14 +21,15 @@ public:
     ~Lamp();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool IsLedOn();
 
 private:
-    void movementValueChange(int value);
-    void ledStateUpdate(bool stateOn, int value);
-    int ledDimValue;
+    void newMovementDetected(bool detected);
+    void dimLed(int value);
+    void turnLedOn(bool p_ledOn);
+
+    bool movementDetected;
+    int ledValue;
     bool ledOn;
-    int movementSensorValue;
 };
 
 #endif

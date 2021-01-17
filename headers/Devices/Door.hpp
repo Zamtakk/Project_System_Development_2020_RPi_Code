@@ -1,12 +1,18 @@
 #ifndef DOOR_HPP
 #define DOOR_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class Door : public Device
 {
@@ -15,20 +21,19 @@ public:
     ~Door();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool IsLedOnInside();
-    bool IsLedOnOutside();
 
 private:
-    void changeDoorState(bool doorState);
-    void changeDoorLockState(bool doorLockState);
-    void buttonPressInside(bool buttonPressedInside);
-    void buttonPressOutside(bool buttonPressedOutside);
-    void ledStateOnInside(bool stateOn);
-    void ledStateOnOutside(bool stateOn);
-    bool ledStateInside;
-    bool ledStateOutside;
-    bool doorOpen;
-    bool doorLocked;
+    void openDoor(bool p_openDoor);
+    void lockDoor(bool p_lockDoor);
+    void buttonInsideWasPressed(bool buttonPressed);
+    void buttonOutsideWasPressed(bool buttonPressed);
+    void turnLedInsideOn(bool p_ledOn);
+    void turnLedOutsideOn(bool p_ledOn);
+
+    bool ledInsideOn;
+    bool ledOutsideOn;
+    bool doorIsOpen;
+    bool doorIsLocked;
 };
 
 #endif
