@@ -18,6 +18,6 @@ obj/%.o: %.cpp
 
 clean:
 	find . -name '*.o' -delete
-	rm $(TARGET)
+	find . -wholename '$(TARGET)' -delete
 	
 .PHONY: all clean
