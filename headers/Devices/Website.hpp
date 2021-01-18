@@ -1,12 +1,18 @@
 #ifndef WEBSITE_HPP
 #define WEBSITE_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class Website : public Device
 {
@@ -15,7 +21,7 @@ public:
     ~Website();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    void updateWebsite();
+    void update();
 };
 
 #endif

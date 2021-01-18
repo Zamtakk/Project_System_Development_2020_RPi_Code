@@ -1,29 +1,35 @@
-#include "Devices/Chair.hpp"
-#include "Devices/Website.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
 
-#include "json.hpp"
+#include "Devices/Chair.hpp"
+#include "Devices/Website.hpp"
 
+#include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 using std::to_string;
+
+// Function definitions
 
 /*!
     @brief Constructor for the Chair object
     @param[in] uuid The UUID of the device where the message needs to go to.
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
+	@param[in] devices A pointer to the map containing all devices
 */
 Chair::Chair(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
 	: Device(uuid, type, server, devices),
-	  vibratorState(false),
-	  ledState(false),
+	  ledOn(false),
+	  vibratorOn(false),
 	  pressureValue(0)
 {
-	json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+	json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
 	jsonMessage["value"] = "";
 	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
@@ -45,9 +51,9 @@ string Chair::GetDeviceInfo()
 		{"UUID", uuid},
 		{"Type", type},
 		{"Status", status},
-		{"vibratorState", vibratorState},
-		{"ledState", ledState},
-		{"pressureValue", pressureValue}};
+		{"CHAIR_LED_ON", ledOn},
+		{"CHAIR_VIBRATOR_ON", vibratorOn},
+		{"CHAIR_PRESSURE_SENSOR_VALUE", pressureValue}};
 
 	return deviceInfo.dump();
 }
@@ -62,43 +68,35 @@ void Chair::HandleMessage(string message)
 
 	switch ((int)jsonMessage["command"])
 	{
-	case DEVICEINFO:
+	case DEVICE_INFO:
 	{
-		vibratorState = (bool)jsonMessage["vibratorState"];
-		ledState = (bool)jsonMessage["ledState"];
-		pressureValue = (int)jsonMessage["pressureValue"];
+		ledOn = (bool)jsonMessage["CHAIR_LED_ON"];
+		vibratorOn = (bool)jsonMessage["CHAIR_VIBRATOR_ON"];
+		pressureValue = (uint8_t)jsonMessage["CHAIR_PRESSURE_SENSOR_VALUE"];
 
-		Device *website = getDeviceByType("Website");
-		if (website == nullptr)
-			break;
-
-		dynamic_cast<Website *>(website)->updateWebsite();
+		updateWebsite();
 		break;
 	}
-	case CHAIR_BUTTON_CHANGE:
+	case CHAIR_BUTTON_PRESSED:
 	{
-		buttonPress((bool)jsonMessage["value"]);
+		buttonWasPressed((bool)jsonMessage["value"]);
 		break;
 	}
-	case CHAIR_FORCESENSOR_CHANGE:
+	case CHAIR_VIBRATOR_ON:
 	{
-		pressureSensorChange((int)jsonMessage["value"]);
+		turnVibratorOn((bool)jsonMessage["value"]);
 		break;
 	}
-	case CHAIR_VIBRATOR_CHANGE:
+	case CHAIR_PRESSURE_SENSOR_VALUE:
 	{
-		vibratorStateOn((bool)jsonMessage["value"]);
+		newPressureSensorValue((uint8_t)jsonMessage["value"]);
 		break;
 	}
     case HEARTBEAT:
     {
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
 
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
     }
 	default:
 		break;
@@ -106,85 +104,69 @@ void Chair::HandleMessage(string message)
 }
 
 /*!
-    @brief Getter for the led state
-    @returns A boolean to check whether led is on or off
+    @brief Function to handle incoming messages when the button is pressed or released
+    @param[in] buttonPressed Boolean on whether button is pressed
 */
-bool Chair::IsLedOn()
+void Chair::buttonWasPressed(bool buttonPressed)
 {
-	return ledState;
+	if (vibratorOn && buttonPressed)
+	{
+		turnVibratorOn(false);
+	}
+	else if (!vibratorOn && buttonPressed)
+	{
+		turnVibratorOn(true);
+	}
 }
 
 /*!
-    @brief Getter for the vibrator state
-    @returns A boolean to check whether vibrator is on or off
+    @brief Turns the LED on or off
+    @param[in] p_ledOn A boolean stating if the LED should turn on (true) or off (false)
 */
-bool Chair::IsVibratorOn()
+void Chair::turnLedOn(bool p_ledOn)
 {
-	return vibratorState;
+	ledOn = p_ledOn;
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_ON));
+	jsonMessage["value"] = ledOn;
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
-    @brief Function to handle incoming messages concerning changes in the pressure sensor.
-    @param[in] pressureValueReceived The pressure value in the message.
+    @brief Turns the vibrator on or off
+    @param[in] p_vibratorOn A boolean stating if the vibrator should turn on (true) or off (false)
 */
-void Chair::pressureSensorChange(int pressureValueReceived)
+void Chair::turnVibratorOn(bool p_vibratorOn)
 {
-	pressureValue = pressureValueReceived;
+	turnLedOn(p_vibratorOn);
+	vibratorOn = p_vibratorOn;
+
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_ON));
+	jsonMessage["value"] = vibratorOn;
+
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 
 	Device *website = getDeviceByType("Website");
 	if (website == nullptr)
-	{
 		return;
-	}
 
-	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_FORCESENSOR_CHANGE));
-	jsonMessage["value"] = pressureValueReceived;
 	socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
-    @brief Function to handle incoming messages when the button is pressed or released
-    @param[in] buttonPressed Boolean on whether button is pressed
+    @brief Function to handle incoming messages concerning changes in the pressure sensor.
+    @param[in] p_pressureValue The new pressure value.
 */
-void Chair::buttonPress(bool buttonPressed)
+void Chair::newPressureSensorValue(uint8_t p_pressureValue)
 {
-	if (vibratorState && buttonPressed)
-	{
-		vibratorStateOn(false);
-	}
-	else if (!vibratorState && buttonPressed)
-	{
-		vibratorStateOn(true);
-	}
-}
-
-/*!
-    @brief Function to turn the led on or off
-    @param[in] stateOn Boolean on whether led needs to be on or off
-*/
-void Chair::ledStateOn(bool stateOn)
-{
-	ledState = stateOn;
-	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_LED_CHANGE));
-	jsonMessage["value"] = ledState;
-	socketServer->SendMessage(uuid, jsonMessage.dump());
-}
-
-/*!
-    @brief Function to turn the vibrator on or off
-    @param[in] stateOn Boolean on whether vibrator needs to be on or off
-*/
-void Chair::vibratorStateOn(bool stateOn)
-{
-	ledStateOn(stateOn);
-	vibratorState = stateOn;
-	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_VIBRATOR_CHANGE));
-	jsonMessage["value"] = vibratorState;
-	socketServer->SendMessage(uuid, jsonMessage.dump());
+	pressureValue = p_pressureValue;
 
 	Device *website = getDeviceByType("Website");
 	if (website == nullptr)
+	{
 		return;
+	}
 
+	json jsonMessage = json::parse(newMessage(uuid, type, CHAIR_PRESSURE_SENSOR_VALUE));
+	jsonMessage["value"] = pressureValue;
 	socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

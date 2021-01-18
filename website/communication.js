@@ -3,6 +3,27 @@ const uuid = "0000000001";
 const type = "Website";
 
 /*!
+	@brief Send registration message when the connection with server gets established
+*/
+socket.onopen = function (event) {
+	var registration = {
+		UUID: uuid,
+		Type: type,
+		command: GeneralDeviceCommands.REGISTRATION,
+		value: ""
+	}
+	socket.send(JSON.stringify(registration));
+
+	var update = {
+		UUID: uuid,
+		Type: type,
+		command: WebsiteCommands.WEBSITE_UPDATE,
+		value: ""
+	}
+	socket.send(JSON.stringify(update));
+};
+
+/*!
 	@brief Log a string to the notifications screen
 	@param[in] logstr the string to be logged to the notifications screen
 */
@@ -12,111 +33,27 @@ function log(logstr) {
 
 /*!
 	@brief Send a message to the websocket server
-	@param[in] UUID the device UUID to be sent
-	@param[in] type the device type 
-	@param[in] command the command number
-	@param[in] value an optional value to be added to the message
+	@param[in] elementId The element that should be send to the server
 */
 async function sendSocket(elementId) {
-	var value = "";
-	if (elementId == "chair_massage_switch") {
-		if (document.getElementById("chair_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("chair_massage_switch");
-		value = {
-			UUID: document.getElementById("chair_uuid").innerHTML,
-			Type: "Chair",
-			command: ChairCommands.CHAIR_VIBRATOR_CHANGE,
-			value: check.checked
-		};
+	if (elementId == "bed_light") {
+		sendSwitchValue("bed_uuid", "Bed", "bed_status", "bed_light", BedCommands.BED_LED_ON);
 	}
-	else if (elementId == "bed_light") {
-		if (document.getElementById("bed_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("bed_light");
-		value = {
-			UUID: document.getElementById("bed_uuid").innerHTML,
-			Type: "Bed",
-			command: BedCommands.BED_LED_CHANGE,
-			value: check.checked
-		};
-	}
-	else if (elementId == "simulation_light_1_slider") {
-		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("simulation_light_1_slider");
-		value = {
-			UUID: document.getElementById("simulation_uuid").innerHTML,
-			Type: "SimulatedDevice",
-			command: SimulatedDeviceCommands.SIMULATED_LED1_CHANGE,
-			value: parseInt(check.value)
-		};
-	}
-	else if (elementId == "simulation_light_2_slider") {
-		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("simulation_light_2_slider");
-		value = {
-			UUID: document.getElementById("simulation_uuid").innerHTML,
-			Type: "SimulatedDevice",
-			command: SimulatedDeviceCommands.SIMULATED_LED2_CHANGE,
-			value: parseInt(check.value)
-		};
-	}
-	else if (elementId == "simulation_light_3_slider") {
-		if (document.getElementById("simulation_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("simulation_light_3_slider");
-		value = {
-			UUID: document.getElementById("simulation_uuid").innerHTML,
-			Type: "SimulatedDevice",
-			command: SimulatedDeviceCommands.SIMULATED_LED3_CHANGE,
-			value: parseInt(check.value)
-		};
+	else if (elementId == "chair_massage_switch") {
+		sendSwitchValue("chair_uuid", "Chair", "chair_status", "chair_massage_switch", ChairCommands.CHAIR_VIBRATOR_ON);
 	}
 	else if (elementId == "door_closeopen_switch") {
-		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("door_closeopen_switch");
-		value = {
-			UUID: document.getElementById("door_uuid").innerHTML,
-			Type: "Door",
-			command: DoorCommands.DOOR_SERVO_CHANGE,
-			value: check.checked
-		};
+		sendSwitchValue("door_uuid", "Door", "door_status", "door_closeopen_switch", DoorCommands.DOOR_DOOR_OPEN);
 	}
 	else if (elementId == "door_unlocklock_switch") {
-		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("door_unlocklock_switch");
-		value = {
-			UUID: document.getElementById("door_uuid").innerHTML,
-			Type: "Door",
-			command: DoorCommands.DOOR_LOCK_CHANGE,
-			value: check.checked
-		};
+		sendSwitchValue("door_uuid", "Door", "door_status", "door_unlocklock_switch", DoorCommands.DOOR_DOOR_LOCKED);
 	}
 	else if (elementId == "door_ring_button") {
-		if (document.getElementById("door_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("door_ring_button");
-		value = {
-			UUID: document.getElementById("door_uuid").innerHTML,
-			Type: "Door",
-			command: DoorCommands.DOOR_BUTTON2_CHANGE,
-			value: check.checked
-		};
+		sendSwitchValue("door_uuid", "Door", "door_status", "door_ring_button", DoorCommands.DOOR_BUTTON_OUTSIDE_PRESSED);
 	}
-	else if (elementId == "wib_led") {
-		if (document.getElementById("wib_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("wib_led");
-		value = {
-			UUID: document.getElementById("wib_uuid").innerHTML,
-			Type: "WIB",
-			command: WibCommands.WIB_LED_CHANGE,
-			value: check.checked
-		};
+	else if (elementId == "fridge_temperature_slider") {
+		sendSliderValue("fridge_uuid", "Fridge", "fridge_status", "fridge_temperature_slider", FridgeCommands.FRIDGE_REQUESTED_FRIDGE_TEMPERATURE);
+		updateText("fridge_set_temperature", parseInt(check.value));
 	}
 	else if (elementId == "wall_curtains_open_closed") {
 		if (document.getElementById("wall_status").innerHTML === "Disconnected") return;
@@ -163,145 +100,96 @@ async function sendSocket(elementId) {
 		};
 	}
 	else if (elementId == "lamp_onoff_switch") {
-		if (document.getElementById("lamp_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("lamp_onoff_switch");
-		value = {
-			UUID: document.getElementById("lamp_uuid").innerHTML,
-			Type: "Lamp",
-			command: LampCommands.LAMP_LED_ONOFF_CHANGE,
-			value: check.checked
-		};
+		sendSwitchValue("lamp_uuid", "Lamp", "lamp_status", "lamp_onoff_switch", LampCommands.LAMP_LED_ON);
 	}
 	else if (elementId == "lamp_dimlevel_slider") {
-		if (document.getElementById("lamp_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("lamp_dimlevel_slider");
-		value = {
-			UUID: document.getElementById("lamp_uuid").innerHTML,
-			Type: "Lamp",
-			command: LampCommands.LAMP_LED_DIMMER_CHANGE,
-			value: parseInt(check.value)
-		};
+		sendSliderValue("lamp_uuid", "Lamp", "lamp_status", "lamp_dimlevel_slider", LampCommands.LAMP_LED_VALUE);
 	}
-	else if (elementId == "fridge_temperature_slider") {
-		if (document.getElementById("fridge_status").innerHTML === "Disconnected") return;
-
-		check = document.getElementById("fridge_temperature_slider");
-		value = {
-			UUID: document.getElementById("fridge_uuid").innerHTML,
-			Type: "Fridge",
-			command: FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE,
-			value: parseInt(check.value)
-		};
-		document.getElementById("fridge_set_temperature").innerHTML = parseInt(check.value);
+	else if (elementId == "simulation_light_1_slider") {
+		sendSliderValue("simulation_uuid", "SimulatedDevice", "simulation_status", "simulation_light_1_slider", SimulatedDeviceCommands.SIMULATED_LED1_VALUE);
 	}
-	else {
-		return;
+	else if (elementId == "simulation_light_2_slider") {
+		sendSliderValue("simulation_uuid", "SimulatedDevice", "simulation_status", "simulation_light_2_slider", SimulatedDeviceCommands.SIMULATED_LED2_VALUE);
 	}
-	var msg = {
-		UUID: uuid,
-		Type: type,
-		command: WebsiteCommands.WEBSITE_FORWARD,
-		value: value
-	};
-	socket.send(JSON.stringify(msg));
+	else if (elementId == "simulation_light_3_slider") {
+		sendSliderValue("simulation_uuid", "SimulatedDevice", "simulation_status", "simulation_light_3_slider", SimulatedDeviceCommands.SIMULATED_LED3_VALUE);
+	}
+	else if (elementId == "wib_led") {
+		sendSwitchValue("wib_uuid", "WIB", "wib_status", "wib_led", WIBCommands.WIB_LED_ON);
+	}
 }
-
-/*!
-	@brief Send registration message when the connection with server gets established
-*/
-socket.onopen = function (event) {
-	var registration = {
-		UUID: uuid,
-		Type: type,
-		command: GeneralDeviceCommands.REGISTRATION,
-		value: ""
-	}
-	socket.send(JSON.stringify(registration));
-
-	var update = {
-		UUID: uuid,
-		Type: type,
-		command: WebsiteCommands.WEBSITE_UPDATE,
-		value: ""
-	}
-	socket.send(JSON.stringify(update));
-};
 
 /*!
 	@brief Trigger an event when receiving a message
 */
 socket.onmessage = function (event) {
 	var jsonMessage = JSON.parse(event.data);
-	if (jsonMessage["command"] == WebsiteCommands.WEBSITE_UPDATE) {
+	var type = jsonMessage["Type"];
+	var command = jsonMessage["command"];
+	var value = jsonMessage["value"];
+
+	if (command == WebsiteCommands.WEBSITE_UPDATE) {
 		updateDeviceInformation(jsonMessage);
 	}
-	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_FORCESENSOR_CHANGE) {
-		document.getElementById("chair_measured_weight").innerHTML = jsonMessage["value"];
+	else if (type == "Bed" && command == BedCommands.BED_LED_ON) {
+		updateSwitch("bed_light", value);
 	}
-	else if (jsonMessage["Type"] == "Chair" && jsonMessage["command"] == ChairCommands.CHAIR_VIBRATOR_CHANGE) {
-		document.getElementById("chair_massage_switch").checked = jsonMessage["value"];
+	else if (type == "Bed" && command == BedCommands.BED_PRESSURE_SENSOR_VALUE) {
+		updateText("bed_measured_weight", value);
 	}
-	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_FORCESENSOR_CHANGE) {
-		document.getElementById("bed_measured_weight").innerHTML = jsonMessage["value"];
+	else if (type == "Chair" && command == ChairCommands.CHAIR_VIBRATOR_ON) {
+		updateSwitch("chair_massage_switch", value);
 	}
-	else if (jsonMessage["Type"] == "Bed" && jsonMessage["command"] == BedCommands.BED_LED_CHANGE) {
-		document.getElementById("bed_light").checked = jsonMessage["value"];
+	else if (type == "Chair" && command == ChairCommands.CHAIR_PRESSURE_SENSOR_VALUE) {
+		updateText("chair_measured_weight", value);
 	}
-	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED1_CHANGE) {
-		document.getElementById("simulation_light_1_slider").value = jsonMessage["value"];
+	else if (type == "Door" && command == DoorCommands.DOOR_DOOR_OPEN) {
+		updateSwitch("door_closeopen_switch", value);
 	}
-	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED2_CHANGE) {
-		document.getElementById("simulation_light_2_slider").value = jsonMessage["value"];
+	else if (type == "Door" && command == DoorCommands.DOOR_DOOR_LOCKED) {
+		updateSwitch("door_unlocklock_switch", value);
 	}
-	else if (jsonMessage["Type"] == "SimulatedDevice" && jsonMessage["command"] == SimulatedDeviceCommands.SIMULATED_LED3_CHANGE) {
-		document.getElementById("simulation_light_3_slider").value = jsonMessage["value"];
+	else if (type == "Fridge" && command == FridgeCommands.FRIDGE_REQUESTED_FRIDGE_TEMPERATURE) {
+		updateText("fridge_set_temperature", value);
+		updateSlider("fridge_temperature_slider", value);
 	}
-	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_SWITCH_CHANGE) {
-		if (jsonMessage["value"]) {
-			document.getElementById("wib_switch").innerHTML = "on";
+	else if (type == "Fridge" && command == FridgeCommands.FRIDGE_TEMPERATURE_INSIDE_VALUE) {
+		updateText("fridge_temperature", value);
+	}
+	else if (type == "Fridge" && command == FridgeCommands.FRIDGE_DOOR_OPEN_COUNTER) {
+		updateText("fridge_opened", value);
+	}
+	else if (type == "Lamp" && command == LampCommands.LAMP_LED_ON) {
+		updateSwitch("lamp_onoff_switch", value);
+	}
+	else if (type == "Lamp" && command == LampCommands.LAMP_LED_VALUE) {
+		updateSlider("lamp_dimlevel_slider", value);
+	}
+	// else if (type == "Lamp" && command == LampCommands.LAMP_MOVEMENT_DETECTED) {
+	// 	updateText("lamp_last_movement", value);
+	// }
+	else if (type == "SimulatedDevice" && command == SimulatedDeviceCommands.SIMULATED_LED1_VALUE) {
+		updateSlider("simulation_light_1_slider", value);
+	}
+	else if (type == "SimulatedDevice" && command == SimulatedDeviceCommands.SIMULATED_LED2_VALUE) {
+		updateSlider("simulation_light_2_slider", value);
+	}
+	else if (type == "SimulatedDevice" && command == SimulatedDeviceCommands.SIMULATED_LED3_VALUE) {
+		updateSlider("simulation_light_3_slider", value);
+	}
+	else if (type == "WIB" && command == WIBCommands.WIB_SWITCH_ON) {
+		if (value) {
+			updateText("wib_switch", "on");
 		} else {
-			document.getElementById("wib_switch").innerHTML = "off";
+			updateText("wib_switch", "off");
 		}
 	}
-	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_LED_CHANGE) {
-		document.getElementById("wib_led").checked = jsonMessage["value"];
+	else if (type == "WIB" && command == WIBCommands.WIB_LED_ON) {
+		updateSwitch("wib_led", value);
 	}
-	else if (jsonMessage["Type"] == "WIB" && jsonMessage["command"] == WibCommands.WIB_POTMETER_CHANGE) {
-		document.getElementById("wib_potmeter").innerHTML = jsonMessage["value"];
+	else if (type == "WIB" && command == WIBCommands.WIB_DIMMER_VALUE) {
+		updateText("wib_potmeter", value);
 	}
-	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_COOLINGVALUE_CHANGE) {
-		document.getElementById("fridge_set_temperature").innerHTML = jsonMessage["value"];
-		document.getElementById("fridge_temperature_slider").value = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_TEMPERATURESENSORINSIDE_CHANGE) {
-		document.getElementById("fridge_temperature").innerHTML = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Fridge" && jsonMessage["command"] == FridgeCommands.FRIDGE_SWITCH_CHANGE) {
-		document.getElementById("fridge_opened").innerHTML = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_SERVO_CHANGE) {
-		document.getElementById("door_closeopen_switch").checked = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Door" && jsonMessage["command"] == DoorCommands.DOOR_LOCK_CHANGE) {
-		document.getElementById("door_unlocklock_switch").checked = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LEDSTRIP_CHANGE) {
-		document.getElementById("wall_led_slider").value = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Wall" && jsonMessage["command"] == WallCommands.WALL_LDR_CHANGE) {
-		document.getElementById("wall_light_level").innerHTML = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_LED_DIMMER_CHANGE) {
-		document.getElementById("lamp_dimlevel_slider").value = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_LED_ONOFF_CHANGE) {
-		document.getElementById("lamp_onoff_switch").checked = jsonMessage["value"];
-	}
-	// else if (jsonMessage["Type"] == "Lamp" && jsonMessage["command"] == LampCommands.LAMP_MOVEMENTSENSOR_CHANGE) {
-	// 	document.getElementById("lamp_last_movement").innerHTML = jsonMessage["value"];
-	// }
 }
 
 /*!
@@ -311,64 +199,60 @@ socket.onmessage = function (event) {
 async function updateDeviceInformation(deviceInformation) {
 	console.log(deviceInformation);
 	for (var i = 0; i < deviceInformation["value"].length; i++) {
-		switch (deviceInformation["value"][i]["Type"]) {
-			case "Fridge":
-				document.getElementById("fridge_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "fridge_status");
-				document.getElementById("fridge_opened").innerHTML = deviceInformation["value"][i]["doorOpenTimes"];
-				document.getElementById("fridge_temperature").innerHTML = deviceInformation["value"][i]["temperatureValueInside"];
-				document.getElementById("fridge_set_temperature").innerHTML = deviceInformation["value"][i]["coolingValue"];
-				document.getElementById("fridge_temperature_slider").value = deviceInformation["value"][i]["coolingValue"];
-				break;
-			case "Lamp":
-				document.getElementById("lamp_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "lamp_status");
-				// document.getElementById("lamp_last_movement").innerHTML = deviceInformation["value"][i]["movementSensorValue"];
-				document.getElementById("lamp_onoff_switch").checked = deviceInformation["value"][i]["ledOn"];
-				document.getElementById("lamp_dimlevel_slider").value = deviceInformation["value"][i]["ledDimValue"];
-				break;
-			case "Door":
-				document.getElementById("door_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "door_status");
-				document.getElementById("door_closeopen_switch").checked = deviceInformation["value"][i]["doorOpen"];
-				document.getElementById("door_unlocklock_switch").checked = deviceInformation["value"][i]["doorLocked"];
+		var device = deviceInformation["value"][i];
+		switch (device["Type"]) {
+			case "Bed":
+				updateText("bed_uuid", device["UUID"]);
+				updateStatus("bed_status", device["Status"]);
+				updateText("bed_light", device["BED_LED_ON"]);
 				break;
 			case "Chair":
-				document.getElementById("chair_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "chair_status");
-				document.getElementById("chair_massage_switch").innerHTML = deviceInformation["value"][i]["vibratorState"];
-				break;
-			case "Bed":
-				document.getElementById("bed_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "bed_status");
-				document.getElementById("bed_light").innerHTML = deviceInformation["value"][i]["ledState"];
+				updateText("chair_uuid", device["UUID"]);
+				updateStatus("chair_status", device["Status"]);
+				updateText("chair_massage_switch", device["CHAIR_VIBRATOR_ON"]);
 				break;
 			case "Column":
-				document.getElementById("column_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "column_status");
+				updateText("column_uuid", device["UUID"]);
+				updateStatus("column_status", device["Status"]);
 				break;
-			case "Wall":
-				document.getElementById("wall_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "wall_status");
-				document.getElementById("wall_led_slider").value = deviceInformation["value"][i]["ledValue"];
-				document.getElementById("wall_light_level").innerHTML = deviceInformation["value"][i]["lightSensorValue"];
-				document.getElementById("wall_curtains_open_closed").checked = deviceInformation["value"][i]["curtainsState"];
-				document.getElementById("wall_dimmer_strip_enabled").checked = deviceInformation["value"][i]["useDimmerLedstrip"];
-				document.getElementById("wall_dimmer_light_enabled").checked = deviceInformation["value"][i]["useDimmerLamp"];
+			case "Door":
+				updateText("door_uuid", device["UUID"]);
+				updateStatus("door_status", device["Status"]);
+				updateSwitch("door_closeopen_switch", device["DOOR_DOOR_OPEN"]);
+				updateSwitch("door_unlocklock_switch", device["DOOR_DOOR_LOCKED"]);
+				break;
+			case "Fridge":
+				updateText("fridge_uuid", device["UUID"]);
+				updateStatus("fridge_status", device["Status"]);
+				updateText("fridge_temperature", device["FRIDGE_TEMPERATURE_INSIDE_VALUE"]);
+				updateText("fridge_set_temperature", device["FRIDGE_REQUESTED_FRIDGE_TEMPERATURE"]);
+				updateSlider("fridge_temperature_slider", device["FRIDGE_REQUESTED_FRIDGE_TEMPERATURE"]);
+				updateText("fridge_opened", device["FRIDGE_DOOR_OPEN_COUNTER"]);
+				break;
+			case "Lamp":
+				updateText("lamp_uuid", device["UUID"]);
+				updateStatus("lamp_status", device["Status"]);
+				// updateText("lamp_last_movement", device["movementSensorValue"]);
+				updateSwitch("lamp_onoff_switch", device["LAMP_LED_ON"]);
+				updateSlider("lamp_dimlevel_slider", device["LAMP_LED_VALUE"]);
 				break;
 			case "SimulatedDevice":
-				document.getElementById("simulation_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "simulation_status");
-				document.getElementById("simulation_light_1_slider").value = deviceInformation["value"][i]["led1Value"];
-				document.getElementById("simulation_light_2_slider").value = deviceInformation["value"][i]["led2Value"];
-				document.getElementById("simulation_light_3_slider").value = deviceInformation["value"][i]["led3Value"];
+				updateText("simulation_uuid", device["UUID"]);
+				updateStatus("simulation_status", device["Status"]);
+				updateSlider("simulation_light_1_slider", device["SIMULATED_LED1_VALUE"]);
+				updateSlider("simulation_light_2_slider", device["SIMULATED_LED2_VALUE"]);
+				updateSlider("simulation_light_3_slider", device["SIMULATED_LED3_VALUE"]);
+				break;
+			case "Wall":
+				updateText("wall_uuid", device["UUID"]);
+				updateStatus("wall_status", device["Status"]);
 				break;
 			case "WIB":
-				document.getElementById("wib_uuid").innerHTML = deviceInformation["value"][i]["UUID"];
-				updateStatus(deviceInformation["value"][i]["Status"], "wib_status");
-				document.getElementById("wib_switch").innerHTML = deviceInformation["value"][i]["switchState"];
-				document.getElementById("wib_led").checked = deviceInformation["value"][i]["ledState"];
-				document.getElementById("wib_potmeter").innerHTML = deviceInformation["value"][i]["potValue"];
+				updateText("wib_uuid", device["UUID"]);
+				updateStatus("wib_status", device["Status"]);
+				updateText("wib_switch", device["WIB_SWITCH_ON"]);
+				updateSwitch("wib_led", device["WIB_LED_ON"]);
+				updateText("wib_potmeter", device["WIB_DIMMER_VALUE"]);
 				break;
 			default:
 				break;
@@ -376,120 +260,178 @@ async function updateDeviceInformation(deviceInformation) {
 	}
 }
 
-function updateStatus(newStatus, statusElementName) {
+function updateStatus(elementId, newStatus) {
 	if (newStatus == DeviceStatus.CONNECTED) {
-		document.getElementById(statusElementName).innerHTML = "Connected";
-		document.getElementById(statusElementName).className = "status_connected";
+		document.getElementById(elementId).innerHTML = "Connected";
+		document.getElementById(elementId).className = "status_connected";
 	} else if (newStatus == DeviceStatus.UNSTABLE) {
-		document.getElementById(statusElementName).innerHTML = "Lost";
-		document.getElementById(statusElementName).className = "status_lost";
+		document.getElementById(elementId).innerHTML = "Lost";
+		document.getElementById(elementId).className = "status_lost";
 	} else if (newStatus == DeviceStatus.DISCONNECTED) {
-		document.getElementById(statusElementName).innerHTML = "Disconnected";
-		document.getElementById(statusElementName).className = "status_disconnected";
+		document.getElementById(elementId).innerHTML = "Disconnected";
+		document.getElementById(elementId).className = "status_disconnected";
 	}
+}
+
+function updateText(elementId, newText) {
+	document.getElementById(elementId).innerHTML = newText;
+}
+
+function updateSlider(elementId, newValue) {
+	document.getElementById(elementId).value = newValue;
+}
+
+function updateSwitch(elementId, newState) {
+	document.getElementById(elementId).checked = newState;
+}
+
+function isConnected(statusID) {
+	if (document.getElementById(statusID).innerHTML === "Disconnected") {
+		return false;
+	}
+	return true;
+}
+
+function forwardMessage(message) {
+	var msg = {
+		UUID: uuid,
+		Type: type,
+		command: WebsiteCommands.WEBSITE_FORWARD,
+		value: message
+	};
+	socket.send(JSON.stringify(msg));
+}
+
+function sendSwitchValue(uuidID, type, statusID, switchID, command) {
+	if (!isConnected(statusID)) return;
+
+	switchElement = document.getElementById(switchID);
+	var message = {
+		UUID: document.getElementById(uuidID).innerHTML,
+		Type: type,
+		command: command,
+		value: switchElement.checked
+	};
+
+	forwardMessage(message);
+}
+
+function sendSliderValue(uuidID, type, statusID, sliderID, command) {
+	if (!isConnected(statusID)) return;
+
+	sliderElement = document.getElementById(sliderID);
+	var message = {
+		UUID: document.getElementById(uuidID).innerHTML,
+		Type: type,
+		command: command,
+		value: parseInt(sliderElement.value)
+	};
+
+	forwardMessage(message);
 }
 
 //Command types
 
 const ErrorCodes =
 {
-	NOT_REGISTERED: 0,
-	INVALID_FORMAT: 1
+	NOT_REGISTERED: 10,
+	INVALID_FORMAT: 11
 };
 
 const GeneralDeviceCommands =
 {
-	HEARTBEAT: 1000,
-	REGISTRATION: 1001,
-	DEVICEINFO: 1002
+	HEARTBEAT: 20,
+	REGISTRATION: 21,
+	DEVICE_INFO: 22
 };
 
 const DeviceStatus =
 {
-	CONNECTED: 2000,
-	UNSTABLE: 2001,
-	DISCONNECTED: 2002
-};
-
-const WebsiteCommands =
-{
-	WEBSITE_UPDATE: 3000,
-	WEBSITE_FORWARD: 3001
-};
-
-const ChairCommands =
-{
-	CHAIR_FORCESENSOR_CHANGE: 4000,
-	CHAIR_BUTTON_CHANGE: 4001,
-	CHAIR_LED_CHANGE: 4002,
-	CHAIR_VIBRATOR_CHANGE: 4003
-};
-
-const FridgeCommands =
-{
-	FRIDGE_SWITCH_CHANGE: 5000,
-	FRIDGE_FAN_CHANGE: 5001,
-	FRIDGE_TEC_CHANGE: 5002,
-	FRIDGE_TEMPERATURESENSORINSIDE_CHANGE: 5003,
-	FRIDGE_TEMPERATURESENSOROUTSIDE_CHANGE: 5004,
-	FRIDGE_COOLINGVALUE_CHANGE: 5005
-};
-
-const ColumnCommands =
-{
-	COLUMN_BUTTON_CHANGE: 6000,
-	COLUMN_BUZZER_CHANGE: 6001,
-	COLUMN_LED_CHANGE: 6002,
-	COLUMN_GASSENSOR_CHANGE: 6003
+	CONNECTED: 30,
+	UNSTABLE: 31,
+	DISCONNECTED: 32
 };
 
 const BedCommands =
 {
-	BED_BUTTON_CHANGE: 7000,
-	BED_LED_CHANGE: 7001,
-	BED_FORCESENSOR_CHANGE: 7002
+	BED_BUTTON_PRESSED: 40,
+	BED_LED_ON: 41,
+	BED_PRESSURE_SENSOR_VALUE: 42
 };
 
-const LampCommands =
+const ChairCommands =
 {
-	LAMP_MOVEMENTSENSOR_CHANGE: 8000,
-	LAMP_LED_DIMMER_CHANGE: 8001,
-	LAMP_LED_ONOFF_CHANGE: 8002
+	CHAIR_BUTTON_PRESSED: 50,
+	CHAIR_LED_ON: 51,
+	CHAIR_VIBRATOR_ON: 52,
+	CHAIR_PRESSURE_SENSOR_VALUE: 53
+};
+
+const ColumnCommands =
+{
+	COLUMN_BUTTON_PRESSED: 60,
+	COLUMN_LED_ON: 61,
+	COLUMN_BUZZER_ON: 62,
+	COLUMN_SMOKE_SENSOR_VALUE: 63
 };
 
 const DoorCommands =
 {
-	DOOR_BUTTON1_CHANGE: 9000,
-	DOOR_BUTTON2_CHANGE: 9001,
-	DOOR_LED1_CHANGE: 9002,
-	DOOR_LED2_CHANGE: 9003,
-	DOOR_SERVO_CHANGE: 9004,
-	DOOR_LOCK_CHANGE: 9005
+	DOOR_BUTTON_INSIDE_PRESSED: 70,
+	DOOR_BUTTON_OUTSIDE_PRESSED: 71,
+	DOOR_LED_INSIDE_ON: 72,
+	DOOR_LED_OUTSIDE_ON: 73,
+	DOOR_DOOR_OPEN: 74,
+	DOOR_DOOR_LOCKED: 75
 };
 
-const WallCommands =
+const FridgeCommands =
 {
-	WALL_SCREEN_CHANGE: 10000,
-	WALL_LDR_CHANGE: 10001,
-	WALL_POTMETER_CHANGE: 10002,
-	WALL_LEDSTRIP_CHANGE: 10003,
-	WALL_LAMPDIMMER_CHANGE: 10004,
-	WALL_LEDSTRIPDIMMER_CHANGE: 10005
+	FRIDGE_DOOR_CLOSED: 80,
+	FRIDGE_FAN_ON: 81,
+	FRIDGE_RAW_TEMPERATURE_SENSOR_INSIDE_VALUE: 82,
+	FRIDGE_RAW_TEMPERATURE_SENSOR_OUTSIDE_VALUE: 83,
+	FRIDGE_COOLER_ON: 84,
+	FRIDGE_REQUESTED_FRIDGE_TEMPERATURE: 85,
+	FRIDGE_DOOR_OPEN_COUNTER: 86,
+	FRIDGE_TEMPERATURE_INSIDE_VALUE: 87,
+	FRIDGE_TEMPERATURE_OUTSIDE_VALUE: 88
+};
+
+const LampCommands =
+{
+	LAMP_MOVEMENT_DETECTED: 90,
+	LAMP_LED_VALUE: 91,
+	LAMP_LED_ON: 92
 };
 
 const SimulatedDeviceCommands =
 {
-	SIMULATED_BUTTON1_CHANGE: 11000,
-	SIMULATED_BUTTON2_CHANGE: 11001,
-	SIMULATED_LED1_CHANGE: 11002,
-	SIMULATED_LED2_CHANGE: 11003,
-	SIMULATED_LED3_CHANGE: 11004,
-	SIMULATED_POTMETER_CHANGE: 11005
+	SIMULATED_BUTTON1_PRESSED: 100,
+	SIMULATED_BUTTON2_PRESSED: 101,
+	SIMULATED_LED1_VALUE: 102,
+	SIMULATED_LED2_VALUE: 103,
+	SIMULATED_LED3_VALUE: 104,
+	SIMULATED_DIMMER_VALUE: 105
 };
 
-const WibCommands =
+const WallCommands =
 {
-	WIB_SWITCH_CHANGE: 12000,
-	WIB_LED_CHANGE: 12001,
-	WIB_POTMETER_CHANGE: 12002
+	WALL_CURTAIN_OPEN: 110,
+	WALL_LEDSTRIP_ON: 111,
+	WALL_DIMMER_VALUE: 112,
+	WALL_LDR_VALUE: 113
+};
+
+const WebsiteCommands =
+{
+	WEBSITE_UPDATE: 120,
+	WEBSITE_FORWARD: 121
+};
+
+const WIBCommands =
+{
+	WIB_SWITCH_ON: 130,
+	WIB_LED_ON: 131,
+	WIB_DIMMER_VALUE: 132
 };

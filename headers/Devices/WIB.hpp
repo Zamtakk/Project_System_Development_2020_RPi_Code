@@ -1,12 +1,18 @@
 #ifndef WIB_HPP
 #define WIB_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class WIB : public Device
 {
@@ -15,17 +21,15 @@ public:
     ~WIB();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool isLedOn();
-    bool getSwitchState();
 
 private:
-    void potValueChange(int potValue);
-    void switchStateOn(bool stateOn);
-    void ledStateOn(bool stateOn);
+    void switchTurnedOn(bool p_switchOn);
+    void turnLedOn(bool p_ledOn);
+    void newDimmerValue(int p_dimmerValue);
 
-    bool ledState;
-    bool switchState;
-    int potValue;
+    bool switchOn;
+    bool ledOn;
+    int dimmerValue;
 };
 
 #endif

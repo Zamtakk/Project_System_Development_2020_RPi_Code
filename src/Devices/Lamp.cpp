@@ -1,35 +1,40 @@
-#include "Devices/Lamp.hpp"
-#include "Devices/Website.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
 
-#include "json.hpp"
+#include "Devices/Lamp.hpp"
+#include "Devices/Website.hpp"
 
+#include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 
+// Function definitions
+
 /*!
-    @brief 
-    @param[in] 
-    @return 
+    @brief Constructor for the Lamp object
+    @param[in] uuid The UUID of the device where the message needs to go to.
+    @param[in] type The device type
+	@param[in] server A pointer to the socketserver instance
+	@param[in] devices A pointer to the map containing all devices
 */
 Lamp::Lamp(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      ledDimValue(0),
-      ledOn(false),
-      movementSensorValue(0)
+      movementDetected(false),
+      ledValue(0),
+      ledOn(false)
 {
-    json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
     jsonMessage["value"] = "";
     socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
-    @brief 
-    @param[in] 
-    @return 
+    @brief Deconstructor for Lamp objects
 */
 Lamp::~Lamp()
 {
@@ -45,24 +50,29 @@ string Lamp::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"ledOn", ledOn},
-        {"ledDimValue", ledDimValue},
-        {"movementSensorValue", movementSensorValue}};
+        {"LAMP_MOVEMENT_DETECTED", movementDetected},
+        {"LAMP_LED_VALUE", ledValue},
+        {"LAMP_LED_ON", ledOn}};
 
     return deviceInfo.dump();
 }
 
+/*!
+    @brief Function to handle incoming messages
+    @param[in] message The incoming JSON message in string format
+*/
 void Lamp::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
 
     switch ((int)jsonMessage["command"])
     {
-    case DEVICEINFO:
+    case DEVICE_INFO:
     {
-        ledDimValue = (int)jsonMessage["ledValue"];
-        movementSensorValue = (int)jsonMessage["movementSensorValue"];
-        if (ledDimValue > 0)
+        movementDetected = (int)jsonMessage["LAMP_MOVEMENT_DETECTED"];
+        ledValue = (int)jsonMessage["LAMP_LED_VALUE"];
+
+        if (ledValue > 0)
         {
             ledOn = true;
         }
@@ -71,39 +81,29 @@ void Lamp::HandleMessage(string message)
             ledOn = false;
         }
 
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
         break;
     }
-    case LAMP_LED_DIMMER_CHANGE:
+    case LAMP_MOVEMENT_DETECTED:
     {
-        ledStateUpdate(ledOn, (int)jsonMessage["value"]);
+        newMovementDetected((bool)jsonMessage["value"]);
         break;
     }
-    case LAMP_LED_ONOFF_CHANGE:
+    case LAMP_LED_VALUE:
     {
-        ledStateUpdate((bool)jsonMessage["value"], ledDimValue);
+        dimLed((int)jsonMessage["value"]);
         break;
     }
-    case LAMP_MOVEMENTSENSOR_CHANGE:
+    case LAMP_LED_ON:
     {
-        movementValueChange((int)jsonMessage["value"]);
+        turnLedOn((bool)jsonMessage["value"]);
         break;
     }
     case HEARTBEAT:
     {
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
 
-        ledStateUpdate(ledOn, ledDimValue);
-
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
     }
     default:
         break;
@@ -111,39 +111,45 @@ void Lamp::HandleMessage(string message)
 }
 
 /*!
-    @brief Getter for the inside led state
-    @returns A boolean to check whether inside led is on or off
+    @brief Handles the movement detected event
+    @param[in] detected A boolean stating if movement was detected (true) or not (false)
 */
-bool Lamp::IsLedOn()
+void Lamp::newMovementDetected(bool detected)
 {
-    return ledOn;
-}
-
-void Lamp::movementValueChange(int value)
-{
-    movementSensorValue = value;
+    movementDetected = detected;
 
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
-    {
         return;
-    }
 
-    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_MOVEMENTSENSOR_CHANGE));
-    jsonMessage["value"] = movementSensorValue;
+    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_MOVEMENT_DETECTED));
+    jsonMessage["value"] = movementDetected;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
-void Lamp::ledStateUpdate(bool stateOn, int value)
+/*!
+    @brief Changes the dimming value of the led and updates the led state
+    @param[in] value A boolean stating if movement was detected (true) or not (false)
+*/
+void Lamp::dimLed(int value)
 {
-    ledDimValue = value;
-    ledOn = stateOn;
+    ledValue = value;
+    turnLedOn(ledOn);
+}
 
-    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_DIMMER_CHANGE));
+/*!
+    @brief Turns the LED on or off and sets the LED to the stored dimming value
+    @param[in] p_ledOn A boolean stating if LED should turn on (true) or off (false)
+*/
+void Lamp::turnLedOn(bool p_ledOn)
+{
+    ledOn = p_ledOn;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_VALUE));
 
     if (ledOn)
     {
-        jsonMessage["value"] = ledDimValue;
+        jsonMessage["value"] = ledValue;
     }
     else
     {
@@ -153,13 +159,12 @@ void Lamp::ledStateUpdate(bool stateOn, int value)
 
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
-    {
         return;
-    }
-    jsonMessage["value"] = ledDimValue;
+
+    jsonMessage["value"] = ledValue;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 
-    jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_ONOFF_CHANGE));
+    jsonMessage = json::parse(newMessage(uuid, type, LAMP_LED_ON));
     jsonMessage["value"] = ledOn;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
