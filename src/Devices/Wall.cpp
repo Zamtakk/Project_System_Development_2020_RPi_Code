@@ -118,6 +118,10 @@ void Wall::HandleMessage(string message)
     }
 }
 
+/*!
+    @brief Function to handle incoming messages concerning changes in the LDR.
+    @param[in] value The new outside light value.
+*/
 void Wall::newLDRValue(int value)
 {
     LDRValue = value;
@@ -131,6 +135,10 @@ void Wall::newLDRValue(int value)
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
+/*!
+    @brief Open or close the curtain
+    @param[in] p_openCurtain A boolean stating if the curtain should be open (true) or closed (false)
+*/
 void Wall::openCurtain(bool p_openCurtain)
 {
     curtainIsOpen = p_openCurtain;
@@ -146,6 +154,10 @@ void Wall::openCurtain(bool p_openCurtain)
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
+/*!
+    @brief A handler for new dimmer values, updates the led with a new value
+    @param[in] value The new value of the dimmer
+*/
 void Wall::newDimmerValue(int value)
 {
     dimmerValue = value;
