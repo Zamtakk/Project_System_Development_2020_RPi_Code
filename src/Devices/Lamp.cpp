@@ -129,7 +129,7 @@ void Lamp::newMovementDetected(bool detected)
 
 /*!
     @brief Changes the dimming value of the led and updates the led state
-    @param[in] value A boolean stating if movement was detected (true) or not (false)
+    @param[in] value The dimming value of the led.
 */
 void Lamp::dimLed(int value)
 {

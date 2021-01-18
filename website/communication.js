@@ -55,6 +55,18 @@ async function sendSocket(elementId) {
 		sendSliderValue("fridge_uuid", "Fridge", "fridge_status", "fridge_temperature_slider", FridgeCommands.FRIDGE_REQUESTED_FRIDGE_TEMPERATURE);
 		updateText("fridge_set_temperature", parseInt(check.value));
 	}
+	else if (elementId == "wall_curtains_open_closed") {
+		sendSwitchValue("wall_uuid", "Wall", "wall_status", "wall_curtains_open_closed", WallCommands.WALL_CURTAIN_OPEN);
+	}
+	else if (elementId == "wall_dimmer_strip_enabled") {
+		sendSwitchValue("wall_uuid", "Wall", "wall_status", "wall_dimmer_strip_enabled", WallCommands.WALL_LEDSTRIP_ON);
+	}
+	else if (elementId == "wall_dimmer_light_enabled") {
+		sendSwitchValue("wall_uuid", "Wall", "wall_status", "wall_dimmer_light_enabled", WallCommands.WALL_LAMP_ON);
+	}
+	else if (elementId == "wall_led_slider") {
+		sendSliderValue("wall_uuid", "Wall", "wall_status", "wall_led_slider", WallCommands.WALL_LEDSTRIP_VALUE);
+	}
 	else if (elementId == "lamp_onoff_switch") {
 		sendSwitchValue("lamp_uuid", "Lamp", "lamp_status", "lamp_onoff_switch", LampCommands.LAMP_LED_ON);
 	}
@@ -133,6 +145,12 @@ socket.onmessage = function (event) {
 	else if (type == "SimulatedDevice" && command == SimulatedDeviceCommands.SIMULATED_LED3_VALUE) {
 		updateSlider("simulation_light_3_slider", value);
 	}
+	else if (type == "Wall" && command == WallCommands.WALL_LDR_VALUE) {
+		updateText("wall_light_level", value);
+	}
+	else if (type == "Wall" && command == WallCommands.WALL_LEDSTRIP_VALUE) {
+		updateSlider("wall_led_slider", value);
+	}
 	else if (type == "WIB" && command == WIBCommands.WIB_SWITCH_ON) {
 		if (value) {
 			updateText("wib_switch", "on");
@@ -202,6 +220,11 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Wall":
 				updateText("wall_uuid", device["UUID"]);
 				updateStatus("wall_status", device["Status"]);
+				updateText("wall_light_level", device["WALL_LDR_VALUE"]);
+				updateSwitch("wall_curtains_open_closed", device["WALL_CURTAIN_OPEN"]);
+				updateSlider("wall_led_slider", device["WALL_LEDSTRIP_VALUE"]);
+				updateSwitch("wall_dimmer_light_enabled", device["WALL_CURTAIN_OPEN"]);
+				updateSwitch("wall_dimmer_strip_enabled", device["WALL_LAMP_ON"]);
 				break;
 			case "WIB":
 				updateText("wib_uuid", device["UUID"]);
@@ -375,8 +398,10 @@ const WallCommands =
 {
 	WALL_CURTAIN_OPEN: 110,
 	WALL_LEDSTRIP_ON: 111,
-	WALL_DIMMER_VALUE: 112,
-	WALL_LDR_VALUE: 113
+	WALL_LAMP_ON: 112,
+	WALL_DIMMER_VALUE: 113,
+	WALL_LDR_VALUE: 114,
+	WALL_LEDSTRIP_VALUE: 115
 };
 
 const WebsiteCommands =
