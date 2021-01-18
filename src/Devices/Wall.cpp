@@ -103,14 +103,14 @@ void Wall::HandleMessage(string message)
         newDimmerValue((int)jsonMessage["value"]);
         break;
     }
-    case WALL_LEDSTRIP_VALUE:
-    {
-        dimLedstrip((int)jsonMessage["value"]);
-        break;
-    }
     case WALL_LDR_VALUE:
     {
         newLDRValue((int)jsonMessage["value"]);
+        break;
+    }
+    case WALL_LEDSTRIP_VALUE:
+    {
+        dimLedstrip((int)jsonMessage["value"]);
         break;
     }
     default:
