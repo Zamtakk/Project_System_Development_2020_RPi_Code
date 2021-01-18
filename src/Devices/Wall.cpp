@@ -151,9 +151,20 @@ void Wall::newDimmerValue(int value)
         if (lamp == nullptr)
             return;
 
+        dynamic_cast<Lamp *>(lamp)->turnLedOn(enableLamp);
         dynamic_cast<Lamp *>(lamp)->dimLed(dimmerValue);
     }
     
+    turnLedstripOn(enableLedstrip);
+}
+
+/*!
+    @brief Changes the dimming value of the ledstrip and updates the ledstrip state
+    @param[in] value The dimming value of the ledstrip.
+*/
+void Wall::dimLedstrip(int value)
+{
+    ledstripValue = value;
     turnLedstripOn(enableLedstrip);
 }
 
@@ -169,7 +180,7 @@ void Wall::turnLedstripOn(bool p_ledstripOn)
 
     if (enableLedstrip)
     {
-        jsonMessage["value"] = dimmerValue;
+        jsonMessage["value"] = ledstripValue;
     }
     else
     {
@@ -181,6 +192,6 @@ void Wall::turnLedstripOn(bool p_ledstripOn)
     if (website == nullptr)
         return;
 
-    jsonMessage["value"] = dimmerValue;
+    jsonMessage["value"] = ledstripValue;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
