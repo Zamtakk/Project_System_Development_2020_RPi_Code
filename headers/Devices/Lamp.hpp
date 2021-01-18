@@ -21,11 +21,11 @@ public:
     ~Lamp();
     string GetDeviceInfo();
     void HandleMessage(string message);
+    void dimLed(int value);
+    void turnLedOn(bool p_ledOn);
 
 private:
     void newMovementDetected(bool detected);
-    void dimLed(int value);
-    void turnLedOn(bool p_ledOn);
 
     bool movementDetected;
     int ledValue;

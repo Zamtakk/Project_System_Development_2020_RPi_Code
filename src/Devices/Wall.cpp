@@ -1,37 +1,43 @@
-#include "Devices/Wall.hpp"
-#include "Devices/Website.hpp"
-#include "Devices/Lamp.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
 
-#include "json.hpp"
+#include "Devices/Wall.hpp"
+#include "Devices/Lamp.hpp"
+#include "Devices/Website.hpp"
 
+#include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 
+// Function definitions
+
 /*!
-    @brief 
-    @param[in] 
-    @return 
+    @brief Constructor for the Wall object
+    @param[in] uuid The UUID of the device where the message needs to go to.
+    @param[in] type The device type
+	@param[in] server A pointer to the socketserver instance
+	@param[in] devices A pointer to the map containing all devices
 */
 Wall::Wall(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      ledValue(0),
-      lightSensorValue(0),
-      potmeterValue(0),
-      curtainsState(false)
+      LDRValue(0),
+      dimmerValue(0),
+      curtainIsOpen(false),
+      enableLamp(false),
+      enableLedstrip(false)
 {
-    json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
     jsonMessage["value"] = "";
     socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
-    @brief 
-    @param[in] 
-    @return 
+    @brief Deconstructor for Wall objects
 */
 Wall::~Wall()
 {
@@ -47,64 +53,59 @@ string Wall::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"ledValue", ledValue},
-        {"lightSensorValue", lightSensorValue},
-        {"potmeterValue", potmeterValue},
-        {"curtainsState", curtainsState},
-        {"useDimmerLamp", useDimmerLamp},
-        {"useDimmerLedstrip", useDimmerLedstrip}};
+        {"WALL_CURTAIN_OPEN", curtainIsOpen},
+        {"WALL_LEDSTRIP_ON", enableLedstrip},
+        {"WALL_LAMP_ON", enableLamp},
+        {"WALL_DIMMER_VALUE", dimmerValue},
+        {"WALL_LDR_VALUE", LDRValue}};
 
     return deviceInfo.dump();
 }
 
+/*!
+    @brief Function to handle incoming messages
+    @param[in] message The incoming JSON message in string format
+*/
 void Wall::HandleMessage(string message)
 {
     json jsonMessage = json::parse(message);
 
     switch ((int)jsonMessage["command"])
     {
-    case DEVICEINFO:
+    case DEVICE_INFO:
     {
-        ledValue = (int)jsonMessage["ledValue"];
-        lightSensorValue = (int)jsonMessage["lightSensorValue"];
-        potmeterValue = (int)jsonMessage["potmeterValue"];
-        curtainsState = (bool)jsonMessage["curtainsState"];
+        curtainIsOpen = (bool)jsonMessage["WALL_CURTAIN_OPEN"];
+        dimmerValue = (int)jsonMessage["WALL_DIMMER_VALUE"];
+        LDRValue = (int)jsonMessage["WALL_LDR_VALUE"];
 
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
         break;
     }
-    case WALL_LEDSTRIP_CHANGE:
+    case WALL_CURTAIN_OPEN:
     {
-        ledStateUpdate((int)jsonMessage["value"]);
+        openCurtain((bool)jsonMessage["value"]);
         break;
     }
-    case WALL_LDR_CHANGE:
+    case WALL_LEDSTRIP_ON:
     {
-        lightSensorChange((int)jsonMessage["value"]);
+        enableLedstrip = (bool)jsonMessage["value"];
+        newDimmerValue(dimmerValue);
         break;
     }
-    case WALL_SCREEN_CHANGE:
+    case WALL_LAMP_ON:
     {
-        curtainsStateChange((bool)jsonMessage["value"]);
+        enableLamp = (bool)jsonMessage["value"];
+        newDimmerValue(dimmerValue);
         break;
     }
-    case WALL_POTMETER_CHANGE:
+    case WALL_DIMMER_VALUE:
     {
-        potmeterChange((int)jsonMessage["value"]);
+        newDimmerValue((int)jsonMessage["value"]);
         break;
     }
-    case WALL_LAMPDIMMER_CHANGE:
+    case WALL_LDR_VALUE:
     {
-        dimmerStateUpdate("lamp", jsonMessage["value"]);
-        break;
-    }
-    case WALL_LEDSTRIPDIMMER_CHANGE:
-    {
-        dimmerStateUpdate("ledstrip", jsonMessage["value"]);
+        newLDRValue((int)jsonMessage["value"]);
         break;
     }
     default:
@@ -112,95 +113,74 @@ void Wall::HandleMessage(string message)
     }
 }
 
-/*!
-    @brief Getter for the inside led state
-    @returns A boolean to check whether inside led is on or off
-*/
-bool Wall::IsLedOn()
+void Wall::newLDRValue(int value)
 {
-    if (ledValue > 0)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void Wall::lightSensorChange(int value)
-{
-    lightSensorValue = value;
+    LDRValue = value;
 
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
-    {
         return;
-    }
 
-    json jsonMessage = json::parse(newMessage(uuid, type, WALL_LDR_CHANGE));
-    jsonMessage["value"] = lightSensorValue;
+    json jsonMessage = json::parse(newMessage(uuid, type, WALL_LDR_VALUE));
+    jsonMessage["value"] = LDRValue;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
-void Wall::ledStateUpdate(int value)
+void Wall::openCurtain(bool p_openCurtain)
 {
-    ledValue = value;
+    curtainIsOpen = p_openCurtain;
 
-    json jsonMessage = json::parse(newMessage(uuid, type, WALL_LEDSTRIP_CHANGE));
-    jsonMessage["value"] = ledValue;
+    json jsonMessage = json::parse(newMessage(uuid, type, WALL_CURTAIN_OPEN));
+    jsonMessage["value"] = curtainIsOpen;
     socketServer->SendMessage(uuid, jsonMessage.dump());
 
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
-    {
         return;
-    }
+
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
-void Wall::curtainsStateChange(bool stateOn)
+void Wall::newDimmerValue(int value)
 {
-    curtainsState = stateOn;
+    dimmerValue = value;
 
-    json jsonMessage = json::parse(newMessage(uuid, type, WALL_SCREEN_CHANGE));
-    jsonMessage["value"] = curtainsState;
-    socketServer->SendMessage(uuid, jsonMessage.dump());
-
-    Device *website = getDeviceByType("Website");
-    if (website == nullptr)
-    {
-        return;
-    }
-    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
-}
-
-void Wall::potmeterChange(int value)
-{
-    potmeterValue = value;
-
-    if (useDimmerLamp)
+    if (enableLamp)
     {
         Device *lamp = getDeviceByType("Lamp");
         if (lamp == nullptr)
             return;
 
-        dynamic_cast<Lamp *>(lamp)->ledStateUpdate(potmeterValue);
+        dynamic_cast<Lamp *>(lamp)->dimLed(dimmerValue);
     }
-    else if (useDimmerLedstrip)
-    {
-        ledStateUpdate(potmeterValue);
-    }
+    
+    turnLedstripOn(enableLedstrip);
 }
 
-void Wall::dimmerStateUpdate(string value, bool stateOn)
+/*!
+    @brief Turns the LED on or off and sets the LED to the stored dimming value
+    @param[in] p_ledstripOn A boolean stating if LED should turn on (true) or off (false)
+*/
+void Wall::turnLedstripOn(bool p_ledstripOn)
 {
-    if (value == "lamp")
+    enableLedstrip = p_ledstripOn;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, WALL_LEDSTRIP_VALUE));
+
+    if (enableLedstrip)
     {
-        useDimmerLamp = stateOn;
+        jsonMessage["value"] = dimmerValue;
     }
-    else if (value == "ledstrip")
+    else
     {
-        useDimmerLedstrip = stateOn;
+        jsonMessage["value"] = 0;
     }
+    socketServer->SendMessage(uuid, jsonMessage.dump());
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    jsonMessage["value"] = dimmerValue;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
