@@ -74,11 +74,11 @@ void Column::HandleMessage(string message)
         smokeValue = (int)jsonMessage["COLUMN_SMOKE_SENSOR_VALUE"];
 
         updateWebsite();
-		break;
+        break;
     }
     case COLUMN_BUTTON_PRESSED:
     {
-        buttonWasPressed((bool)jsonMessage["value"]);        
+        buttonWasPressed((bool)jsonMessage["value"]);
         break;
     }
     case COLUMN_LED_ON:
@@ -113,7 +113,8 @@ void Column::newSmokeSensorValue(int value)
     {
         turnBuzzerOn(true);
     }
-    else {
+    else
+    {
         turnBuzzerOn(false);
     }
 
@@ -154,9 +155,9 @@ void Column::buttonWasPressed(bool buttonPressed)
 void Column::turnLedOn(bool p_ledOn)
 {
     ledOn = p_ledOn;
-	json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_LED_ON));
-	jsonMessage["value"] = ledOn;
-	socketServer->SendMessage(uuid, jsonMessage.dump());
+    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_LED_ON));
+    jsonMessage["value"] = ledOn;
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -166,7 +167,7 @@ void Column::turnLedOn(bool p_ledOn)
 void Column::turnBuzzerOn(bool p_buzzerOn)
 {
     buzzerOn = p_buzzerOn;
-	json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_ON));
-	jsonMessage["value"] = buzzerOn;
-	socketServer->SendMessage(uuid, jsonMessage.dump());
+    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_ON));
+    jsonMessage["value"] = buzzerOn;
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
