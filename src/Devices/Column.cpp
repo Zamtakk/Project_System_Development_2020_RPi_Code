@@ -84,6 +84,7 @@ void Column::HandleMessage(string message)
     case COLUMN_LED_ON:
     {
         turnLedOn((bool)jsonMessage["value"]);
+        turnBuzzerOn((int)jsonMessage["value"]);
         break;
     }
     case COLUMN_BUZZER_ON:
@@ -112,10 +113,7 @@ void Column::newSmokeSensorValue(int value)
     if (smokeValue > smokeTreshold)
     {
         turnBuzzerOn(true);
-    }
-    else
-    {
-        turnBuzzerOn(false);
+        turnLedOn(true);
     }
 
     Device *website = getDeviceByType("Website");
@@ -133,18 +131,9 @@ void Column::newSmokeSensorValue(int value)
 */
 void Column::buttonWasPressed(bool buttonPressed)
 {
-    if (ledOn && buttonPressed && !buzzerOn)
-    {
-        turnLedOn(false);
-    }
-    else if (!ledOn && buttonPressed && !buzzerOn)
+    if (buttonPressed && !ledOn)
     {
         turnLedOn(true);
-    }
-
-    if (buzzerOn && buttonPressed)
-    {
-        turnBuzzerOn(false);
     }
 }
 
@@ -155,9 +144,15 @@ void Column::buttonWasPressed(bool buttonPressed)
 void Column::turnLedOn(bool p_ledOn)
 {
     ledOn = p_ledOn;
+    
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
     json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_LED_ON));
     jsonMessage["value"] = ledOn;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
 /*!
