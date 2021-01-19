@@ -21,11 +21,11 @@ public:
     ~Column();
     string GetDeviceInfo();
     void HandleMessage(string message);
+    void turnBuzzerOn(bool p_buzzerOn);
 
 private:
     void newSmokeSensorValue(int value);
     void turnLedOn(bool p_ledOn);
-    void turnBuzzerOn(bool p_buzzerOn);
     void buttonWasPressed(bool buttonPressed);
 
     bool buzzerOn;
