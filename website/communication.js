@@ -42,6 +42,10 @@ async function sendSocket(elementId) {
 	else if (elementId == "chair_massage_switch") {
 		sendSwitchValue("chair_uuid", "Chair", "chair_status", "chair_massage_switch", ChairCommands.CHAIR_VIBRATOR_ON);
 	}
+	else if (elementId == "column_smoke_threshold_slider") {
+		sendSliderValue("column_uuid", "Column", "colum_status", "column_smoke_threshold_slider", ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE);
+		updateText("column_smoke_threshold", parseInt(document.getElementById("column_smoke_threshold_slider").value));
+	}
 	else if (elementId == "door_closeopen_switch") {
 		sendSwitchValue("door_uuid", "Door", "door_status", "door_closeopen_switch", DoorCommands.DOOR_DOOR_OPEN);
 	}
@@ -53,7 +57,7 @@ async function sendSocket(elementId) {
 	}
 	else if (elementId == "fridge_temperature_slider") {
 		sendSliderValue("fridge_uuid", "Fridge", "fridge_status", "fridge_temperature_slider", FridgeCommands.FRIDGE_REQUESTED_FRIDGE_TEMPERATURE);
-		updateText("fridge_set_temperature", parseInt(check.value));
+		updateText("fridge_set_temperature", parseInt(document.getElementById("fridge_temperature_slider").value));
 	}
 	else if (elementId == "wall_curtains_open_closed") {
 		sendSwitchValue("wall_uuid", "Wall", "wall_status", "wall_curtains_open_closed", WallCommands.WALL_CURTAIN_OPEN);
@@ -111,6 +115,12 @@ socket.onmessage = function (event) {
 	else if (type == "Chair" && command == ChairCommands.CHAIR_PRESSURE_SENSOR_VALUE) {
 		updateText("chair_measured_weight", value);
 	}
+	else if (type == "Column" && command == ColumnCommands.COLUMN_LED_ON) {
+		updateText("column_light", value);
+	}
+	else if (type == "Column" && command == ColumnCommands.COLUMN_SMOKE_SENSOR_VALUE) {
+		updateText("column_smoke_level", value);
+	}
 	else if (type == "Door" && command == DoorCommands.DOOR_DOOR_OPEN) {
 		updateSwitch("door_closeopen_switch", value);
 	}
@@ -164,6 +174,12 @@ socket.onmessage = function (event) {
 	else if (type == "WIB" && command == WIBCommands.WIB_DIMMER_VALUE) {
 		updateText("wib_potmeter", value);
 	}
+	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_LED_CHANGE) {
+		document.getElementById("column_light").innerHTML = jsonMessage["value"];
+	}
+	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_GASSENSOR_CHANGE) {
+		document.getElementById("column_smoke_level").innerHTML = jsonMessage["value"];
+	}
 }
 
 /*!
@@ -188,6 +204,9 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Column":
 				updateText("column_uuid", device["UUID"]);
 				updateStatus("column_status", device["Status"]);
+				updateText("column_light"), device["COLUMN_LED_ON"];
+				updateText("column_smoke_threshold"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
+				updateSlider("column_smoke_threshold_slider"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
 				break;
 			case "Door":
 				updateText("door_uuid", device["UUID"]);
@@ -348,10 +367,11 @@ const ChairCommands =
 
 const ColumnCommands =
 {
-	COLUMN_BUTTON_PRESSED: 60,
-	COLUMN_LED_ON: 61,
-	COLUMN_BUZZER_ON: 62,
-	COLUMN_SMOKE_SENSOR_VALUE: 63
+	COLUMN_BUTTON_PRESSED : 60,
+    COLUMN_LED_ON : 61,
+    COLUMN_BUZZER_ON : 62,
+    COLUMN_SMOKE_SENSOR_VALUE : 63,
+    COLUMN_SMOKE_TRESHOLD_VALUE : 64
 };
 
 const DoorCommands =
