@@ -1,28 +1,34 @@
-#include "Devices/Column.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
+
+#include "Devices/Column.hpp"
 #include "Devices/Website.hpp"
 
 #include "json.hpp"
-
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 using std::to_string;
+
+// Function definitions
 
 /*!
     @brief Constructor for the Column object
     @param[in] uuid The UUID of the device where the message needs to go to.
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
+	@param[in] devices A pointer to the map containing all devices
 */
 Column::Column(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      buzzerState(false),
-      ledState(false),
-      gasSensorValue(0),
-      gasSensorTreshold(0)
+      buzzerOn(false),
+      ledOn(false),
+      smokeValue(0),
+      smokeTreshold(20)
 {
 }
 
@@ -43,10 +49,10 @@ string Column::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"ledState", ledState},
-        {"buzzerState", buzzerState},
-        {"gasSensorValue", gasSensorValue},
-        {"gasSensorTreshold", gasSensorTreshold}};
+        {"COLUMN_LED_ON", ledOn},
+        {"COLUMN_BUZZER_ON", buzzerOn},
+        {"COLUMN_SMOKE_SENSOR_VALUE", smokeValue},
+        {"COLUMN_SMOKE_TRESHOLD_VALUE", smokeTreshold}};
 
     return deviceInfo.dump();
 }
@@ -61,33 +67,38 @@ void Column::HandleMessage(string message)
 
     switch ((int)jsonMessage["command"])
     {
-    case DEVICEINFO:
+    case DEVICE_INFO:
     {
-        ledState = (bool)jsonMessage["ledState"];
-        buzzerState = (bool)jsonMessage["buzzerState"];
-        gasSensorValue = (int)jsonMessage["gasSensorValue"];
+        ledOn = (bool)jsonMessage["COLUMN_LED_ON"];
+        buzzerOn = (bool)jsonMessage["COLUMN_BUZZER_ON"];
+        smokeValue = (int)jsonMessage["COLUMN_SMOKE_SENSOR_VALUE"];
 
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
+		break;
+    }
+    case COLUMN_BUTTON_PRESSED:
+    {
+        buttonWasPressed((bool)jsonMessage["value"]);        
         break;
     }
-    case COLUMN_GASSENSOR_CHANGE:
+    case COLUMN_LED_ON:
     {
-        gasSensorChange((int)jsonMessage["value"]);
+        turnLedOn((bool)jsonMessage["value"]);
         break;
     }
-    case COLUMN_BUTTON_CHANGE:
+    case COLUMN_BUZZER_ON:
     {
-        buttonPress((bool)jsonMessage["value"]);
+        turnBuzzerOn((int)jsonMessage["value"]);
         break;
     }
-    case COLUMN_GASTRESHOLD_CHANGE:
+    case COLUMN_SMOKE_SENSOR_VALUE:
     {
-        changeGasTreshold((int)jsonMessage["value"]);
+        newSmokeSensorValue((int)jsonMessage["value"]);
         break;
+    }
+    case COLUMN_SMOKE_TRESHOLD_VALUE:
+    {
+        smokeTreshold = (int)jsonMessage["value"];
     }
 
     default:
@@ -95,59 +106,23 @@ void Column::HandleMessage(string message)
     }
 }
 
-/*!
-    @brief Getter for the led state
-    @returns A boolean to check whether led is on or off
-*/
-bool Column::IsLedOn()
+void Column::newSmokeSensorValue(int value)
 {
-    return ledState;
-}
-
-void Column::BuzzerStateOn(bool stateOn)
-{
-    buzzerState = stateOn;
-    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_CHANGE));
-    jsonMessage["value"] = buzzerState;
-    socketServer->SendMessage(uuid, jsonMessage.dump());
-}
-
-/*!
-    @brief Function to handle changes to the treshold for the gas sensor
-    @param[in] value The value to which the treshold should be changed.
-*/
-void Column::changeGasTreshold(int value)
-{
-    gasSensorTreshold = value;
-
-    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_GASTRESHOLD_CHANGE));
-    jsonMessage["value"] = gasSensorTreshold;
-    socketServer->SendMessage(uuid, jsonMessage.dump());
-
-    Device *website = getDeviceByType("Website");
-    if (website == nullptr)
+    smokeValue = value;
+    if (smokeValue > smokeTreshold)
     {
-        return;
+        turnBuzzerOn(true);
     }
-    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
-}
-
-void Column::gasSensorChange(int value)
-{
-    gasSensorValue = value;
-    if (gasSensorValue > gasSensorTreshold)
-    {
-        BuzzerStateOn(true);
+    else {
+        turnBuzzerOn(false);
     }
 
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
-    {
         return;
-    }
 
-    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_GASSENSOR_CHANGE));
-    jsonMessage["value"] = gasSensorValue;
+    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_SMOKE_SENSOR_VALUE));
+    jsonMessage["value"] = smokeValue;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }
 
@@ -155,31 +130,43 @@ void Column::gasSensorChange(int value)
     @brief Function to handle incoming messages when the button is pressed or released
     @param[in] buttonPressed Boolean on whether button is pressed
 */
-void Column::buttonPress(bool buttonPressed)
+void Column::buttonWasPressed(bool buttonPressed)
 {
-    if (ledState && buttonPressed && !buzzerState)
+    if (ledOn && buttonPressed && !buzzerOn)
     {
-        ledStateOn(false);
+        turnLedOn(false);
     }
-    else if (!ledState && buttonPressed && !buzzerState)
+    else if (!ledOn && buttonPressed && !buzzerOn)
     {
-        ledStateOn(true);
+        turnLedOn(true);
     }
 
-    if (buzzerState && buttonPressed)
+    if (buzzerOn && buttonPressed)
     {
-        BuzzerStateOn(false);
+        turnBuzzerOn(false);
     }
 }
 
 /*!
-    @brief Function to turn the led on or off
-    @param[in] stateOn Boolean on whether led needs to be on or off
+    @brief Turns the LED on or off
+    @param[in] p_ledOn A boolean stating if the LED should turn on (true) or off (false)
 */
-void Column::ledStateOn(bool stateOn)
+void Column::turnLedOn(bool p_ledOn)
 {
-    ledState = stateOn;
-    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_LED_CHANGE));
-    jsonMessage["value"] = ledState;
-    socketServer->SendMessage(uuid, jsonMessage.dump());
+    ledOn = p_ledOn;
+	json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_LED_ON));
+	jsonMessage["value"] = ledOn;
+	socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+/*!
+    @brief Turns the buzzer on or off
+    @param[in] p_buzzerOn A boolean stating if the buzzer should turn on (true) or off (false)
+*/
+void Column::turnBuzzerOn(bool p_buzzerOn)
+{
+    buzzerOn = p_buzzerOn;
+	json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_ON));
+	jsonMessage["value"] = buzzerOn;
+	socketServer->SendMessage(uuid, jsonMessage.dump());
 }

@@ -1,12 +1,18 @@
 #ifndef COLUMN_HPP
 #define COLUMN_HPP
 
+// Includes
+
 #include "Device.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 
+// Define namespace functions
+
 using std::string;
+
+// Class definition
 
 class Column : public Device
 {
@@ -15,18 +21,17 @@ public:
     ~Column();
     string GetDeviceInfo();
     void HandleMessage(string message);
-    bool IsLedOn();
-    void BuzzerStateOn(bool stateOn);
 
 private:
-    void changeGasTreshold(int value);
-    void gasSensorChange(int value);
-    void ledStateOn(bool stateOn);
-    void buttonPress(bool buttonPressed);
-    bool buzzerState;
-    bool ledState;
-    int gasSensorValue;
-    int gasSensorTreshold;
+    void newSmokeSensorValue(int value);
+    void turnLedOn(bool p_ledOn);
+    void turnBuzzerOn(bool p_buzzerOn);
+    void buttonWasPressed(bool buttonPressed);
+
+    bool buzzerOn;
+    bool ledOn;
+    int smokeValue;
+    int smokeTreshold;
 };
 
 #endif
