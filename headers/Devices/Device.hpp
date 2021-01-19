@@ -1,14 +1,20 @@
 #ifndef DEVICE_HPP
 #define DEVICE_HPP
 
+// Includes
+
 #include "CommandTypes.hpp"
 #include "Websocket/SocketServer.hpp"
 
 #include <string>
 #include <map>
 
+// Define namespace functions
+
 using std::map;
 using std::string;
+
+// Class definition
 
 class Device
 {
@@ -24,6 +30,7 @@ public:
 protected:
     Device *getDeviceByType(string type);
     string newMessage(string p_uuid, string p_type, int p_command);
+    void updateWebsite();
 
     string uuid;
     string type;

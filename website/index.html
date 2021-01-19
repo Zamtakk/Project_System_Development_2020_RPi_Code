@@ -41,7 +41,7 @@
                     <span class="slider_text">Set:</span><span id="fridge_set_temperature" class="slider_text">-</span><span class="slider_text">&deg;c</span>
                     <span class="slider_text">&#160;&#160;&#160;</span>
                     <span id="fridge_temperature" class="slider_text">-</span><span class="slider_text">&deg;c</span>
-                    <input id="fridge_temperature_slider" type="range" min="1" max="20" value="11" class="dimmerslider" onchange="sendSocket('fridge_temperature_slider')">
+                    <input id="fridge_temperature_slider" type="range" min="15" max="25" value="11" class="dimmerslider" onchange="sendSocket('fridge_temperature_slider')">
                     <p id="fridge_opened">-</p>
                 </div>
             </div>
@@ -220,7 +220,10 @@
                     <p id="wall_uuid">-</p>
                     <p id="wall_status" class="status_disconnected">Disconnected</p>
                     <p id="wall_light_level">-</p>
-                    <input id="wall_curtains_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('wall_curtains_slider')">
+                    <label class="switch">
+                        <input type="checkbox" id="wall_curtains_open_closed" onclick="sendSocket('wall_curtains_open_closed')">
+                        <span class="slider round"></span>
+                    </label>
                     <input id="wall_led_slider" type="range" min="1" max="100" value="1" class="dimmerslider" onchange="sendSocket('wall_led_slider')">
                     <span class="normal_text">Strip</span>
                     <label class="switch">

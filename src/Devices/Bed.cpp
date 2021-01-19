@@ -1,28 +1,34 @@
-#include "Devices/Bed.hpp"
-#include "Devices/Website.hpp"
+// Includes
+
 #include "CommandTypes.hpp"
 
-#include "json.hpp"
+#include "Devices/Bed.hpp"
+#include "Devices/Website.hpp"
 
+#include "json.hpp"
 #include <string>
 
-using json = nlohmann::json;
+// Define namespace functions
 
+using nlohmann::json;
 using std::string;
 using std::to_string;
+
+// Function definitions
 
 /*!
     @brief Constructor for the Bed object
     @param[in] uuid The UUID of the device where the message needs to go to.
     @param[in] type The device type
 	@param[in] server A pointer to the socketserver instance
+	@param[in] devices A pointer to the map containing all devices
 */
 Bed::Bed(string uuid, string type, SocketServer *server, map<string, Device *> *devices)
     : Device(uuid, type, server, devices),
-      ledState(false),
+      ledOn(false),
       pressureValue(0)
 {
-    json jsonMessage = json::parse(newMessage(uuid, type, DEVICEINFO));
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
 	jsonMessage["value"] = "";
 	socketServer->SendMessage(uuid, jsonMessage.dump());
 }
@@ -44,8 +50,8 @@ string Bed::GetDeviceInfo()
         {"UUID", uuid},
         {"Type", type},
         {"Status", status},
-        {"ledState", ledState},
-        {"pressureValue", pressureValue}};
+        {"BED_LED_ON", ledOn},
+        {"BED_PRESSURE_SENSOR_VALUE", pressureValue}};
 
     return deviceInfo.dump();
 }
@@ -60,42 +66,34 @@ void Bed::HandleMessage(string message)
 
 	switch ((int)jsonMessage["command"])
 	{
-	case DEVICEINFO:
+	case DEVICE_INFO:
 	{
-		ledState = (bool)jsonMessage["ledState"];
-		pressureValue = (int)jsonMessage["pressureValue"];
+		ledOn = (bool)jsonMessage["BED_LED_ON"];
+		pressureValue = (int)jsonMessage["BED_PRESSURE_SENSOR_VALUE"];
 
-		Device *website = getDeviceByType("Website");
-		if (website == nullptr)
-			break;
-
-		dynamic_cast<Website *>(website)->updateWebsite();
+		updateWebsite();
 		break;
 	}
-	case BED_BUTTON_CHANGE:
+	case BED_BUTTON_PRESSED:
 	{
-		buttonPress((bool)jsonMessage["value"]);
+		buttonWasPressed((bool)jsonMessage["value"]);
 		break;
 	}
-	case BED_FORCESENSOR_CHANGE:
+	case BED_LED_ON:
 	{
-		pressureSensorChange((int)jsonMessage["value"]);
+		turnLedOn((bool)jsonMessage["value"]);
 		break;
 	}
-	case BED_LED_CHANGE:
+	case BED_PRESSURE_SENSOR_VALUE:
 	{
-		ledStateOn((bool)jsonMessage["value"]);
+		newPressureSensorValue((uint16_t)jsonMessage["value"]);
 		break;
 	}
     case HEARTBEAT:
     {
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
 
-        Device *website = getDeviceByType("Website");
-        if (website == nullptr)
-            break;
-
-        dynamic_cast<Website *>(website)->updateWebsite();
+        updateWebsite();
     }
 	default:
 		break;
@@ -103,37 +101,18 @@ void Bed::HandleMessage(string message)
 }
 
 /*!
-    @brief Function to handle incoming messages concerning changes in the pressure sensor.
-    @param[in] pressureValueReceived The pressure value in the message.
-*/
-void Bed::pressureSensorChange(int pressureValueReceived)
-{
-    pressureValue = pressureValueReceived;
-
-    Device *website = getDeviceByType("Website");
-    if (website == nullptr)
-    {
-        return;
-    }
-
-    json jsonMessage = json::parse(newMessage(uuid, type, BED_FORCESENSOR_CHANGE));
-    jsonMessage["value"] = pressureValueReceived;
-    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
-}
-
-/*!
     @brief Function to handle incoming messages when the button is pressed or released
     @param[in] buttonPressed Boolean on whether button is pressed
 */
-void Bed::buttonPress(bool buttonPressed)
+void Bed::buttonWasPressed(bool buttonPressed)
 {
-    if (ledState && buttonPressed)
+    if (ledOn && buttonPressed)
     {
-        ledStateOn(false);
+        turnLedOn(false);
     }
-    else if (!ledState && buttonPressed)
+    else if (!ledOn && buttonPressed)
     {
-        ledStateOn(true);
+        turnLedOn(true);
     }
 }
 
@@ -141,11 +120,11 @@ void Bed::buttonPress(bool buttonPressed)
     @brief Function to turn the led on or off
     @param[in] stateOn Boolean on whether led needs to be on or off
 */
-void Bed::ledStateOn(bool stateOn)
+void Bed::turnLedOn(bool p_ledOn)
 {
-    ledState = stateOn;
-    json jsonMessage = json::parse(newMessage(uuid, type, BED_LED_CHANGE));
-    jsonMessage["value"] = ledState;
+    ledOn = p_ledOn;
+    json jsonMessage = json::parse(newMessage(uuid, type, BED_LED_ON));
+    jsonMessage["value"] = ledOn;
     socketServer->SendMessage(uuid, jsonMessage.dump());
 
     Device *website = getDeviceByType("Website");
@@ -154,5 +133,24 @@ void Bed::ledStateOn(bool stateOn)
         return;
     }
 
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
+}
+
+/*!
+    @brief Function to handle incoming messages concerning changes in the pressure sensor.
+    @param[in] pressureValueReceived The pressure value in the message.
+*/
+void Bed::newPressureSensorValue(uint16_t p_pressureValue)
+{
+    pressureValue = p_pressureValue;
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+    {
+        return;
+    }
+
+    json jsonMessage = json::parse(newMessage(uuid, type, BED_PRESSURE_SENSOR_VALUE));
+    jsonMessage["value"] = pressureValue;
     socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

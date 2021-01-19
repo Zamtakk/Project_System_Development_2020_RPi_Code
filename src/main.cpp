@@ -6,7 +6,9 @@
 #include "Devices/SimulatedDevice.hpp"
 #include "Devices/Bed.hpp"
 #include "Devices/Door.hpp"
-#include "Devices/Column.hpp"
+#include "Devices/Wall.hpp"
+#include "Devices/Lamp.hpp"
+#include "Devices/Fridge.hpp"
 #include "Devices/WIB.hpp"
 
 #include "json.hpp"
@@ -91,11 +93,25 @@ int main()
                 Door *newDevice = new Door(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
-            else if (jsonMessage["Type"] == "Column")
+            else if (jsonMessage["Type"] == "Wall")
             {
                 newUUID = jsonMessage["UUID"];
                 newType = jsonMessage["Type"];
-                Column *newDevice = new Column(newUUID, newType, Socket, &devices);
+                Wall *newDevice = new Wall(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Lamp")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Lamp *newDevice = new Lamp(newUUID, newType, Socket, &devices);
+                devices.insert(pair<string, Device *>(newUUID, newDevice));
+            }
+            else if (jsonMessage["Type"] == "Fridge")
+            {
+                newUUID = jsonMessage["UUID"];
+                newType = jsonMessage["Type"];
+                Fridge *newDevice = new Fridge(newUUID, newType, Socket, &devices);
                 devices.insert(pair<string, Device *>(newUUID, newDevice));
             }
             else if (jsonMessage["Type"] == "WIB")
