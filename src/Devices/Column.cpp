@@ -87,12 +87,12 @@ void Column::HandleMessage(string message)
     case COLUMN_LED_ON:
     {
         turnLedOn((bool)jsonMessage["value"]);
-        turnBuzzerOn((int)jsonMessage["value"]);
+        turnBuzzerOn((bool)jsonMessage["value"]);
         break;
     }
     case COLUMN_BUZZER_ON:
     {
-        turnBuzzerOn((int)jsonMessage["value"]);
+        turnBuzzerOn((bool)jsonMessage["value"]);
         break;
     }
     case COLUMN_SMOKE_SENSOR_VALUE:
@@ -183,6 +183,7 @@ void Column::turnBuzzerOn(bool p_buzzerOn)
     @param[in] value The new treshold value
 */
 void Column::newSmokeTresholdValue(int value) {
+    std::cout << "New smoke value " << value << std::endl;
     smokeTreshold = value;
 
     Device *website = getDeviceByType("Website");

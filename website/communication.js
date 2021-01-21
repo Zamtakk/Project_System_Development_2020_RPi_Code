@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 const uuid = "0000000001";
 const type = "Website";
 
@@ -43,7 +43,11 @@ async function sendSocket(elementId) {
 		sendSwitchValue("chair_uuid", "Chair", "chair_status", "chair_massage_switch", ChairCommands.CHAIR_VIBRATOR_ON);
 	}
 	else if (elementId == "column_smoke_threshold_slider") {
-		sendSliderValue("column_uuid", "Column", "colum_status", "column_smoke_threshold_slider", ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE);
+		sendSliderValue("column_uuid", "Column", "column_status", "column_smoke_threshold_slider", ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE);
+	}
+	else if (elementId == "column_emergency_light_buzzer") {
+		sendSwitchValue("column_uuid", "Column", "column_status", "column_emergency_light_buzzer", ColumnCommands.COLUMN_LED_ON);
+		sendSwitchValue("column_uuid", "Column", "column_status", "column_emergency_light_buzzer", ColumnCommands.COLUMN_BUZZER_ON);
 	}
 	else if (elementId == "door_closeopen_switch") {
 		sendSwitchValue("door_uuid", "Door", "door_status", "door_closeopen_switch", DoorCommands.DOOR_DOOR_OPEN);
@@ -115,13 +119,14 @@ socket.onmessage = function (event) {
 		updateText("chair_measured_weight", value);
 	}
 	else if (type == "Column" && command == ColumnCommands.COLUMN_LED_ON) {
-		updateText("column_light", value);
+		updateSwitch("column_emergency_light_buzzer", value);
 	}
 	else if (type == "Column" && command == ColumnCommands.COLUMN_SMOKE_SENSOR_VALUE) {
 		updateText("column_smoke_level", value);
 	}
 	else if (type == "Column" && command == ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE) {
-		updateText("column_smoke_threshold_slider", value);
+		updateSlider("column_smoke_threshold_slider", value);
+		updateText("column_smoke_threshold", value);
 	}
 	else if (type == "Door" && command == DoorCommands.DOOR_DOOR_OPEN) {
 		updateSwitch("door_closeopen_switch", value);
@@ -200,9 +205,9 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Column":
 				updateText("column_uuid", device["UUID"]);
 				updateStatus("column_status", device["Status"]);
-				updateText("column_light"), parseBool(device["COLUMN_LED_ON"]);
-				updateSlider("column_smoke_threshold_slider"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
-				updateText("column_smoke_threshold"), parseInt(device["COLUMN_SMOKE_TRESHOLD_VALUE"]);
+				updateSwitch("column_emergency_light_buzzer", device["COLUMN_LED_ON"]);
+				updateText("column_smoke_threshold", parseInt(device["COLUMN_SMOKE_TRESHOLD_VALUE"]));
+				updateSlider("column_smoke_threshold_slider", device["COLUMN_SMOKE_TRESHOLD_VALUE"]);
 				break;
 			case "Door":
 				updateText("door_uuid", device["UUID"]);
@@ -363,11 +368,11 @@ const ChairCommands =
 
 const ColumnCommands =
 {
-	COLUMN_BUTTON_PRESSED : 60,
-    COLUMN_LED_ON : 61,
-    COLUMN_BUZZER_ON : 62,
-    COLUMN_SMOKE_SENSOR_VALUE : 63,
-    COLUMN_SMOKE_TRESHOLD_VALUE : 64
+	COLUMN_BUTTON_PRESSED: 60,
+	COLUMN_LED_ON: 61,
+	COLUMN_BUZZER_ON: 62,
+	COLUMN_SMOKE_SENSOR_VALUE: 63,
+	COLUMN_SMOKE_TRESHOLD_VALUE: 64
 };
 
 const DoorCommands =

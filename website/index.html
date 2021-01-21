@@ -178,14 +178,17 @@
                 <div class="device-status">
                     <p>UUID:</p>
                     <p>Status:</p>
-                    <p>Emergency light:</p>
+                    <p>Emergency:</p>
                     <p>Smoke level:</p>
                     <p>Smoke threshold:</p>
                 </div>
                 <div class="device-values">
                     <p id="column_uuid">-</p>
                     <p id="column_status" class="status_disconnected">Disconnected</p>
-                    <p id="column_light">-</p>
+                    <label class="switch">
+                        <input type="checkbox" id="column_emergency_light_buzzer" onclick="sendSocket('column_emergency_light_buzzer')">
+                        <span class="slider round"></span>
+                    </label>
                     <p id="column_smoke_level">-</p>
                     <span id="column_smoke_threshold" class="slider_text">-</span><span class="slider_text"> ppm</span>
                     <input id="column_smoke_threshold_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('column_smoke_threshold_slider')">
