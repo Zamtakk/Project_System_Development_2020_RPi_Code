@@ -27,6 +27,7 @@ Wall::Wall(string uuid, string type, SocketServer *server, map<string, Device *>
     : Device(uuid, type, server, devices),
       LDRValue(0),
       dimmerValue(0),
+      ledstripValue(0),
       curtainIsOpen(false),
       enableLamp(false),
       enableLedstrip(false)
@@ -57,6 +58,7 @@ string Wall::GetDeviceInfo()
         {"WALL_LEDSTRIP_ON", enableLedstrip},
         {"WALL_LAMP_ON", enableLamp},
         {"WALL_DIMMER_VALUE", dimmerValue},
+        {"WALL_LEDSTRIP_VALUE", ledstripValue},
         {"WALL_LDR_VALUE", LDRValue}};
 
     return deviceInfo.dump();
@@ -192,27 +194,11 @@ void Wall::newDimmerValue(int value)
 void Wall::dimLedstrip(int value)
 {
     ledstripValue = value;
-    turnLedstripOn(enableLedstrip);
-}
-
-/*!
-    @brief Turns the LED on or off and sets the LED to the stored dimming value
-    @param[in] p_ledstripOn A boolean stating if LED should turn on (true) or off (false)
-*/
-void Wall::turnLedstripOn(bool p_ledstripOn)
-{
-    enableLedstrip = p_ledstripOn;
 
     json jsonMessage = json::parse(newMessage(uuid, type, WALL_LEDSTRIP_VALUE));
 
-    if (enableLedstrip)
-    {
-        jsonMessage["value"] = ledstripValue;
-    }
-    else
-    {
-        jsonMessage["value"] = 0;
-    }
+    jsonMessage["value"] = ledstripValue;
+
     socketServer->SendMessage(uuid, jsonMessage.dump());
 
     Device *website = getDeviceByType("Website");
