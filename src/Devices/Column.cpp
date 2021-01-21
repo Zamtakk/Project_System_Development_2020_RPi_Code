@@ -28,8 +28,11 @@ Column::Column(string uuid, string type, SocketServer *server, map<string, Devic
       buzzerOn(false),
       ledOn(false),
       smokeValue(0),
-      smokeTreshold(20)
+      smokeTreshold(240)
 {
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
+    jsonMessage["value"] = "";
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -100,6 +103,12 @@ void Column::HandleMessage(string message)
     case COLUMN_SMOKE_TRESHOLD_VALUE:
     {
         smokeTreshold = (int)jsonMessage["value"];
+    }
+    case HEARTBEAT:
+    {
+        status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
+
+        updateWebsite();
     }
 
     default:

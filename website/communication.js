@@ -1,4 +1,4 @@
-var socket = new WebSocket("ws://169.254.181.129:9002"); //change the ip address to the ip address of your pi! - also works when using live server
+var socket = new WebSocket("ws://169.254.41.114:9002"); //change the ip address to the ip address of your pi! - also works when using live server
 const uuid = "0000000001";
 const type = "Website";
 
@@ -204,8 +204,8 @@ async function updateDeviceInformation(deviceInformation) {
 			case "Column":
 				updateText("column_uuid", device["UUID"]);
 				updateStatus("column_status", device["Status"]);
-				updateText("column_light"), device["COLUMN_LED_ON"];
-				updateText("column_smoke_threshold"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
+				updateText("column_light"), parseBool(device["COLUMN_LED_ON"]);
+				updateText("column_smoke_threshold"), parseInt(device["COLUMN_SMOKE_TRESHOLD_VALUE"]);
 				updateSlider("column_smoke_threshold_slider"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
 				break;
 			case "Door":
