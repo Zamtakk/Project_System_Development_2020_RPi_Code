@@ -55,9 +55,6 @@ async function sendSocket(elementId) {
 	else if (elementId == "door_unlocklock_switch") {
 		sendSwitchValue("door_uuid", "Door", "door_status", "door_unlocklock_switch", DoorCommands.DOOR_DOOR_LOCKED);
 	}
-	else if (elementId == "door_ring_button") {
-		sendSwitchValue("door_uuid", "Door", "door_status", "door_ring_button", DoorCommands.DOOR_BUTTON_OUTSIDE_PRESSED);
-	}
 	else if (elementId == "fridge_temperature_slider") {
 		sendSliderValue("fridge_uuid", "Fridge", "fridge_status", "fridge_temperature_slider", FridgeCommands.FRIDGE_REQUESTED_FRIDGE_TEMPERATURE);
 		updateText("fridge_set_temperature", parseInt(document.getElementById("fridge_temperature_slider").value));
@@ -329,6 +326,40 @@ function sendSliderValue(uuidID, type, statusID, sliderID, command) {
 	forwardMessage(message);
 }
 
+function ringTrue() {
+	if (!isConnected("door_status")) return;
+	var message = {
+		UUID: document.getElementById("door_uuid").innerHTML,
+		Type: "Door",
+		command: DoorCommands.DOOR_DOORBELL_PRESSED,
+		value: true
+	};
+
+	forwardMessage(message);
+}
+
+function ringFalse() {
+	if (!isConnected("door_status")) return;
+	var message = {
+		UUID: document.getElementById("door_uuid").innerHTML,
+		Type: "Door",
+		command: DoorCommands.DOOR_DOORBELL_PRESSED,
+		value: false
+	};
+
+	forwardMessage(message);
+}
+
+//Button eventlisteners
+buttonElement = document.getElementById("door_ring_button");
+buttonElement.addEventListener('mousedown', function (data) {
+	ringTrue()
+});
+
+buttonElement.addEventListener('mouseup', function (data) {
+	ringFalse()
+});
+
 //Command types
 
 const ErrorCodes =
@@ -382,7 +413,8 @@ const DoorCommands =
 	DOOR_LED_INSIDE_ON: 72,
 	DOOR_LED_OUTSIDE_ON: 73,
 	DOOR_DOOR_OPEN: 74,
-	DOOR_DOOR_LOCKED: 75
+	DOOR_DOOR_LOCKED: 75,
+	DOOR_DOORBELL_PRESSED: 76
 };
 
 const FridgeCommands =

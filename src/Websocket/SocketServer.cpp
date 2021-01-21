@@ -107,7 +107,7 @@ void SocketServer::parseIncomingMessages()
     while (1)
     {
         // Wait before parsing a new message to not overload the system
-        sleep_for(milliseconds(10));
+        sleep_for(milliseconds(5));
 
         // Aquire lock and get a new message if one is available
         const lock_guard<mutex> _websocketppLock(websocketppRxLock);
