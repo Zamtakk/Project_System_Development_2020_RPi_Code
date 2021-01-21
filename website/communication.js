@@ -174,12 +174,6 @@ socket.onmessage = function (event) {
 	else if (type == "WIB" && command == WIBCommands.WIB_DIMMER_VALUE) {
 		updateText("wib_potmeter", value);
 	}
-	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_LED_CHANGE) {
-		document.getElementById("column_light").innerHTML = jsonMessage["value"];
-	}
-	else if (jsonMessage["Type"] == "Column" && jsonMessage["command"] == ColumnCommands.COLUMN_GASSENSOR_CHANGE) {
-		document.getElementById("column_smoke_level").innerHTML = jsonMessage["value"];
-	}
 }
 
 /*!
