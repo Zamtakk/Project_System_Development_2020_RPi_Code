@@ -113,6 +113,13 @@ void Wall::HandleMessage(string message)
         dimLedstrip((int)jsonMessage["value"]);
         break;
     }
+    case HEARTBEAT:
+    {
+        status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
+
+        updateWebsite();
+        break;
+    }
     default:
         break;
     }

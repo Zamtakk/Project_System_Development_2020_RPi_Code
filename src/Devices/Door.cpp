@@ -104,6 +104,7 @@ void Door::HandleMessage(string message)
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
 
         updateWebsite();
+        break;
     }
     default:
         break;
