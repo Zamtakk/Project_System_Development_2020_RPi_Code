@@ -155,7 +155,7 @@ void Column::buttonWasPressed(bool buttonPressed)
 void Column::turnLedOn(bool p_ledOn)
 {
     ledOn = p_ledOn;
-    
+
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
         return;
@@ -182,7 +182,8 @@ void Column::turnBuzzerOn(bool p_buzzerOn)
     @brief Updates the treshold value for the smoke sensor
     @param[in] value The new treshold value
 */
-void Column::newSmokeTresholdValue(int value) {
+void Column::newSmokeTresholdValue(int value)
+{
     std::cout << "New smoke value " << value << std::endl;
     smokeTreshold = value;
 
