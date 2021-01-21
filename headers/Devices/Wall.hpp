@@ -26,7 +26,6 @@ private:
     void newLDRValue(int value);
     void openCurtain(bool p_openCurtain);
     void newDimmerValue(int value);
-    void turnLedstripOn(bool p_ledstripOn);
     void dimLedstrip(int value);
 
     int LDRValue;
