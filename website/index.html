@@ -70,7 +70,7 @@
                         <input type="checkbox" id="lamp_onoff_switch" onclick="sendSocket('lamp_onoff_switch')">
                         <span class="slider round"></span>
                     </label>
-                    <input id="lamp_dimlevel_slider" type="range" min="1" max="100" value="50" class="dimmerslider" onchange="sendSocket('lamp_dimlevel_slider')">
+                    <input id="lamp_dimlevel_slider" type="range" min="0" max="255" value="0" class="dimmerslider" onchange="sendSocket('lamp_dimlevel_slider')">
                     <p id="lamp_last_movement">- min ago</p>
                 </div>
             </div>

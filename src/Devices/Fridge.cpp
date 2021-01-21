@@ -122,7 +122,7 @@ void Fridge::HandleMessage(string message)
 void Fridge::newRawTemperatureSensorInsideValue(uint16_t value)
 {
     float resistance = adc_to_resistance((float)value);
-    float temperatureValueInside = resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
+    temperatureValueInside = (int)resistance_to_celcius((float)resistance, THERMISTOR_NOMINAL);
 
     updateCoolingState();
 
