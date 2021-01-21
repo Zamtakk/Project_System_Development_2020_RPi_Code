@@ -28,8 +28,11 @@ Column::Column(string uuid, string type, SocketServer *server, map<string, Devic
       buzzerOn(false),
       ledOn(false),
       smokeValue(0),
-      smokeTreshold(20)
+      smokeTreshold(240)
 {
+    json jsonMessage = json::parse(newMessage(uuid, type, DEVICE_INFO));
+    jsonMessage["value"] = "";
+    socketServer->SendMessage(uuid, jsonMessage.dump());
 }
 
 /*!
@@ -84,12 +87,12 @@ void Column::HandleMessage(string message)
     case COLUMN_LED_ON:
     {
         turnLedOn((bool)jsonMessage["value"]);
-        turnBuzzerOn((int)jsonMessage["value"]);
+        turnBuzzerOn((bool)jsonMessage["value"]);
         break;
     }
     case COLUMN_BUZZER_ON:
     {
-        turnBuzzerOn((int)jsonMessage["value"]);
+        turnBuzzerOn((bool)jsonMessage["value"]);
         break;
     }
     case COLUMN_SMOKE_SENSOR_VALUE:
@@ -99,7 +102,15 @@ void Column::HandleMessage(string message)
     }
     case COLUMN_SMOKE_TRESHOLD_VALUE:
     {
-        smokeTreshold = (int)jsonMessage["value"];
+        newSmokeTresholdValue((int)jsonMessage["value"]);
+        break;
+    }
+    case HEARTBEAT:
+    {
+        status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
+
+        updateWebsite();
+        break;
     }
 
     default:
@@ -144,7 +155,7 @@ void Column::buttonWasPressed(bool buttonPressed)
 void Column::turnLedOn(bool p_ledOn)
 {
     ledOn = p_ledOn;
-    
+
     Device *website = getDeviceByType("Website");
     if (website == nullptr)
         return;
@@ -165,4 +176,22 @@ void Column::turnBuzzerOn(bool p_buzzerOn)
     json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_ON));
     jsonMessage["value"] = buzzerOn;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+/*!
+    @brief Updates the treshold value for the smoke sensor
+    @param[in] value The new treshold value
+*/
+void Column::newSmokeTresholdValue(int value)
+{
+    std::cout << "New smoke value " << value << std::endl;
+    smokeTreshold = value;
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_SMOKE_TRESHOLD_VALUE));
+    jsonMessage["value"] = smokeTreshold;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

@@ -99,6 +99,15 @@ void Door::HandleMessage(string message)
         lockDoor((bool)jsonMessage["value"]);
         break;
     }
+    case DOOR_DOORBELL_PRESSED:
+    {
+        Device *column = getDeviceByType("Column");
+        if (column == nullptr)
+            return;
+
+        dynamic_cast<Column *>(column)->turnBuzzerOn((bool)jsonMessage["value"]);
+        break;
+    }
     case HEARTBEAT:
     {
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];

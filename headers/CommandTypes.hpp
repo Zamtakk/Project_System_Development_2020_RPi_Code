@@ -52,7 +52,8 @@ enum DoorCommands
     DOOR_LED_INSIDE_ON = 72,
     DOOR_LED_OUTSIDE_ON = 73,
     DOOR_DOOR_OPEN = 74,
-    DOOR_DOOR_LOCKED = 75
+    DOOR_DOOR_LOCKED = 75,
+    DOOR_DOORBELL_PRESSED = 76
 };
 
 enum FridgeCommands
