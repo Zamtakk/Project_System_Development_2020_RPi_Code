@@ -102,13 +102,15 @@ void Column::HandleMessage(string message)
     }
     case COLUMN_SMOKE_TRESHOLD_VALUE:
     {
-        smokeTreshold = (int)jsonMessage["value"];
+        newSmokeTresholdValue((int)jsonMessage["value"]);
+        break;
     }
     case HEARTBEAT:
     {
         status = (DeviceStatus)jsonMessage["heartbeat"]["status"];
 
         updateWebsite();
+        break;
     }
 
     default:
@@ -174,4 +176,20 @@ void Column::turnBuzzerOn(bool p_buzzerOn)
     json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_BUZZER_ON));
     jsonMessage["value"] = buzzerOn;
     socketServer->SendMessage(uuid, jsonMessage.dump());
+}
+
+/*!
+    @brief Updates the treshold value for the smoke sensor
+    @param[in] value The new treshold value
+*/
+void Column::newSmokeTresholdValue(int value) {
+    smokeTreshold = value;
+
+    Device *website = getDeviceByType("Website");
+    if (website == nullptr)
+        return;
+
+    json jsonMessage = json::parse(newMessage(uuid, type, COLUMN_SMOKE_TRESHOLD_VALUE));
+    jsonMessage["value"] = smokeTreshold;
+    socketServer->SendMessage(website->GetUUID(), jsonMessage.dump());
 }

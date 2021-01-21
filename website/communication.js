@@ -44,7 +44,6 @@ async function sendSocket(elementId) {
 	}
 	else if (elementId == "column_smoke_threshold_slider") {
 		sendSliderValue("column_uuid", "Column", "colum_status", "column_smoke_threshold_slider", ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE);
-		updateText("column_smoke_threshold", parseInt(document.getElementById("column_smoke_threshold_slider").value));
 	}
 	else if (elementId == "door_closeopen_switch") {
 		sendSwitchValue("door_uuid", "Door", "door_status", "door_closeopen_switch", DoorCommands.DOOR_DOOR_OPEN);
@@ -120,6 +119,9 @@ socket.onmessage = function (event) {
 	}
 	else if (type == "Column" && command == ColumnCommands.COLUMN_SMOKE_SENSOR_VALUE) {
 		updateText("column_smoke_level", value);
+	}
+	else if (type == "Column" && command == ColumnCommands.COLUMN_SMOKE_TRESHOLD_VALUE) {
+		updateText("column_smoke_threshold_slider", value);
 	}
 	else if (type == "Door" && command == DoorCommands.DOOR_DOOR_OPEN) {
 		updateSwitch("door_closeopen_switch", value);
@@ -199,8 +201,8 @@ async function updateDeviceInformation(deviceInformation) {
 				updateText("column_uuid", device["UUID"]);
 				updateStatus("column_status", device["Status"]);
 				updateText("column_light"), parseBool(device["COLUMN_LED_ON"]);
-				updateText("column_smoke_threshold"), parseInt(device["COLUMN_SMOKE_TRESHOLD_VALUE"]);
 				updateSlider("column_smoke_threshold_slider"), device["COLUMN_SMOKE_TRESHOLD_VALUE"];
+				updateText("column_smoke_threshold"), parseInt(device["COLUMN_SMOKE_TRESHOLD_VALUE"]);
 				break;
 			case "Door":
 				updateText("door_uuid", device["UUID"]);

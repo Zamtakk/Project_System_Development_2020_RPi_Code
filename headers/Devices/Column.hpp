@@ -27,6 +27,7 @@ private:
     void newSmokeSensorValue(int value);
     void turnLedOn(bool p_ledOn);
     void buttonWasPressed(bool buttonPressed);
+    void newSmokeTresholdValue(int value);
 
     bool buzzerOn;
     bool ledOn;
