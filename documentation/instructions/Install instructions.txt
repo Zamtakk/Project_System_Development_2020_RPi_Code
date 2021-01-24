@@ -63,7 +63,7 @@ IF: Used host is Ubuntu
     }
     <<<<
     - Make sure to edit the SSID name and PSK (password)
-    - Save the file with Ctrl + O, and exit with Ctrl + X
+    - Save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
 
 - Now remove the SD card from the host computer
 
@@ -114,15 +114,21 @@ i: We will now update the OS and install the required software
 > sudo apt-get install g++-8-arm-linux-gnueabihf gdb-multiarch sshpass make python3-distutils git libssl-dev -y
 
 i: We will now add environment variables (This is in addition to the ones done in Windows for WSL users) (Make sure to replace <rpi_address> with the Pi IP address)
+
 i: First we will add one to the /etc/environment, this must be done as root
 > sudo -i
-> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment              |ex. echo "RPI_ADDRESS=10.0.0.104" >> /etc/environment
+i: Do not forget to replace the <rpi_address> in the command below with the actual address. Ex. <rpi_address> becomes 10.0.0.104
+> echo "RPI_ADDRESS=<rpi_address>" >> /etc/environment
 > exit
+
 i: Next we will add two as a normal user
 i: Add the environment variable to .profile
-> echo "RPI_ADDRESS=<rpi_address>" >> ~/.profile                    |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.profile
+i: Do not forget to replace the <rpi_address> in the command below with the actual address. Ex. <rpi_address> becomes 10.0.0.104
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.profile
+
 i: And add the environment variable to .bashrc
-> echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc                     |ex. echo "RPI_ADDRESS=10.0.0.104" >> ~/.bashrc
+i: Do not forget to replace the <rpi_address> in the command below with the actual address. Ex. <rpi_address> becomes 10.0.0.104
+> echo "RPI_ADDRESS=<rpi_address>" >> ~/.bashrc
 
 - Reboot the host computer for these changes to take effect. (Logout is not enough) (WSL users need to reboot windows entirely, not just WSL)
 
@@ -161,8 +167,8 @@ IF: A password was still asked
 
 i: You are now logged in the Pi, we will need to update the OS of the Pi
 pi> sudo apt-get update && sudo apt-get upgrade -y
-i: Now we need to install some software to be able to debug later.
-pi> sudo apt-get install gdbserver -y
+i: Now we need to install some software to be able to debug later and to run the website.
+pi> sudo apt-get install gdbserver apache2 -y
 
 i: We are now done in the pi
 pi> exit
@@ -214,6 +220,7 @@ i: Now we will install the needed extensions
 - Install: C/C++ by Microsoft
 - Install: Native Debug by WebFreak
 - Install: Git History by Don Jayamanne
+- Install: Live Server by Ritwick Dey
 
 IF: Host is ubuntu
     i: VSCode might want to reload a couple of times to finish up installation
@@ -223,11 +230,24 @@ i: We need to edit user settings file to make VSCode not interfere with an exten
 - Open the VSCode command line with Shift + Ctrl + P
 - Type in: 'Preferences: Open Settings (JSON)'
 - Hit enter
-i: Insert these variables in the file
+i: Replace all contents in the file with the following
 >>>>
 {
+    "arduino.additionalUrls": [
+        "http://arduino.esp8266.com/stable/package_esp8266com_index.json"
+    ],
+    "C_Cpp.updateChannel": "Insiders",
+    "explorer.confirmDelete": false,
+    "git.confirmSync": false,
     "debug.showInStatusBar": "never",
-    "debug.toolBarLocation": "hidden"
+    "debug.toolBarLocation": "hidden",
+    "platformio-ide.activateOnlyOnPlatformIOProject": true,
+    "platformio-ide.disablePIOHomeStartup": true,
+    "git.fetchOnPull": true,
+    "git.postCommitCommand": "push",
+    "git.autofetch": true,
+    "git.pruneOnFetch": true,
+    "git.autofetchPeriod": 30
 }
 <<<<
 - Save the file and close it.
@@ -275,13 +295,17 @@ i: You now have two workspaces you can use to program the Raspberry Pi and the W
 
 ++++++++++++++++++++++++++ Using the programming environment for the Raspberry Pi ++++++++++++++++++++++++++
 i: In the bottom blue status bar there are several task buttons you can use to Clean/Build/Run/Debug your code. Most of these are pretty self explanetory.
-i: To use the remote debugging function though, you first need to start a remote session with the 'Start Remote' button. As soon as this is running you can press the
+i: To use the remote debugging function though, you first need to start a remote session with the 'Start' button. As soon as this is running you can press the
 i: smaller bug right next to it. This will start the local debugging session that will connect to the remote process.
 
-i: If a debugging process gets stuck or a program freezes or something happens and the program does not self terminate, you can use the kill remote button.
+i: If a debugging process gets stuck or a program freezes or something happens and the program does not self terminate, you can use the 'kill' button.
 i: This will stop all remote debugging processes and all running instances of the program.
 
 i: To have some easy control over the Pi there are also buttons available to reboot and shutdown the Raspberry Pi.
+
+i: On the left is a terminal icon which van be used to quickly open a terminal with ssh connection to the pi.
+
+i: The 'Sync' button can be used to copy all files for the website to the Raspberry Pi. This only works after you followed the instructions for setting up the website.
 
 ++++++++++++++++++++++++++ Using the programming environment for the Wemos ++++++++++++++++++++++++++
 i: Programming the Wemos makes use of the PlatformIO environment that uses its own buttons in the blue bottom status bar.
@@ -294,8 +318,56 @@ i: A plug to start a Serial monitor.
 i: A new terminal button.
 i: And a bug to start a debugging session.
 
+++++++++++++++++++++++++++ Setting up Apache2 to run the website ++++++++++++++++++++++++++
+i: Connect to the pi.
+> ssh pi@$RPI_ADDRESS
+
+i: First we will change some user permissions needed for the website.
+pi> sudo usermod -a -G www-data pi
+pi> sudo chown -R -f www-data:www-data /var/www/html
+
+i: Reboot the pi for the user changes to take effect
+pi> sudo shutdown -r now
+
+- Wait for the pi to reboot
+i: Re-connect to the pi.
+> ssh pi@$RPI_ADDRESS
+
+i: Now we will add the configuration for our site
+pi> sudo nano /etc/apache2/sites-available/pjsdvgroup13.com.conf
+i: Insert the below text into the file
+>>>>
+<VirtualHost *:80>
+      ServerName pjsdvgroup13.com
+      ServerAlias www.pjsdvgroup13.com
+      DocumentRoot /var/www/pjsdvgroup13.com/public_html
+      ErrorLog ${APACHE_LOG_DIR}/pjsdvgroup13.com_error.log
+      CustomLog ${APACHE_LOG_DIR}/pjsdvgroup13.com_access.log combined
+</VirtualHost>
+<<<<
+- Save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
+
+i: Now we create folders for the website with the right permissions
+pi> sudo mkdir -p /var/www/pjsdvgroup13.com/public_html
+pi> sudo chown -R www-data:www-data /var/www/pjsdvgroup13.com/public_html
+pi> sudo chmod -R 777 /var/www/pjsdvgroup13.com
+
+i: Add the site to Apache
+pi> sudo a2ensite pjsdvgroup13.com.conf
+
+i: Remove the default page so we can access our site simply by navigating to the IP of the Pi.
+pi> sudo rm /etc/apache2/sites-enabled/000-default.conf 
+
+i: Now we reload and restart Apache for the site to start
+pi> sudo systemctl reload apache2
+pi> sudo /etc/init.d/apache2 restart
+
+- Update the website files with the 'Sync' button in the status bar.
+i: You can now access the website by navigating to the IP address of the pi in a Google Chrome window.
+i: The website in this project is not optimized for other browsers. It works best on a 1080p display.
+
 ++++++++++++++++++++++++++ Changing the wireless Pi connection to a direct ethernet connection ++++++++++++++++++++++++++
-i: If you want to use the Pi to setup a wifi hotstop for an IoT project it is not possible to also communicate with the Pi over wifi.
+i: If you want to use the Pi to setup a wifi hotspot for an IoT project it is not possible to also communicate with the Pi over wifi.
 i: It would be possible if you connect to the hotspot of the Pi but then your host computer won't have an internet connection anymore.
 i: To bypass this problem we can use an ethernet cable to directly connect to the raspberry pi.
 
@@ -315,17 +387,17 @@ i: We will now change the environment variables in WSL or ubuntu (Make sure to r
 i: First we will change one in the /etc/environment, this must be done as root
 > sudo -i
 > nano /etc/environment
-- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+- Modify the IP address, save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
 > exit
 
 i: Next we will change two as a normal user
 i: Change the variable in .profile
 > nano ~/.profile
-- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+- Modify the IP address, save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
 
 i: Change the variable in .bashrc
 > nano ~/.bashrc
-- Modify the IP address, save the file with Ctrl + O and enter, and exit with Ctrl + X
+- Modify the IP address, save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
 
 - Reboot the host computer for these changes to take effect. (Logout is not enough) (WSL users need to reboot windows entirely, not just WSL)
 
@@ -347,7 +419,7 @@ pi> wget https://raw.githubusercontent.com/Zamtakk/Raspberry_WiFi_AP/main/setup_
 IF: If you want to edit the SSID and password
     pi> nano setup_wifi_ap.sh
     - Change the SSID and password on line 42 and 43
-    - Save the file with Ctrl + O and enter, and exit with Ctrl + X
+    - Save the file with Ctrl + O and hit Enter, and exit with Ctrl + X
 
 i: Give the script execution permissions
 pi> sudo chmod 777 setup_wifi_ap.sh
